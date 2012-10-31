@@ -1,0 +1,67 @@
+
+- version 1.0.1 (31.10.2012 ) Beta 
+  +REP cleaning repo and start again in Beta. old upto lastalfa is at
+       http://code.google.com/p/x64lab/source/checkout?repo=lastalfa
+       entering mantainance mode 24 hours.
+
+  +DIR x64lab has the following directory tree
+
+		├───backup
+		├───config
+		├───develop
+		├───├───backup
+		├───├───config
+		├───├───equates
+		├───├───ext
+		├───├───help
+		├───├───└───en-US
+		├───├───ide
+		├───├───lang
+		├───├───├───en-US
+		├───├───└───pl-PL
+		├───├───macro
+		├───├───plugin
+		├───├───├───bk64
+		├───├───├───dock64
+		├───├───└───top64
+		├───├───project
+		├───├───shared
+		├───├───template
+		├───├───├───module
+		├───├───├───├───arm
+		├───├───├───└───assembly32
+		├───├───├───project
+		├───├───├───snippet
+		├───├───└───workspace
+		├───├───tmp
+		├───└───tool
+		├───ext
+		├───help
+		├───└───en-US
+		├───lang
+		├───├───en-US
+		├───└───pl-PL
+		├───packed
+		├───plugin
+		├───project
+		├───template
+		├───└───module
+		├──────├───arm
+		├──────└───assembly32
+		├───tmp
+		└───tool
+ 
+  +NOT We using the following prefixing to describe
+       updates and type of corrections. prefixes are affecting
+    - ALG affecting change in the algorithms
+    - API related to OS functions or x64lab
+    - BEH behaviour/interaction
+    - CFG configuration files
+    - DIR paths and directory
+    - FIL inserted or deleted files
+    - GUI related modifications
+    - MNU affeting menus
+    - NOT note/description
+    - REP affecting repository
+    - RES resources
+  
