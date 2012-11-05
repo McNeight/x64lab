@@ -11,14 +11,7 @@
  - board http://board.flatassembler.net/index.php
  - and on comp.lang.asm.x86 newsgroup
 
- Important note: x64lab is in Alfa development stage.
-  at the moment i write this file (12.Aug.2012) it is at 
-  its 0.0.114 build. it will become "beta" version after wrapping
-  the last octet to 255. i will try to do my best in max 40 days
-  from the current date. from now up to that beta-date 
-  something may change completely. this is especially intended for
-  dll plugins in the [plugin\*.*] and those user configuration 
-  files in the [config] directory, respectively,
+ Important note about the following files:
 
  - [config\accel.utf8]   keyboard accelerators
  - [config\config.utf8]  general config file
@@ -26,9 +19,9 @@
  - [config\docking.bin]  repositional infos
  - [config\ext\*.*]      classes and file-extensions
  
-  please, save them before unpacking a new build.
-  you can stay up to date to check what has changed using 
-  Google Projects and Mercurial feeds from
+  please, save them before unpacking a new build in the
+  x64lab directory. you can stay up to date for changes
+  using Google Projects and Mercurial feeds from
 
   http://code.google.com/feeds/p/x64lab/downloads/basic
   http://code.google.com/feeds/p/x64lab/hgchanges/basic
@@ -101,9 +94,9 @@ Summary:
      in there from the Mercurial repository online.
      alternatively, download the zipped packages and unzip them
 
-      the "bin" prefixed package should be unpacked in x64lab
-      the "src" prefixed package should be unpacked in x64lab\develop
-
+     the "bin" prefixed package should be unpacked in x64lab. it is
+     the last working copy of x64lab
+ 
    -----------------------------------------------------------------
 
 -7 Compile notes:
@@ -136,18 +129,29 @@ Summary:
      you will find some other useful batch files 
      in the [develop\] folder.
 
-     # build_all.bat : to rebuild the whole package
+     - [lab_update.bat]
+        to set the current build as the working version 
+        (after exiting current x64lab, if running)
 
-     # setlang.bat   : to rebuild and set the lang.dll file
+     - [lang\makeall.bat]
+        to rebuild and set all lang files
 
-     # version.vbs   : to increment the version number
-       it creates or update a version.txt file
+     - [lang\makone.bat]
+        to rebuild and set one of the lang files
 
-     # lab_update.bat : to set the current build as the
-       working version (after exiting current x64lab, if running)
+     - [lang\makelist.vbs]
+        output a lang.txt list of updated languages
 
-     # repack.bat     : to pack src/bin zipped file
+     - [version.vbs]
+        to increment the version number. it creates 
+        or update a version.txt file
 
+     - [makeall.bat]
+        build all targets. called from lab_update.
+        (exiting current x64lab, if running)
+
+     - [repack.bat]
+        to pack src/bin zipped file
 
 -8 License
 
@@ -172,6 +176,9 @@ Summary:
 
    - icons in the [config\x64lab.bmp] are from the Open Icon Library
      under the CC License at http://openiconlibrary.sourceforge.net/
+   
+   - arm source files in the [template\module\arm] are revolution's BSD 
+     license fasmarm. http://board.flatassembler.net/topic.php?t=4191
 
    -----------------------------------------------------------------
 
@@ -179,7 +186,7 @@ Summary:
 
    - because x64lab is a self-building framework, the [develop]
      folder contains all what i need to recompile it and set it
-     as the working version. all files should be utf-8 encoded.
+     as the working version. all files should be utf-8 no-BOM encoded.
      the release version set an %X64LAB% env variable pointing
      to the application executable. the debug version an %X64LABD% one
 
@@ -191,18 +198,16 @@ Summary:
 
    - x64lab uses a docking system i built taking inspiration from
      Qt. obviously it is not Qt, but something very flexible and
-     very easy to use. it doesnt save the position for now but 
-     this last feature is already urgent in my todo list.
+     very easy to use.
 
    - x64lab uses very few unicode routine, whose methods 
      i am very proud of.
 
    - x64lab introduces a new feature of file/folder organization.
-     i call it "folder orientation" and smartlinks. this should
+     i name it "folder orientation" and smartlinks. this should
      reduce mad clicking by 2/3.
 
-   - x64lab works good but it is not perfect and still in ALPHA.
-     you can do whatever you want with my code. the guideline
+   - you can do whatever you want with my code. the guideline
      of using my code are set in the MPL 2.0 license.
      the MPL 2.0 license allows us to build for example a plugin
      and use it in x64lab whatever its internal code may be: 
@@ -223,6 +228,9 @@ Summary:
 
      [backup]   backup files
      [config]   for config files
+     [ext]      syntax files to manage extensions
+     [help]     help files and documentation
+     [lang]     language files
      [plugin]   plugin/dll files
      [project]  projects and workspaces
      [tool]     to store tools

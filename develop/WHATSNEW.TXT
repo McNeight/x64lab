@@ -1,4 +1,10 @@
 
+- version 1.0.3 (05.11.2012 ) "" 
+  +FIL [template\module\arm\arm_pe*.arm] module templates WinCE
+  +FIL [ext\arm.utf8] Syntax for arm. it relates to *.s,*.arm files
+  +FIL [ext\s.arm] 0-size syntax file
+  +FIL [ext\arm.arm] 0-size syntax file
+
 - version 1.0.1 (31.10.2012 ) Beta 
   +REP cleaning repo and start again in Beta. old upto lastalfa is at
        http://code.google.com/p/x64lab/source/checkout?repo=lastalfa

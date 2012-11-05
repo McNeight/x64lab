@@ -795,6 +795,12 @@ winproc:
 .mi_ed_relscicls:
 	call ext.discard
 	call ext.setup
+
+	mov rcx,[hDocs]
+	call lvw.get_count
+	test eax,eax
+	jz	.ret0
+
 	mov ecx,UZ_MSG_SCIREL
 
 	sub rsp,\

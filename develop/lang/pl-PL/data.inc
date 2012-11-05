@@ -44,7 +44,7 @@
 		UZ_NO,0,U8+UR,db "Nie",\
 		UZ_CANCEL,0,U8+UR,db "Anuluj",\
 		UZ_IO_SELDPF,0,U8+UR,db "Wybierz miejsce przeznaczenia oraz nazwę pliku",\
-		UZ_IO_DPATH,0,U8+UR,db "Dest. path",\
+		UZ_IO_DPATH,0,U8+UR,db "(*) Dest. path",\
 		UZ_IO_KDIR,0,U8+UR,db "Znane ścieżki",\
 		UZ_IO_DFNAME,0,U8+UR,db "Dest. filename",\
 		UZ_IO_EXT,0,U8+UR,db "nazwapliku.ext",\
@@ -96,8 +96,8 @@
 			MI_SCI_COMMB,0,U8+UR,db "Zakomentuj bloki",\
 			MI_SCI_UNCOMML,0,U8+UR,db "Usuń komentarze w liniach",\
 			MI_SCI_UNCOMMB,0,U8+UR,db "Usuń komentarze w blokach",\
-		MP_UPD,0,U8+UR,db "(no transl) Update",\
-			MI_UPD_LANG,0,U8+UR,db "(no transl) Language update (script)",\
+		MP_UPD,0,U8+UR,db "(*) Update",\
+			MI_UPD_LANG,0,U8+UR,db "(*) Language update (script)",\
 		MP_PATH,0,U8+UR,db "[?]",\
 			MI_PA_CONS,0,U8+UR,db "Otwórz konsolę tutaj",\
 			MI_PA_BROWSE,0,U8+UR,db "Przeglądaj",\
@@ -131,14 +131,11 @@
 			UZ_TIMEFRM,0,U8+UR,db "gg':'mm':'ss",\
 			UZ_DEFUSER,0,U8+UR,db "Mr.Biberkopf",\
 			UZ_TOOLGEN,0,U8+UR,db "Narzędzia wszystkich zastosowań",\
-			UZ_INFO_TREL,0,U8+UR,<db \
-				"Po edycji pliku [config\devtool.utf8], nie zapomnij",13,10,\
-				"załadować ponownie narzędzi wybierając z menu pozycję [Przeładuj Narzędzia]">,\
 			UZ_MSG_U_TGREM,0,U8+UR,<db \
 				"Usunięcie grupy [%ls] jest nieodwracalne. ",13,10,\
 				"Narzędzia, które zawiera, również zostaną usunięte !",13,10,\
 				"Usunąć trwale ?">,\
-			UZ_MSG_TADDG,0,U8+UR,db "(no transl) Type something, press <enter> to create a Group",\
+			UZ_MSG_TADDG,0,U8+UR,db "(*) Type something, press <enter> to create a Group",\
 			UZ_MSG_SCIREL,0,U8+UR,<db \
 				"Po zapisaniu plików klas Scintilli, proszę zamknąć i otworzyć ponownie",13,10,\
         "aktualny edytor również otwiera pliki w kolejności",13,10,\
@@ -159,10 +156,10 @@
 			UZ_NOTASS,0,U8+UR,db "Nie ma wyznaczonego zadania",\
 			UZ_WZERO,0,U8+UR,db "0000",\
 			UZ_RESTART,0,U8+UR,db "Please restart x64lab to apply change. Close it now ?",\
-			UZ_MSG_LNK,0,U8+UR,<db "(no transl.) The selected treeitem is empty.",13,10,\
+			UZ_MSG_LNK,0,U8+UR,<db "(*) The selected treeitem is empty.",13,10,\
 				"Add this smartlink as its first child item ?">,\
-			UZ_TEMPLATE,0,U8+UR,db "(no transl)Ready templates",\
-			UZ_TMPL_MOD,0,U8+UR,db "(no transl) Bare-module templates"
+			UZ_TEMPLATE,0,U8+UR,db "(*)Ready templates",\
+			UZ_TMPL_MOD,0,U8+UR,db "(*) Bare-module templates"
 
 			;---			MI_DEVT_MAN,0,U8+UR,db "Zarządzanie plikiem narzędzi (dla zaawansowanych Urzytkowników)",\
 			;---			MI_DEVT_REL,0,U8+UR,db "Przeładuj Narzędzia",\

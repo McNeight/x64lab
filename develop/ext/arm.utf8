@@ -1,0 +1,207 @@
+  
+  ;#-------------------------------------------------ß
+  ;|          x64lab  MPL 2.0 License                |
+  ;|   Copyright (c) 2009-2012, Marc Rainer Kranz.   |
+  ;|            All rights reserved.                 |
+  ;ö-------------------------------------------------ä
+
+  ;#-------------------------------------------------ß
+  ;| uft-8-NO-BOM encoded üäöß
+  ;| update:05/Nov/2012
+  ;| filename:
+  ;ö-------------------------------------------------ä
+
+	;--- define SCLEX_ASM 34 ; 4 bits
+	;--- the same for Assembly
+	lexer:34
+	stylebits:4
+	multisel:1
+	tabwidth:2
+	selback:1,0BABEBAh
+	commline:";--- "
+
+	keyword:0,\
+		"adc add adr adrl and asr b bfc bfi bic bkpt bl bls blx bne bx bxj cbz cbnz "\
+		"cdp cdp2 chka clrex clz cmn cmp cps dbg dmb dsb enterx leavex eor hb hbl hblp hbp "\
+		"isb it ldc ldc2 ldm ldr ldr ldrb ldrbt ldrd ldrex ldrexb ldrexh ldrexd ldrh "\
+		"ldrht ldrsb ldrsbt ldrsh ldrsht ldrt lsl lsr mar mcr mcr2 mcrr mcrr2 mia miaph "\
+		"miaxy mla mls mov movs movt mov32 mra mrs msr mul mvn nop "\
+		"orn orr pkhbt pld pldw pli push pop qadd qdadd qdsub qsub qadd8 qadd16 qasx "\
+		"qsub8 qsub16 qsax rbit ret rev rev16 revsh rfe ror rrx rsb rsc sadd8 sadd16 sasx sbc "\
+		"sbfx ubfx sdiv sel setend sev shadd8 shadd16 shasx shsub8 shsub16 shsax smc smlaxy "\
+		"smlad smlal smlalxy smlald smlawy smlsd smlsld smmla smmls smmul smuad smusd "\
+		"smulxy smull smulwy srs ssat ssat16 ssub8 ssub16 ssax stc stc2 stm str strb strbt "\
+		"strd strex strexb strexh strexd strh strht strt sub subs pc lr svc swi swp swpb "\
+		"sxtab sxtab16 sxtah sxtb sxth sxtb16 sys tbb tbh teq tst uadd8 uadd16 uasx udiv "\
+		"uhadd8 uhadd16 uhasx uhsub8 uhsub16 uhsax umaal umlal umull uqadd8 uqadd16 uqasx "\
+		"uqsub8 uqsub16 uqsax usad8 usada8 usat usat16 usub8 usub16 usax uxtab uxtab16 "\
+		"uxtah uxtb uxth uxtb16 wfe wfi yield"
+
+	;--- NEON etc
+	keyword:1,\
+		"vaba vabd vabs vacge vacgt vacle vaclt vadd vaddhn vand vand vbic "\
+		"vbif vbit vbsl vceq vcle vclt vcge vcgt vcls vclz vcnt vcvt vcvt vdup "\
+		"veor vext vfma vfms vhadd vhsub vld vmax vmin vmla vmls vmov vmovl "\
+		"vmovu vmovn vmul vmvn vneg vorn vorr vpadd vpadal vpmax vpmin vqabs vqadd "\
+		"vqdmlal vqdmlsl vqdmul vqdmulh vqmov vqneg vqrdmulh vqrshl vqrshr vqshl vqshl "\
+		"vqshr vqsub vraddhn vrecpe vrecps vrev vrhadd vrshr vrsra vrsqrte vrsqrts vrsubhn "\
+		"vshl vshr vsli vsra vsri vst vsub vsubhn vswp vtbl vtbx vtrn vtst vuzp vzip vldm "\
+		"vldr vmrs vmsr vpop vpush vstm vstr tandc tbcst textrc textrm tinsr tmia tmiaph "\
+		"tmiaxy tmovmsk torc wacc wadd waligni walignr wand wandn wavg2 wcmpeq wcmpgt wldr "\
+		"wmac wmadd wmax wmin wmul wor wpack wror wsad wshufh wsll wsrl wsra wstr wsub "\
+		"wunpckeh wunpckel wunpckih wunpckil wxor tmcr tmcrr tmrc tmrrc wmov wzero "
+
+	;--- E:\arm\SOURCE\ARMTABLE.INC
+	keyword:2,\
+		"a0 a1 a2 a3 a4 al "\
+		"apsr_g apsr_nzcvq apsr_nzcvqg "\
+		"basepri_max "\
+		"c0 c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11 c12 c13 c14 c15 "\
+		"cpsr cpsr_c cpsr_f cpsr_s cpsr_x "\
+		"cpsr_all cpsr_cfs cpsr_cfx cpsr_csf cpsr_csx cpsr_ctl cpsr_cxf "\
+		"cpsr_cxs cpsr_fcs cpsr_fcx cpsr_flg cpsr_fsc cpsr_fsx cpsr_fxc "\
+		"cpsr_fxs cpsr_scf cpsr_scx cpsr_sfc cpsr_sfx cpsr_sxc cpsr_sxf "\
+		"cpsr_xcf cpsr_xcs cpsr_xfc cpsr_xfs cpsr_xsc cpsr_xsf "\
+		"cpsr_cfsx cpsr_cfxs cpsr_csfx cpsr_csxf cpsr_cxfs cpsr_cxsf cpsr_fcsx cpsr_fcxs "\
+		"cpsr_fscx cpsr_fsxc cpsr_fxcs cpsr_fxsc cpsr_scfx cpsr_scxf cpsr_sfcx cpsr_sfxc "\
+		"cpsr_sxcf cpsr_sxfc cpsr_xcfs cpsr_xcsf cpsr_xfcs cpsr_xfsc cpsr_xscf cpsr_xsfc "\
+		"d0 d1 d2 d3 d4 d5 d6 d7 d8 d9 d10 d11 d12 d13 d14 d15 "\
+		"d16 d17 d18 d19 d20 d21 d22 d23 d24 d25 d26 d27 d28 d29 d30 d31 "\
+		"eapsr epsr "\
+		"f0 f1 f2 f3 f4 f5 f6 f7 fp "\
+		"faultmask "\
+		"iapsr ip ipsr lr pc "\
+		"lr_abt lr_fiq lr_irq lr_mon lr_svc lr_und lr_usr "\
+		"p0 p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12 p13 p14 p15 pc "\
+		"q0 q1 q2 q3 q4 q5 q6 q7 q8 q9 q10 q11 q12 q13 q14 q15 "\
+		"r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 "\
+		"r0@16 r0@32 r0@64 r1@16 r1@32 r1@64 r2@16 r2@32 r2@64 "\
+		"r3@16 r3@32 r3@64 r4@16 r4@32 r4@64 r5@16 r5@32 r5@64 "\	
+		"r6@16 r6@32 r6@64 r7@16 r7@32 r7@64 r8@16 r8@32 r8@64 "\
+		"r9@16 r9@32	r9@64 "\
+		"r0@128 r0@256 r10@16 r10@32 r10@64 r11@16 r11@32 r11@64 "\
+		"r12@16 r12@32 r12@64 r13@16 r13@32 r13@64 "\
+		"r14@16 r14@32 r14@64 r15@16 r15@32 r15@64 "\
+		"r1@128 r1@256 r2@128 r2@256 r3@128 r3@256 r4@128 r4@256 "\
+		"r5@128 r5@256 r6@128 r6@256 r7@128 r7@256 r8@128 r8@256 "\
+		"r8_fiq r8_usr r9@128 r9@256 r9_fiq r9_usr "\
+		"s0 s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 "\
+		"s16 s17 s18 s19 s20 s21 s22 s23 s24 s25 s26 s27 s28 s29 s30 s31 "\
+		"sb sl sp spsr st sy "\
+		"sp_abt sp_fiq sp_hyp sp_irq sp_mon sp_svc sp_und sp_usr "\
+		"spsr_c spsr_f spsr_s spsr_x "\
+		"spsr_cf spsr_cs spsr_cx spsr_fc spsr_fs spsr_fx "\
+		"spsr_sc spsr_sf spsr_sx spsr_xc spsr_xf spsr_xs "\
+		"spsr_abt spsr_all spsr_cfs spsr_cfx spsr_csf spsr_csx spsr_ctl spsr_cxf "\
+		"spsr_cxs spsr_fcs spsr_fcx spsr_fiq spsr_flg spsr_fsc spsr_fsx spsr_fxc "\
+		"spsr_fxs spsr_hyp spsr_irq spsr_mon spsr_scf spsr_scx spsr_sfc spsr_sfx "\
+		"spsr_svc spsr_sxc spsr_sxf spsr_und spsr_xcf spsr_xcs spsr_xfc spsr_xfs "\
+		"spsr_xsc spsr_xsf "\
+		"spsr_cfsx spsr_cfxs spsr_csfx spsr_csxf spsr_cxfs spsr_cxsf spsr_fcsx "\
+		"spsr_fcxs spsr_fscx spsr_fsxc spsr_fxcs spsr_fxsc spsr_scfx spsr_scxf spsr_sfcx "\
+		"spsr_sfxc spsr_sxcf spsr_sxfc spsr_xcfs spsr_xcsf spsr_xfcs spsr_xfsc spsr_xscf "\
+		"spsr_xsfc "\
+		"v1 v2 v3 v4 v5 v6 v7 v8 "\
+		"wcasf wcgr0 wcgr1 wcgr20 wcgr31 wcssf "\
+		"wr0 wr1 wr2 wr3 wr4 wr5 wr6 wr7 wr8 wr9 wr10 wr11 wr12 wr13 wr14 wr15 "\
+		"wcid wcon "\
+		"xpsr"
+	
+	keyword:3,\
+		"al alias align apscall arm assert assume at "\
+		"be break byte "\
+		"cc cn coprocessor code code16 code32 common "\
+		"cp cs data dcb dcd dcdo dcdu dcfd dcfdu dcfs dcfsu dci dcq dcqu dcw dcwu "\
+		"define directory dn dup dwarf dword "\
+		"elf elif else elseif end endfunc endif endl endm endp ends "\
+		"entry equ even executable extern "\
+		"for format forward from ge goto gt hi hs hword "\
+		"if ifdef ifdif include invoke irp irps "\
+		"label le lo local locals ls lt macro match mi mod ne offset org "\
+		"pl proc processor ptr public purge "\
+		"readable relativeto repeat rept resource restore restruc reverse "\
+		"section segment short size sizeof struc struct "\
+		"thumb thumbx union virtual vc vs while word writeable"
+
+	keyword:4,\
+		"? $ $$ @f @b db dh du dw dd rb rh ru rw rd eq"
+
+	;--- the keyword:5 is still available. it will contain
+	;--- ex.: instr+condition/specifier (.n .w)
+	;--- using the SCE_ASM_EXTINSTRUCTION id for its style
+	
+	;--- define STYLE_DEFAULT 32
+	style:32
+		back:00F2F2F7h
+		fore:0
+		font:'Courier New'
+		fontsize:12
+		clearall:
+
+	;--- SCE_F_DEFAULT 0
+	style:0
+	;---		fore:0808080h
+	;---		bold:1
+
+	;---define SCE_ASM_COMMENTBLOCK 11
+	;---define SCE_ASM_CHARACTER 12
+	;---define SCE_ASM_STRINGEOL 13
+	;---define SCE_ASM_EXTINSTRUCTION 14
+
+	;---define SCE_ASM_COMMENT 1
+	style:1
+		fore:0B359h
+		italic:1
+
+	;---define SCE_ASM_NUMBER 2
+	style:2
+		charset:255
+		bold:1
+
+	;---define SCE_ASM_STRING 3
+	style:3
+		fore:00AA00FFh
+
+	;---define SCE_ASM_OPERATOR 4
+	style:4
+		bold:1
+
+	;---define SCE_ASM_IDENTIFIER 5
+	style:5
+		fore:0h
+		bold:0
+
+	;--- define SCE_ASM_CPUINSTRUCTION 6
+	style:6
+		fore:0583195h
+
+	;---define SCE_ASM_MATHINSTRUCTION 7
+	style:7
+		fore:0583195h
+		bold:1
+
+	;--- define SCE_ASM_REGISTER 8
+	style:8
+		fore:0BA3E00h
+		bold:0
+
+
+	;---define SCE_ASM_DIRECTIVE 9
+	style:9
+		fore:076402Eh
+		bold:1
+	
+	;---define SCE_ASM_DIRECTIVEOPERAND 10
+	style:10
+		fore:0096AA28h
+		bold:1
+
+	;--- define STYLE_LINENUMBER 33
+	style:33
+		back:00AABBCCh
+		fore:0
+		charset:255
+		fontsize:8
+		bold:1
+
+

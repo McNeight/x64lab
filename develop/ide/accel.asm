@@ -180,7 +180,7 @@ accel:
 	mov rsi,rax
 	rep movsb
 	@do_eol
-	
+
 	mov al,09
 	stosb
 	;--- insert top info -------

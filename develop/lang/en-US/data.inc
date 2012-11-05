@@ -129,9 +129,6 @@
 			UZ_TIMEFRM,0,U8+UR,db "HH':'mm':'ss",\
 			UZ_DEFUSER,0,U8+UR,db "Mr.Biberkopf",\
 			UZ_TOOLGEN,0,U8+UR,db "All purpose tools",\
-			UZ_INFO_TREL,0,U8+UR,<db \
-				"After editing the file [config\devtool.utf8], dont forget",13,10,\
-				"to reload all tools by choosing the menu item [Reload tools]">,\
 			UZ_MSG_U_TGREM,0,U8+UR,<db \
 				"Removing group [%ls] cannot be undone. ",13,10,\
 				"Tools contained into it will be removed too !",13,10,\
