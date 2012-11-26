@@ -11,23 +11,26 @@
   ;| filename:
   ;ö-------------------------------------------------ä
 
+	hInst	dq 0
+	
+;---	g:
+;---	.hDefCurs	dq 0
+;---	.hNSCurs	dq 0
+;---	.hWECurs		dq 0
+;---	.hPattern	dq 0
+;---	.hInst		dq 0
+;---	.hBrush		dq 0
+;---	;.hGdip 		dq 0
+;---	;.gdipsi 	GDIPLUS_STARTUPINPUT 1,NULL, FALSE, FALSE
 
-	g:
-	.hDefCurs	dq 0
-	.hNSCurs	dq 0
-	.hWECurs		dq 0
-	.hPattern	dq 0
-	.hInst		dq 0
-	.hBrush		dq 0
-	;.hGdip 		dq 0
-	;.gdipsi 	GDIPLUS_STARTUPINPUT 1,NULL, FALSE, FALSE
+;---	.pt				POINT
+;---	.cx_sframe		dw 0
+;---	.cy_sframe		dw 0
+;---	.cy_caption		dw 0
+;---	.cy_border		dw 0
+;---	.cx_smicon		dw 0
+;---	.cy_smicon		dw 0
+;---	.cx_smsize		dw 0
+;---	.cy_smsize		dw 0
 
-	.pt				POINT
-	.cx_sframe		dw 0
-	.cy_sframe		dw 0
-	.cy_caption		dw 0
-	.cy_border		dw 0
-	.cx_smicon		dw 0
-	.cy_smicon		dw 0
-	.cx_smsize		dw 0
-	.cy_smsize		dw 0
+ 

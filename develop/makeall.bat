@@ -7,13 +7,17 @@ echo off
 
  @del x64labd.exe
  @del x64lab.exe
-
+ @del ext\bin\ext.bin
+ 
  call lang\makeall.bat
    IF ERRORLEVEL 1 GOTO err_exit
 
  call plugin\makeall.bat
    IF ERRORLEVEL 1 GOTO err_exit
 
+ echo.
+ fasm ext\bin\ext.inc
+   IF ERRORLEVEL 1 GOTO err_exit
  echo.
  fasm x64labd.asm
    IF ERRORLEVEL 1 GOTO err_exit

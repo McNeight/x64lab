@@ -721,6 +721,54 @@ argresult equ (result and 0xffffffff)
 }
 
 
+	;#---------------------------------------------------ö
+	;|               @xsdbmu utf16                       |
+	;ö---------------------------------------------------ü
+
+macro @xsdbmu argstr,argresult,argprime {
+	common 
+	local	lo,hi,result,cpts,prime,..tmp
+	argresult equ 0
+	if argprime eq
+		prime = 6121
+	else
+		prime = argprime
+	end if
+	virtual at 0
+		..tmp:
+		du argstr
+		result = prime
+
+	;--- 32 bit range ---------
+	repeat $/2
+		load cpts word from %*2 -2
+		lo = (cpts and 0x000000FF)
+		hi = (cpts and 0x0000FF00) shr 8
+		result = ((lo xor hi) and 0x000000FF )+\
+			(result shl 6) + \
+			(result shl 17) - \
+			result
+	end repeat
+	end virtual
+	argresult equ (result and 0xffffffff)
+	;--------------------------------------------
+
+	;---	;--- full 64 bit result on string -----
+	;---	argresult equ result
+	;---		repeat $/2
+	;---			load cpts word from %*2 -2
+	;---			lo = (cpts and 0x000000FF)
+	;---			hi = (cpts and 0x0000FF00) shr 8
+	;---			result = ((lo xor hi) )+\
+	;---				(result shl 6) + \
+	;---				(result shl 17) - \
+	;---				result
+	;---		end repeat
+	;---	end virtual
+	;---	argresult equ result 
+}
+
+
 macro @szhash [argstr]{
 	result equ 0
 	@xsdbm argstr,result
@@ -772,27 +820,6 @@ macro @top_pack argreg,argname,arglevel {
 	..tmp equ (..tmp shl 8 or T_IS_LABEL)
 	mov argreg,..tmp
 }
-	;#---------------------------------------------------ö
-	;|               @make_hash			                     |
-	;ö---------------------------------------------------ü
-
-;macro @make_hash argname,argresult  {
-;	common 
-;	local	result,char,prime,tmp
-;	argresult equ 0
-;	prime = 01000193h
-;	virtual at 0
-;		tmp:
-;		db `argname
-;		result = 811C9DC5h	;basis
-;		gsize = $-tmp
-;		repeat $
-;			load char byte from % - 1
-;			result = prime * ((result xor (char and 0x000000FF)) and 0xffffffFF)
-;		end repeat
-;	end virtual
-;argresult equ (result and 0xffffffff)
-;}
 
 ;;----------------- MACRo for shared.asm -----------------
 	macro @using [name] {

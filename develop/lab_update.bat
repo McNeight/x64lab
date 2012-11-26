@@ -15,10 +15,12 @@ xcopy ext ..\ext\ /E /Y
 xcopy lang\en-US\lang.dll ..\lang\en-US\ /Y
 
 copy plugin\dock64.dll ..\plugin /Y
+copy plugin\HexView.dll ..\plugin /Y
 copy plugin\bk64.dll ..\plugin /Y
 copy plugin\top64.dll ..\plugin /Y
 copy plugin\Scilexer64.dll ..\plugin /Y
 copy plugin\License.txt ..\plugin /Y
+copy plugin\license_HexView.txt ..\plugin /Y
 
 xcopy help ..\help\*.* /E /Y
 

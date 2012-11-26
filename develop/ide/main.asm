@@ -60,6 +60,7 @@
 	include "bridge.inc"
 	include "shared\unicode.inc"
 	include "shared\scintilla.inc"
+	include "shared\hexview.inc"
 	
 section '.code' code readable executable
 	include "shared\api.asm"
@@ -68,6 +69,7 @@ section '.code' code readable executable
 	include "shared\unicode.asm"
 
 	include "config.asm"
+	include "hex.asm"
 	include "window.asm"
 	include "edit.asm"
 	include "float.asm"
@@ -86,52 +88,6 @@ section '.code' code readable executable
 	include "template.asm"
 
 start:
-;---macro peppi {
-;---	movdqu xmm0,[rsp]
-;---	pcmpeqw xmm1,xmm1
-;---	psrld xmm1,16
-;---	pand xmm0,xmm1
-;---	mov rax,8000800080008000h
-;---	mov [rsp+16],rax
-;---	mov [rsp+24],rax
-
-;---	movdqu xmm0,dqword[rsp]
-;---	movdqu xmm1,dqword[rsp+16]
-;---	paddsw xmm1,xmm0
-;---	psubsw xmm0,xmm1
-;---	pand xmm0,xmm1
-;---	packssdw xmm0,xmm0
-;---	movq rax,xmm0
-
-;---;---	packssdw xmm0,xmm0
-;---;---	movdqa xmm1,xmm0
-;---;---	paddsb	xmm0,xmm0
-;---;---	psubsw xmm0,xmm1
-;---;---	movq rax,xmm0
-;---	nop
-;---}
-
-;---	sub rsp,32
-;---	mov [rsp+RECT.left],-1
-;---	mov [rsp+RECT.top],-2
-;---	mov [rsp+RECT.right],-3
-;---	mov [rsp+RECT.bottom],-4
-
-;---peppi
-
-;---	mov [rsp+RECT.left],1111h
-;---	mov [rsp+RECT.top],2222h
-;---	mov [rsp+RECT.right],3333h
-;---	mov [rsp+RECT.bottom],4444h
-
-;---peppi
-
-;---	add rsp,32
-;---	ret
-
-
-
-
 	;	call get_version
 	;	call win.ask_tar
 	;	call win.err_notar
@@ -206,6 +162,7 @@ start:
 
 	call config.setup_gui
 	call ext.setup
+	call ext.setup_bin
 
 .winmain:
 	mov ecx,\
@@ -381,6 +338,7 @@ start:
 
 .err_start:
 	call ext.discard
+	call ext.discard_bin
 	call config.unset_lang
 	call config.unset_libs
 
@@ -648,7 +606,6 @@ winproc:
 		sci.commline
 
 .mi_sci_commlA:
-
 	mov rsi,[pEdit]
 	mov rbx,\
 		[rsi+EDIT.curlabf]

@@ -262,41 +262,6 @@ sci:
 	mov edx,SCI_GETTEXTRANGE
 	jmp	apiw.sms
 
-	;#---------------------------------------------------ö
-	;|                DISCARD                            |
-	;ö---------------------------------------------------ü
-
-.discard:
-	mov rcx,[hSciDll]
- 	jmp apiw.freelib
-
-	;#---------------------------------------------------ö
-	;|                SETUP                              |
-	;ö---------------------------------------------------ü
-
-.setup:
-	;--- in RCX plugdir
-	lea rcx,[rcx+DIR.dir]
-
-.setupA:
-	sub rsp,FILE_BUFLEN
-	xor eax,eax
-	mov rdx,rsp
-	
-	push rax
-	push uzSciDll
-	push uzSlash
-	push rcx
-	push rdx
-	push rax
-	call art.catstrw
-
-	mov rdx,\
-		LOAD_WITH_ALTERED_SEARCH_PATH
-	mov rcx,rsp
- 	call apiw.loadlib
-	add rsp,FILE_BUFLEN
-	ret 0
 	
 	;#---------------------------------------------------ö
 	;|               .DEF_FLAGS                          |

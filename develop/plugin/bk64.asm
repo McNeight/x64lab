@@ -33,9 +33,13 @@ INC_EQU		equ	\
 INC_DATA	equ \
 	SHAREDDIR#'\art.inc',\
 	WORKDIR#'\'#MODULE#'\data.inc',\
-	WORKDIR#'\'#MODULE#'\layer.inc',\
 	SHAREDDIR#'\shobjidl.inc',\
-	WORKDIR#'\'#MODULE#'\dialog.inc'
+	WORKDIR#'\'#MODULE#'\dialog.inc',\
+	WORKDIR#'\'#MODULE#'\hex.inc'
+
+
+;---	WORKDIR#'\'#MODULE#'\layer.inc',\
+
 		
 INC_CODE	equ \
 	WORKDIR#'\'#MODULE#'\code.asm'
@@ -55,36 +59,40 @@ INC_INC equ
 	;WORKDIR#'\'#MODULE#'\rsrc.inc'
 
 INC_ASM equ \
-	WORKDIR#'\'#MODULE#'\inet.asm',\
-	WORKDIR#'\'#MODULE#'\layer.asm',\
-	WORKDIR#'\'#MODULE#'\dialog.asm'
+	WORKDIR#'\'#MODULE#'\dialog.asm',\
+	WORKDIR#'\'#MODULE#'\hex.asm'
 
-	;WORKDIR#'\'#MODULE#'\log.asm',\
-	;WORKDIR#'\'#MODULE#'\gdip.asm',\
-	;WORKDIR#'\'#MODULE#'\splash.asm'
+;---	WORKDIR#'\'#MODULE#'\inet.asm',\
+;---	WORKDIR#'\'#MODULE#'\layer.asm',\
+;---	WORKDIR#'\'#MODULE#'\log.asm',\
+;---	WORKDIR#'\'#MODULE#'\gdip.asm',\
+;---	WORKDIR#'\'#MODULE#'\splash.asm'
 
 INC_FIX	equ TRUE
 
 APIEXPORT equ
 
 APIBRIDGE equ \
-	inet.check,\
-	inet.state,\
-	inet.open,\
-	inet.close,\
-	inet.iourl,\
-	inet.setopt,\
-	inet.cback,\
-	inet.fread,\
-	inet.lsave,\
-  inet.closeurl,\
-  inet.query,\
-	lay64.init,\
-	lay64.panel,\
-	lay64.release,\
-	lay64.resize,\
+	hex.create,\
 	dlg.open,\
 	bk64.listfiles
+
+;---	inet.check,\
+;---	inet.state,\
+;---	inet.open,\
+;---	inet.close,\
+;---	inet.iourl,\
+;---	inet.setopt,\
+;---	inet.cback,\
+;---	inet.fread,\
+;---	inet.lsave,\
+;---  inet.closeurl,\
+;---  inet.query,\
+
+;---	lay64.init,\
+;---	lay64.panel,\
+;---	lay64.release,\
+;---	lay64.resize,\
 
 ;	gdip.startup,\
 ;	gdip.shutdown,\

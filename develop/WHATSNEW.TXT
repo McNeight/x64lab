@@ -1,4 +1,12 @@
 
+- version 1.0.10 (26.11.2012 ) Beta 
+  +GUI added Hexview component
+  +FIL added [ext\bin\ext.bin] binary extension file list
+  +DIR added the following directories to develop/root
+		├───ext
+		├───├───bin
+   extension format lexer (flexer) and binary file list
+
 - version 1.0.3 (05.11.2012 ) "" 
   +FIL [template\module\arm\arm_pe*.arm] module templates WinCE
   +FIL [ext\arm.utf8] Syntax for arm. it relates to *.s,*.arm files

@@ -17,6 +17,93 @@
 	;ö---------------------------------------------------ü
 
 art:
+@using .is_bin
+.is_bin:
+	;--- in RCX data
+	;--- in RDX len
+	sub rsp,16
+	pxor xmm3,xmm3
+	push .is_bin32
+	mov rax,.mask_09
+	mov r8,rdx
+	shr r8,6
+	jnz	.is_bin64
+	ret 0
+
+.is_bin32:
+	push .is_bin16
+	and edx,3Fh
+	mov r8,rdx
+	shr r8,5
+	jnz	.is_bin32A
+	ret 0
+
+.is_bin16:
+	push .is_binR
+	and edx,1Fh
+	mov r8,rdx
+	shr r8,4
+	jnz	.is_bin16A
+	ret 0
+
+.is_binR:
+	movdqu dqword[rsp],xmm3
+	pop rax
+	pop rcx
+	or rax,rcx
+	ret 0
+
+.is_bin64:
+	push .is_bin64A
+	push .is_bin32A
+	jmp	.is_bin32A
+	
+.is_bin64A:
+	dec r8
+	jnz	.is_bin64
+	ret 0
+
+.is_bin32A:
+	push .is_bin16A
+
+.is_bin16A:	
+	movdqa xmm2,dqword[rcx]
+	;--- check invalid = 7F
+	movdqa xmm0,dqword[rax+80]
+	pcmpeqb xmm0,xmm2
+	;--- check < 20 > 7F
+	movdqa xmm1,dqword[rax+64]
+	pcmpgtb xmm1,xmm2
+	por xmm1,xmm0
+	;--- keep invalid < 09 > 7F
+	movdqa xmm0,dqword[rax]
+	pcmpeqb xmm0,xmm2
+	pxor xmm1,xmm0
+	;--- filter valid 0D
+	movdqa xmm0,dqword[rax+16]
+	pcmpeqb xmm0,xmm2
+	pxor xmm1,xmm0
+	;--- filter valid 0A
+	movdqa xmm0,dqword[rax+48]
+	pcmpeqb xmm0,xmm2
+	pxor xmm1,xmm0
+	;--- filter valid 0C
+	movdqa xmm0,dqword[rax+32]
+	pcmpeqb xmm0,xmm2
+	pxor xmm0,xmm1
+	por xmm3,xmm0
+	add rcx,16
+	ret 0
+
+align 16
+	.mask_09	dq 09090909'09090909h,09090909'09090909h
+	.mask_0A	dq 0A0A0A0A'0A0A0A0Ah,0A0A0A0A'0A0A0A0Ah
+	.mask_0C	dq 0C0C0C0C'0C0C0C0Ch,0C0C0C0C'0C0C0C0Ch
+	.mask_0D	dq 0D0D0D0D'0D0D0D0Dh,0D0D0D0D'0D0D0D0Dh
+	.mask_20	dq 20202020'20202020h,20202020'20202020h
+	.mask_7F	dq 7F7F7F7F'7F7F7F7Fh,7F7F7F7F'7F7F7F7Fh
+@endusing
+
 
 @using .pmc_fuerst
 	;--- in RAX seed
@@ -1185,21 +1272,29 @@ align 8
 	;|         .FOPEN_RW           	                     |
 	;ö---------------------------------------------------ü
 if (used .fopen_rw) | \
-		(used .fcreate_rw)
+		(used .fcreate_rw) | \
+		(used .fopen_r)
 
 .fcreate_rw:
 	mov r10,CREATE_ALWAYS
 	jmp	.fopen_rwA
+
+.fopen_r:
+	mov r10,OPEN_EXISTING
+	mov edx,GENERIC_READ
+	jmp	.fopen_rwB
 	
 .fopen_rw:
 	;--- in RCX path\filename
 	mov r10,OPEN_EXISTING
 
 .fopen_rwA:
-	mov r8,FILE_SHARE_READ \
-		or FILE_SHARE_WRITE 
 	mov edx,GENERIC_READ \
 		or GENERIC_WRITE
+
+.fopen_rwB:
+	mov r8,FILE_SHARE_READ \
+		or FILE_SHARE_WRITE 
 
 	push rbp
 	mov rbp,rsp

@@ -33,11 +33,13 @@ edit:
 	push rsi
 	push r12
 	push r13
+	push r14
 
 	mov rbp,rsp
 	and rsp,-16
 	xor r12,r12
 	xor r13,r13
+	xor r14,r14
 
 	sub rsp,\
 		FILE_BUFLEN
@@ -74,11 +76,50 @@ edit:
 	mov rcx,rdi
 	call art.is_file
 	jz .openE
-	
-	;--- 2) TODO: check type
-	test [.labf.type],\
-		LF_TXT
 
+	;--- first check for TEXT extension
+	mov rcx,rbx
+	add rcx,\
+		sizeof.LABFILE
+	call ext.load
+	mov r14,rax
+	test eax,eax
+	jnz	.openA1
+
+	mov rcx,rdi
+	call ext.fe2hash
+	
+	mov rcx,rax
+	call ext.is_bin
+	test eax,eax
+	jz .openA1
+
+	mov rcx,rdi
+	call .sample_bin
+	test eax,eax
+	jz .openA1
+
+	or [.labf.type],\
+		LF_BIN
+
+	mov rsi,[pEdit]
+	mov rcx,[.pEdit.hwnd]
+	
+	call hex.create
+	test eax,eax
+	jz	.openE
+	mov [.labf.hBin],rax
+
+	mov r9,rdi
+	mov r8,HVOF_READONLY
+	mov edx,HVM_OPENFILE
+	mov rcx,rax
+	call apiw.sms
+	mov r12,rbx
+	jmp	.openB3
+
+.openA1:	
+	;--- 2) TODO: check type
 	;----TODO: review ---------------
 	or [.labf.type],\
 		LF_TXT
@@ -113,16 +154,17 @@ edit:
 	call sci.set_defprop
 
 	;--- TODO: eventual unicode conversion
+;---	mov rcx,rbx
+;---	add rcx,\
+;---		sizeof.LABFILE
+;---	call ext.load
+;---	test eax,eax
+;---	jz	.openB2
+	test r14,r14
+	jz .openB2
 
-	mov rcx,rbx
-	add rcx,\
-		sizeof.LABFILE
-	call ext.load
-	test eax,eax
-	jz	.openB2
-	
 	mov rdx,rbx
-	mov rcx,rax
+	mov rcx,r14
 	call ext.apply
 
 .openB2:
@@ -142,12 +184,14 @@ edit:
 	call sci.def_flags
 	mov r12,rbx
 
+.openB3:
 	or [.labf.type],\
 		LF_OPENED
 
 .openE:
 	xchg rax,r12
 	mov rsp,rbp
+	pop r14
 	pop r13
 	pop r12
 	pop rsi
@@ -156,6 +200,74 @@ edit:
 	pop rbp
 	ret 0
 
+
+	;#---------------------------------------------------ö
+	;|             EDIT.sample_bin                       |
+	;ö---------------------------------------------------ü
+.sample_bin:
+	;--- in RCX path+filename	
+	;--- RET RAX -1=err, 0=NO-bin 1=bin
+	push rbp
+	push rbx
+	push rsi
+	push r12
+	push r13
+	mov rbp,rsp
+
+	mov rsi,rcx
+	and rsp,-16
+	mov ecx,1000h ;--- sample size
+	sub rsp,rcx
+	or r12,-1
+	xor r13,r13
+
+	mov rdx,rsp
+	call art.zeromem
+
+	mov rcx,rsi
+	call art.fopen_r
+	test eax,eax
+	jz	.sample_binE
+	mov rbx,rax
+
+	mov rcx,rax
+	call art.fsizex
+	test eax,eax
+	jz	.sample_binE
+	test rcx,rcx
+	jz .sample_binF
+
+	sub ecx,1000h
+	sbb eax,eax
+	and ecx,eax
+	add ecx,1000h
+
+	mov r8,rcx
+	mov r13,rcx
+	mov rdx,rsp
+	mov rcx,rbx
+	call art.fread
+	inc r12
+	
+	mov rcx,rsp
+	mov rdx,r13
+	call art.is_bin
+	mov r12,rax
+
+
+.sample_binF:
+	mov rcx,rbx
+	call art.fclose
+
+.sample_binE:
+	mov rax,r12
+	mov rsp,rbp
+	pop r13
+	pop r12
+	pop rsi
+	pop rbx
+	pop rbp
+	ret 0
 
 	;#---------------------------------------------------ö
 	;|             EDIT.close                            |
@@ -622,4 +734,10 @@ edit:
 
 .exit:
 	@wepi
+
+
+
+
+
+
 

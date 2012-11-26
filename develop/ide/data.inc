@@ -34,8 +34,10 @@ section '.data' data readable writeable
 	pOmni		dq 0
 	hSciDll	dq 0
 	hDocker	dq 0
+	hHexDll	dq 0
 
 	pExtClass	dq 0
+	pBinExt		dq 0
 
 	hTree			dq 0
 	hRootWsp	dq 0
@@ -110,13 +112,15 @@ section '.data' data readable writeable
 		uzExplore		du "explore",0
 		uzDocking		du "docking",0
 		uzDefLang		du "en-US",0
-		
+		uzHexDll		du "hexview.dll",0
+		uzHexClass	du "HexView32",0
 
 		uzDefault  du "default"		;<--- follows
 		uzLabExt   du "."
 		uzAppName  du TITLE,0
 		uzUtf8Ext  du ".utf8",0
-		uzBinExt   du ".bin",0
+		uzBinExt   du "."
+		uzBinName	 du "bin",0
 		uzCfgExt   du ".cfg",0
 		uzPngExt   du ".png",0
 		uzEmfExt   du ".emf",0

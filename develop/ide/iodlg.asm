@@ -451,14 +451,14 @@ iodlg:
 	;--- bug: on no selection on Explorer's root (edit = "Computer") gets back
 	;--- C:\Users\marc\AppData\Roaming\Microsoft\Windows\Network Shortcuts
 	;--- but no Computer exists
-
+	;@break
 	mov rbx,rax
 	mov rdx,rax
 	mov rcx,[.hu.hCbx]
 	call cbex.is_param
 	mov r8,rax
 	inc rax
-	jnz	.set_browsdirF
+	jnz	.set_browsdirA
 
 	mov rcx,rbx
 	call .fill_kdirs

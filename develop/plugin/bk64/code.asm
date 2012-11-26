@@ -14,93 +14,128 @@
 
 bk64:
 
+	;#---------------------------------------------ö
+	;|            bk64.attach                      |
+	;ö---------------------------------------------ü
+
 .attach:
+	mov rbx,rcx
+	mov [hInst],rcx
 	mov rsi,rsp
 	and rsp,-16
 
-	xor rcx,rcx
-	sub rsp,20h
-	call [CoInitialize]
-	add rsp,20h
+	;--- class for hex viewer ---------
+	xor eax,eax
+	sub rsp,\
+		sizea16.WNDCLASSEXW
 
-	mov rdi,apiw.loadcurs
-	mov rbx,rcx
-	mov [g.hInst],rcx
+	mov rdi,rsp
+	mov rdx,rsp
+	mov ecx,\
+		sizea16.WNDCLASSEXW / 8
+	rep stosq
+	mov rdi,rdx
 
-	mov rdx,IDC_SIZENS
 	xor ecx,ecx
-	call rdi
-	mov [g.hNSCurs],rax
+	mov edx,IDC_ARROW
+	call apiw.loadcurs
+	
+	mov [rdi+\
+		WNDCLASSEXW.hCursor],rax	
 
-	mov rdx,IDC_SIZEWE
-	xor ecx,ecx
-	call rdi
-	mov [g.hWECurs],rax
+	mov [rdi+\
+		WNDCLASSEXW.cbSize],\
+		sizea16.WNDCLASSEXW
 
-	mov rdx,IDC_ARROW
-	xor ecx,ecx
-	call rdi
-	mov [g.hDefCurs],rax
+	mov [rdi+\
+		WNDCLASSEXW.lpfnWndProc],\
+		hex.proc
 
-	mov rdi,apiw.get_sysmet
-	mov ecx,SM_CXSIZEFRAME
-	call rdi
-	mov [g.cx_sframe],ax
+	mov [rdi+\
+		WNDCLASSEXW.cbWndExtra],8
 
-	mov ecx,\
-		SM_CYSIZEFRAME
-	call rdi
-	mov [g.cy_sframe],ax
+	mov [rdi+\
+		WNDCLASSEXW.lpszClassName],\
+		uzHexClass
 
-	mov ecx,\
-		SM_CYSMCAPTION	
-	call rdi
-	mov [g.cy_caption],ax
+	mov rcx,rdi
+	call apiw.regcls
+	
+	
+;---	mov rdx,IDC_SIZENS
+;---	xor ecx,ecx
+;---	call rdi
+;---	mov [g.hNSCurs],rax
 
-	mov ecx,\
-		SM_CYBORDER	
-	call rdi
-	mov [g.cy_border],ax
+;---	mov rdx,IDC_SIZEWE
+;---	xor ecx,ecx
+;---	call rdi
+;---	mov [g.hWECurs],rax
 
-	mov ecx,\
-		SM_CXSMICON
-	call rdi
-	mov [g.cx_smicon],ax
+;---	mov rdx,IDC_ARROW
+;---	xor ecx,ecx
+;---	call rdi
+;---	mov [g.hDefCurs],rax
 
-	mov ecx,\
-		SM_CYSMICON
-	call rdi
-	mov [g.cy_smicon],ax
+;---	mov rdi,apiw.get_sysmet
+;---	mov ecx,SM_CXSIZEFRAME
+;---	call rdi
+;---	mov [g.cx_sframe],ax
 
-	mov ecx,\
-		SM_CXSMSIZE
-	call rdi
-	mov [g.cx_smsize],ax
+;---	mov ecx,\
+;---		SM_CYSIZEFRAME
+;---	call rdi
+;---	mov [g.cy_sframe],ax
 
-	mov ecx,\
-		SM_CXSMSIZE
-	call rdi
-	mov [g.cy_smsize],ax
+;---	mov ecx,\
+;---		SM_CYSMCAPTION	
+;---	call rdi
+;---	mov [g.cy_caption],ax
 
-	mov ecx,00B6C0CCh;;00D9E1B9h;;53EC1Eh;
-	call apiw.create_sbrush
-	mov [g.hBrush],rax
+;---	mov ecx,\
+;---		SM_CYBORDER	
+;---	call rdi
+;---	mov [g.cy_border],ax
 
-	mov r10,patt_bmp
-	mov r9,1
-	mov r8,1
-	mov rdx,8
-	mov rcx,8
-	call apiw.create_bmp
-	mov rdi,rax
+;---	mov ecx,\
+;---		SM_CXSMICON
+;---	call rdi
+;---	mov [g.cx_smicon],ax
 
-	mov rcx,rax
-	call apiw.create_pbrush
-	mov [g.hPattern],rax
+;---	mov ecx,\
+;---		SM_CYSMICON
+;---	call rdi
+;---	mov [g.cy_smicon],ax
+
+;---	mov ecx,\
+;---		SM_CXSMSIZE
+;---	call rdi
+;---	mov [g.cx_smsize],ax
+
+;---	mov ecx,\
+;---		SM_CXSMSIZE
+;---	call rdi
+;---	mov [g.cy_smsize],ax
+
+;---	mov ecx,00B6C0CCh;;00D9E1B9h;;53EC1Eh;
+;---	call apiw.create_sbrush
+;---	mov [g.hBrush],rax
+
+;---	mov r10,patt_bmp
+;---	mov r9,1
+;---	mov r8,1
+;---	mov rdx,8
+;---	mov rcx,8
+;---	call apiw.create_bmp
+;---	mov rdi,rax
+
+;---	mov rcx,rax
+;---	call apiw.create_pbrush
+;---	mov [g.hPattern],rax
 
 .attachA:
-	mov rcx,rdi
-	call apiw.delobj
+;---	mov rcx,rdi
+;---	call apiw.delobj
 
 .ok_attach:	
 	xor eax,eax
@@ -113,12 +148,12 @@ bk64:
 .detach:
 	mov rsi,rsp
 	and rsp,-16
-	xor ecx,ecx
-	sub rsp,20h
-	call [CoUninitialize]
-	mov rcx,[g.hBrush]
-	call apiw.delobj
-	mov rdi,[g.hPattern]
+;---	xor ecx,ecx
+;---	sub rsp,20h
+;---	call [CoUninitialize]
+;---	mov rcx,[g.hBrush]
+;---	call apiw.delobj
+;---	mov rdi,[g.hPattern]
 	jmp	.attachA
 
 

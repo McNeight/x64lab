@@ -54,14 +54,52 @@ config:
 	test rax,rax
 	jz	.setup_libsE
 
+	mov rdx,uzSciDll
 	mov rcx,rsi
-	call sci.setupA
+	call .setup_libA
 	mov [hSciDll],rax
+
+	mov rdx,uzHexDll
+	mov rcx,rsi
+	call .setup_libA
+	mov [hHexDll],rax
 
 .setup_libsE:
 	pop rsi
 	pop rdi
 	ret 0
+
+	;ü-----------------------------------------ö
+	;|     SETUP_LIB                           |
+	;#-----------------------------------------ä
+
+.setup_lib:
+	;--- in RCX plugdir
+	;--- in RDX dllName
+	lea rcx,[rcx+DIR.dir]
+
+.setup_libA:
+	sub rsp,\
+		FILE_BUFLEN
+	xor eax,eax
+	mov r8,rsp
+	
+	push rax
+	push rdx
+	push uzSlash
+	push rcx
+	push r8
+	push rax
+	call art.catstrw
+
+	mov rdx,\
+		LOAD_WITH_ALTERED_SEARCH_PATH
+	mov rcx,rsp
+ 	call apiw.loadlib
+	add rsp,FILE_BUFLEN
+	ret 0
+
+
 
 	;ü-----------------------------------------ö
 	;|     SETUP_DIRS                          |
@@ -290,7 +328,12 @@ config:
 		bk64_bridge
 	call rdi
 
-	call sci.discard
+	mov rcx,[hSciDll]
+ 	call apiw.freelib
+
+	mov rcx,[hHexDll]
+ 	call apiw.freelib
+
 	pop rdi
 	ret 0
 

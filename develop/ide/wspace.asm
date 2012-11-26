@@ -353,6 +353,9 @@ wspace:
 	test eax,LF_MODIF
 	jz	.save_file1
 
+	test eax,LF_BIN
+	jnz	.save_file1		;--- TODO: becasue readonly for now
+
 	test eax,LF_TXT
 	jz	.save_fileF		;--- TODO: err for now
 	
@@ -1208,8 +1211,8 @@ wspace:
 	mov rcx,[hTree]
 	call tree.set_bold
 
-;	mov rcx,rbx
-;	call edit.view
+;---	mov rcx,rbx
+;---	call edit.view
 
 	mov rcx,rbx
 	call .ins_doc
@@ -1217,6 +1220,11 @@ wspace:
 	mov r9,[.labf.hItem]
 	mov rcx,[hTree]
 	call tree.sel_item
+
+	mov rcx,rbx
+	call edit.view
+
+
 
 	mov rax,rbx
 
@@ -2623,9 +2631,6 @@ wspace:
 	mov r8,rax
 	mov rcx,[hDocs]
 	call lvw.ins_col
-
-
-
 	;jmp	.setupB
 
 .setupE:
@@ -2773,6 +2778,7 @@ wspace:
 		sizea16.TVITEMW+\
 		FILE_BUFLEN
 
+;@break
 	mov rcx,rdi
 	call tree.get_sel
 	test rax,rax

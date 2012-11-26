@@ -211,6 +211,18 @@ ends
 		hFont	dq 0
 	ends
 
+	struct BIN_SLOT
+		next dd 0		;--- next in the linked list
+		type dd 0		;--- tipe AUDIO etc
+	  hash dd 0		;--- utf8 hash of name
+	  len  db 0		;--- utf8 len of name
+				 db 0
+				 dw 0
+		name du 0
+		;--- follow utf8 name zero ended and aligned 4
+	ends
+
+
 	STATB_NOPART	equ 0
 	STATB_ENCPART equ 1
 	STATB_DIRPART	equ 2

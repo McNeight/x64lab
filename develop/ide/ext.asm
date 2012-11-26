@@ -16,6 +16,64 @@ ext:
 		.extc EXT_CLASS
 	end virtual
 
+
+	;#---------------------------------------------------ö
+	;|             EXT.SETUP_BIN                         |
+	;ö---------------------------------------------------ü
+
+.setup_bin:
+	push rbp
+	push rbx
+	push rdi
+	mov rbp,rsp
+
+	sub rsp,\
+	 FILE_BUFLEN
+
+	xor ebx,ebx
+	xor edx,edx
+	mov rdi,rsp
+
+	;--- check binfile: binlist of extensions [ext\bin\ext.bin]
+	push rdx
+ 	push uzBinExt
+	push uzExtName
+	push uzSlash
+	push uzBinName
+	push uzSlash
+	push uzExtName
+	push rdi
+	push rdx
+	call art.catstrw
+
+	mov rcx,rdi
+	call art.is_file
+	jz .setup_binE
+
+	mov rcx,rdi
+	call art.fload
+	test eax,eax
+	jz	.setup_binE
+	mov [pBinExt],rax
+
+.setup_binE:
+	mov rax,rbx
+	mov rsp,rbp
+	pop rdi
+	pop rbx
+	pop rbp
+	ret 0
+
+	;#---------------------------------------------------ö
+	;|             EXT.DISCARD_BIN                       |
+	;ö---------------------------------------------------ü
+.discard_bin:
+	xor eax,eax
+	xchg rcx,[pBinExt]
+	xchg rax,[pBinExt]
+	call art.vfree
+	ret 0
+
 	;#---------------------------------------------------ö
 	;|             EXT.SETUP                             |
 	;ö---------------------------------------------------ü
@@ -186,16 +244,10 @@ ext:
 .load:
 	;--- in RCX filename
 	;--- ret RAX 0, eslot
-	push rbp
 	push rbx
 	push rdi
-	push rsi
 	push r12
 	push r13
-	push r14
-	push r15
-	mov rbp,rsp
-	mov rsi,rcx
 
 	sub rsp,\
 		FILE_BUFLEN*2
@@ -206,69 +258,65 @@ ext:
 	jz	.loadE
 
 	mov rdi,rcx	;--- save ppart "asm"
-	mov r12,rax	;--- save hash "asm"
 	mov r13,rcx
+	mov r12,rax	;--- save hash "asm"
 
 	;--- check for EXT_SLOT "asm" hash
 	mov rcx,rax
 	call .is_ext
 
 	test eax,eax
-	jnz	.loadA
+	jnz	.loadE
 
-	mov rcx,rdi
-	mov rdx,rsp
-	call utf16.copyz
-
+	;--- check for [config\ext\asm.*] once
 	mov rdi,rsp
-	add rdi,rax
-	mov ax,"."
-	stosw
-	mov ax,"*"
-	stosw
-	xor eax,eax
-	stosw
-	@nearest 16,rdi
-
-	;--- check for config\ext\asm.* files
 	xor edx,edx
+	
 	push rdx
+	push uzAsterisk
+	push uzDot
+	push r13
+	push uzSlash
 	push uzExtName
 	push rdi
 	push rdx
 	call art.catstrw
-
-	;---	in RCX upath		;--- example "E:" or "E:\mydir"
-	;---	in RDX uattr		;--- FILE_ATTRIBUTE_HIDDEN
-	;---	in R8  ulevel		;--- nesting level to stop search 0=all
-	;---	in R9  ufilter	;--- "*.asm"
-	;---	in R10 ucback   ;--- address of a calback
-	;---	in R11 uparam   ;--- user param
-
-	xor r8,r8
-	lea r11,[rsp+\
-		FILE_BUFLEN]
-	mov [r11],r8
-	mov r10,.cb_item
-	mov r9,rsp
-	inc r8
-	xor edx,edx
-	mov rcx,rdi
-	call [bk64.listfiles]
-
-	;--- check for only ONE found item [asm.assembly]
-	lea rcx,[rsp+\
-		FILE_BUFLEN]
-	movzx eax,word[rcx]
-	test eax,eax
-	jz	.loadE
 	
+	mov rdx,rsp
+	add rdx,rax
+	add rdx,rax
+	add rdx,2
+	@nearest 16,rdx
+
+	mov rdi,rdx
+	mov rcx,rsp
+	call apiw.ff_file
+	mov rcx,rax
+	inc rax
+	jz	.loadE
+
+	call apiw.f_close
+
+	mov edx,[rdi+\
+		WIN32_FIND_DATA.dwFileAttributes]
+	xor eax,eax
+
+	;---	cmp eax,[rdi+\
+	;---		WIN32_FIND_DATA.nFileSizeLow]
+	;---	jz	.loadE
+
+	test edx,\
+		FILE_ATTRIBUTE_DIRECTORY
+	jnz	.loadE
+
+	lea rcx,[rdi+\
+		WIN32_FIND_DATA.cFileName]
+
 	;--- get class id [assembly] from [asm.assembly]
 	call .fe2hash
 	test eax,eax
 	jz	.loadE
-	mov r15,rcx	;--- save ppart "assembly"
-	mov r14,rax	;--- save hash "assembly"
+	mov r13,rax	;--- save hash "assembly"
 
 	;--- check for EXT_SLOT "assembly" hash
 	mov rcx,rax
@@ -294,46 +342,21 @@ ext:
 	mov [rdi+\
 		EXT_SLOT.hash],r12
 	mov [rdi+\
-		EXT_SLOT.clsid],r14
+		EXT_SLOT.clsid],r13
 	mov [rdi+\
 		EXT_SLOT.next],rax
 	mov [rdx+rcx*8],rdi
 	mov rax,rdi
-
-.loadA:
 	;--- EXT_SLOT "asm" hash exists
 
 .loadE:
-	mov rsp,rbp
-	pop r15
-	pop r14
+	add rsp,\
+		FILE_BUFLEN*2
 	pop r13
 	pop r12
-	pop rsi
 	pop rdi
 	pop rbx
-	pop rbp
 	ret 0
-
-.cb_item:
-	;---  the calback receives those args
-	;--- in RCX path
-	;--- in RDX w32fnd 
-	;--- in R8h lenpath
-	;--- in R9 uparam
-	;--- ret RAX = 1 continue search, 0 stop search
-	test rdx,rdx
-	jz	.cb_itemA
-
-	lea rcx,[rdx+\
-		WIN32_FIND_DATA.cFileName]
-	mov rdx,r9
-	call utf16.copyz
-
-.cb_itemA:
-	xor eax,eax
-	ret 0
-
 
 	;#---------------------------------------------------ö
 	;|             EXT.IS_CLASS                          |
@@ -368,6 +391,50 @@ ext:
 .is_classE:
 	ret 0
 
+
+	;#---------------------------------------------------ö
+	;|             EXT.IS_BIN                            |
+	;ö---------------------------------------------------ü
+.is_bin:
+	;--- in RCX hash
+	;--- ret RAX 0,slot
+	;--- ret ECX,len
+	;--- ret R9 original hash
+
+	mov r9,rcx
+	mov rdx,[pBinExt]
+	xor eax,eax
+	and ecx,07FFh
+	test edx,edx
+	jnz	.is_binA
+	ret 0
+
+.is_binA:
+	mov r8d,[rdx+rcx*4]
+	jmp	.is_binB
+
+.is_binD:
+	mov r8d,[r8+\
+		rdx+BIN_SLOT.next]
+
+.is_binB:
+	test r8,r8
+	jnz	.is_binC
+	ret 0
+
+.is_binC:
+	cmp r9d,[r8+rdx+\
+		BIN_SLOT.hash]
+	jnz	.is_binD
+	lea rax,[r8+rdx]
+	movzx ecx,[r8+rdx+\
+		BIN_SLOT.len]
+	mov edx,[rax+\
+		BIN_SLOT.type]
+	ret 0
+
+	
+
 	;#---------------------------------------------------ö
 	;|             EXT.IS_EXT                            |
 	;ö---------------------------------------------------ü
@@ -375,7 +442,6 @@ ext:
 	;--- in RCX hash
 	;--- ret RAX 0,slot
 	;--- ret R9 original hash
-
 	mov r9,rcx
 	mov rdx,[extHash]
 	xor eax,eax
@@ -434,7 +500,6 @@ ext:
 	pop rdi
 	pop rbx
 	ret 0
-
 
 	;#---------------------------------------------------ö
 	;|             EXT.DISCARD_SLOT                      |

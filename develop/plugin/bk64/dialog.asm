@@ -243,7 +243,9 @@ dlg:
 	jl .openC
 
 	lea r8,[.pPath]
-	mov rdx,SIGDN_NORMALDISPLAY
+	mov rdx,\
+		SIGDN_PARENTRELATIVEPARSING
+		;--- SIGDN_NORMALDISPLAY
 	@comcall .pShi->\
 		GetDisplayName
 	test eax,eax
