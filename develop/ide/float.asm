@@ -37,8 +37,8 @@ float:
 		WS_POPUPWINDOW;	WS_CHILD 
 	xor r8,r8
 	mov rdx,uzStcClass
-	mov rcx,\
-		WS_EX_LAYERED ;or WS_EX_TOPMOST
+	mov rcx,WS_EX_LAYERED \
+		or WS_EX_TOPMOST
 	call [CreateWindowExW]
 	test rax,rax
 	jz .createE

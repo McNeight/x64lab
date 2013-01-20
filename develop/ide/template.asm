@@ -218,6 +218,7 @@ tmpl:
 ;---	mov rdx,[rsp+8]
 ;---	call art.cout2XU
 
+
 	lea rdx,[.tmpl.text]
 	mov rcx,[.tmpl.hIcon]
 	call float.draw

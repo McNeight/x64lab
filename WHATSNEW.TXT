@@ -1,4 +1,8 @@
 
+- version 1.0.13 (20.01.2013 ) "" 
+  +API No dependencies from MSVCP100.dll on Hexview Component
+  +API No dependencies from MSVCR100.dll on Hexview Component
+
 - version 1.0.10 (26.11.2012 ) Beta 
   +GUI added Hexview component
   +FIL added [ext\bin\ext.bin] binary extension file list

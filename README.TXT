@@ -169,6 +169,8 @@ Summary:
 
    - Scilexer, Scintilla is Copyright 1998-2003 by Neil Hodgson
 
+   - Hexviewer component is Copyright (C) 2012 James Brown
+
    - files in the [equates\] folder are my own modifications from
      excellent public domain provided by madmatt.
 
