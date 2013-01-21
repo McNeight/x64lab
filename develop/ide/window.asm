@@ -92,7 +92,10 @@ win:
 	mov [rdi+20h],rax
 	mov r9,WS_CHILD\
 		or WS_VISIBLE\
-		or LVS_REPORT
+		or LVS_REPORT\
+		or LVS_NOCOLUMNHEADER \
+		or LVS_SHOWSELALWAYS
+	
 	;mov r9,0x50810105
 	xor r8,r8
 	mov rdx,uzLvwClass
@@ -830,6 +833,12 @@ lvw:
 	;--- in R9 TVITEM
 	;--- in R8 idx item
 	mov edx,LVM_SETITEMTEXTW
+	jmp	apiw.sms
+
+.set_istate:
+	;--- in R9 TVITEM
+	;--- in R8 idx item
+	mov edx,LVM_SETITEMSTATE
 	jmp	apiw.sms
 
 .set_bkcol:

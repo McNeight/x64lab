@@ -1,5 +1,8 @@
 
-- version 1.0.13 (20.01.2013 ) "" 
+- version 1.0.14 (21.01.2013 ) "" 
+  +GUI Open Documents shows selected active document
+
+- version 1.0.13 (20.01.2013)
   +API No dependencies from MSVCP100.dll on Hexview Component
   +API No dependencies from MSVCR100.dll on Hexview Component
 

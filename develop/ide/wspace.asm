@@ -312,6 +312,8 @@ wspace:
 .close_fileB:
 	mov rcx,rdi
 	call edit.view
+	mov rcx,rdi
+	call .sel_doc
 
 	xor eax,eax
 	inc eax
@@ -1467,6 +1469,59 @@ wspace:
 	pop rbx
 	ret 0
 
+.sel_doc:
+ 	;--- in RCX labf
+	push rbx
+	mov rbx,rcx
+
+	sub rsp,\
+		sizeof.LVITEMW
+
+	mov rdx,rbx
+	mov rcx,[hDocs]
+	call lvw.is_param
+	test eax,eax
+	jz .sel_docE
+
+	or rax,-1
+	mov r9,rsp
+	mov r8,rax
+
+	push r9
+	push rdx
+	inc eax
+	
+	;-- clear all states for all items
+	mov [r9+\
+		LVITEMW.stateMask],\
+	LVIS_SELECTED \
+	or LVIS_FOCUSED
+	mov [r9+\
+		LVITEMW.state],eax
+	mov rcx,[hDocs]
+	call lvw.set_istate
+
+	pop rdx
+	pop r9
+
+	mov [r9+\
+		LVITEMW.stateMask],\
+		LVIS_SELECTED \
+		or LVIS_FOCUSED
+	mov [r9+\
+		LVITEMW.state],\
+		LVIS_SELECTED \
+		or LVIS_FOCUSED
+	mov r8,rdx
+	mov rcx,[hDocs]
+	call lvw.set_istate
+
+.sel_docE:
+	add rsp,\
+		sizeof.LVITEMW
+	pop rbx
+	ret 0
+
 	;#---------------------------------------------------ö
 	;|                   LOAD WORKSPACE                  |
 	;ö---------------------------------------------------ü
@@ -2570,16 +2625,14 @@ wspace:
 
 	mov r9,\
 		LVS_EX_CHECKBOXES or\
-		LVS_EX_BORDERSELECT 
-		;0
-		;	LVS_EX_GRIDLINES or \
-		;	0;LVS_EX_AUTOSIZECOLUMNS
-
-	;LVS_EX_HEADERINALLVIEWS
-	;	LVS_EX_JUSTIFYCOLUMNS
-	;	LVS_EX_FLATSB or \
-	;	LVS_EX_DOUBLEBUFFER
-
+		LVS_EX_FULLROWSELECT or \
+		LVS_EX_AUTOSIZECOLUMNS ;or \
+;---		LVS_EX_JUSTIFYCOLUMNS ; or \
+;---		LVS_EX_FLATSB; or \
+;---	LVS_EX_GRIDLINES or \
+;---	LVS_EX_HEADERINALLVIEWS
+;---	LVS_EX_JUSTIFYCOLUMNS
+;---	LVS_EX_DOUBLEBUFFER
 	xor r8,r8
 	mov rcx,[hDocs]
 	call lvw.set_xstyle
@@ -2613,25 +2666,27 @@ wspace:
 	mov ecx,UZ_INFO_BUF
 	call [lang.get_uz]
 
-	mov [.lvc.pszText],rsi
-	shl edx,5
-	mov [.lvc.cx],edx
+;---	mov [.lvc.pszText],0;rsi
+;---	shl edx,5
+	mov [.lvc.cx],600
+	mov [.lvc.cxIdeal],100
 	mov [.lvc.mask],\
-		LVCF_TEXT or \
-		LVCF_FMT or \
-		LVCF_WIDTH ;or \
-		;LVCF_SUBITEM
+		LVCF_WIDTH or \
+		LVCF_IDEALWIDTH
 
-	;pop rax
+;---		LVCF_TEXT or \
+;---		LVCF_FMT or \
+;---		;LVCF_SUBITEM
+
+;---	;pop rax
 	xor eax,eax
-	mov [.lvc.fmt],LVCFMT_LEFT
-	mov [.lvc.iSubItem],eax
-
+;---	mov [.lvc.fmt],LVCFMT_LEFT
+;---	mov [.lvc.iSubItem],eax
 	mov r9,rdi
 	mov r8,rax
 	mov rcx,[hDocs]
 	call lvw.ins_col
-	;jmp	.setupB
+
 
 .setupE:
 	mov rsp,rbp
@@ -2659,6 +2714,11 @@ wspace:
 		[r9+NM_LISTVIEW.lParam]
 	test rcx,rcx
 	jz	winproc.ret0
+
+;---	mov eax,[r9+\
+;---		NM_LISTVIEW.uNewState]
+;---	test eax,LVIS_FOCUSED
+;---	jz	winproc.ret0
 
 	test [r9+\
 		NM_LISTVIEW.uNewState],\
@@ -2914,6 +2974,9 @@ wspace:
 
 	mov rcx,rdx
 	call edit.view
+
+	mov rcx,rbx
+	call .sel_doc
 	
 .tree_schgedB:
 	mov rcx,[.labf.dir]
