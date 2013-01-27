@@ -123,7 +123,6 @@ edit:
 	;----TODO: review ---------------
 	or [.labf.type],\
 		LF_TXT
-
 	;----------------------- 
 	mov rsi,[pEdit]
 	mov rcx,rdi
@@ -178,6 +177,10 @@ edit:
 
 	mov rcx,r12
 	call art.vfree
+
+;---@break
+	mov rcx,rbx
+	call doc.load_info
 
 .openB1:
 	mov rcx,[.labf.hSci]
@@ -545,6 +548,9 @@ edit:
 	;--- view is text ---------
 	mov edx,[r9+\
 		NMHDR.code]
+	cmp edx,\
+		SCN_MARGINCLICK
+	jz	.wm_notifyM
 
 	cmp edx,\
 		SCN_SAVEPOINTREACHED
@@ -560,6 +566,43 @@ edit:
 	or [.labf.type],\
 		LF_MODIF
 	jmp	.ret1
+
+
+.wm_notifyM:
+	mov eax,[r9+SCNOTIF.line]
+	mov eax,[r9+\
+		SCNOTIF.margin]
+	test eax,eax
+	jnz	.ret0
+
+	mov r8d,[r9+\
+		SCNOTIF.position]
+	mov rcx,[.labf.hSci]
+	call sci.linefrompos
+
+	mov rdx,rax
+	mov rcx,rbx
+	call doc.toggle_bm
+
+;---	mov rdi,rax
+;---	mov r8,rax
+;---	mov rcx,[.labf.hSci]
+;---	call sci.mark_get
+	
+;---	mov rsi,sci.mark_add
+;---	mov rdx,sci.mark_del
+
+;---	test eax,\
+;---		1 shl SC_MARK_CIRCLE
+;---	cmovnz rsi,rdx
+	
+;---	mov r9,SC_MARK_CIRCLE
+;---	mov r8,rdi
+;---	mov rcx,[.labf.hSci]
+;---	call rsi
+
+	or [.labf.info],LF_BM
+	jmp	.ret0
 
 	;#---------------------------------------------------ö
 	;|             STAT_NOTIFY                           |

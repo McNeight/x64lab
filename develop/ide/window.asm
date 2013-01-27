@@ -80,30 +80,32 @@ win:
 	jz .controlsE
 	mov [hTree],rax
 
-	xor eax,eax
-	mov [rdi+58h],rax
-	mov [rdi+50h],rsi
-	mov [rdi+48h],rax
-	mov [rdi+40h],rbx
+;---	xor eax,eax
+;---	mov [rdi+58h],rax
+;---	mov [rdi+50h],rsi
+;---	mov [rdi+48h],rax
+;---	mov [rdi+40h],rbx
 
-	mov [rdi+38h],rax
-	mov [rdi+30h],rax
-	mov [rdi+28h],rax
-	mov [rdi+20h],rax
-	mov r9,WS_CHILD\
-		or WS_VISIBLE\
-		or LVS_REPORT\
-		or LVS_NOCOLUMNHEADER \
-		or LVS_SHOWSELALWAYS
-	
-	;mov r9,0x50810105
-	xor r8,r8
-	mov rdx,uzLvwClass
-	mov rcx,0;WS_EX_WINDOWEDGE;;WS_EX_CLIENTEDGE;WS_EX_STATICEDGE;0;
-	call r12
-	test rax,rax
-	jz .controlsE
-	mov [hDocs],rax
+;---	mov [rdi+38h],rax
+;---	mov [rdi+30h],rax
+;---	mov [rdi+28h],rax
+;---	mov [rdi+20h],rax
+;---	mov r9,WS_CHILD\
+;---		or WS_VISIBLE\
+;---		or TVS_HASBUTTONS	\
+;---		or TVS_SHOWSELALWAYS
+;---;---		or LVS_NOCOLUMNHEADER \
+;---;---		or LVS_SHOWSELALWAYS \
+;---;---		or LVS_REPORT
+;---	;or LVS_SMALLICON or LVS_ALIGNLEFT or LVS_SINGLESEL
+;---	;mov r9,0x50810105
+;---	xor r8,r8
+;---	mov rdx,uzTreeClass;uzLvwClass
+;---	mov rcx,0;WS_EX_WINDOWEDGE;;WS_EX_CLIENTEDGE;WS_EX_STATICEDGE;0;
+;---	call r12
+;---	test rax,rax
+;---	jz .controlsE
+;---	mov [hDocs],rax
 
 	;--- load [config\docking.bin]
 	push 0
@@ -227,10 +229,19 @@ win:
 	push CFG_EDIT_DOCK_ID
 	push UZ_EDIT_PANE
 
-	push [hDocs]
+	;---------------------
+	mov r10,0
+	mov r9,doc.proc
+	mov r8,rbx
+	mov rdx,DOC_DLG
+	mov rcx,rsi
+	call apiw.cdlgp
+
+	push rax
 	push CFG_DOCS_DOCK_ID
 	push MI_FI_OPEN
 
+	;---------------------
 	mov r10,[pCons]
 	mov r9,console.proc
 	mov r8,rbx
@@ -311,6 +322,7 @@ win:
 		EDIT.pPanel],r13
 
 	call wspace.setup
+	call doc.setup
 	
 .controlsE:
 	mov rsp,rbp
@@ -766,6 +778,21 @@ lvw:
 	mov edx,LVM_INSERTCOLUMNW
 	jmp	apiw.sms
 
+.set_colwidthA:
+	mov r9,LVSCW_AUTOSIZE
+	jmp	.set_colwidthC
+
+.set_colwidthH:
+	mov r9,LVSCW_AUTOSIZE_USEHEADER
+	jmp	.set_colwidthC
+
+.set_colwidth:
+	;--- in r9 flags
+	;--- in R8 idx column
+.set_colwidthC:
+	mov edx,LVM_SETCOLUMNWIDTH
+	jmp	apiw.sms
+
 .edit_lab:
 	xor r9,r9
 	mov edx,LVM_EDITLABELW
@@ -836,10 +863,22 @@ lvw:
 	jmp	apiw.sms
 
 .set_istate:
-	;--- in R9 TVITEM
-	;--- in R8 idx item
+	;--- in R9 new state
+	;--- in R8 flags to set
+	;--- in RDX idx item
+	sub rsp,\
+		sizeof.LVITEMW
+	mov [rsp+\
+		LVITEMW.stateMask],r8d
+	mov [rsp+\
+		LVITEMW.state],r9d
+	mov r8,rdx
+	mov r9,rsp
 	mov edx,LVM_SETITEMSTATE
-	jmp	apiw.sms
+	call apiw.sms
+	add rsp,\
+		sizeof.LVITEMW
+	ret 0
 
 .set_bkcol:
 	;--- in R9 color

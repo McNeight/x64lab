@@ -780,37 +780,39 @@ config:
 	lea rdi,[rsp+\
 		FILE_BUFLEN*2]
 
-	mov al,09
-	stosb
+	call wspace.frm_head
 
-	;--- insert utf8 warning -------
-	xor edx,edx
-	mov ecx,UZ_INFO_UTF8
-	call [lang.get_uz]
-	mov rsi,rax
-	rep movsb
-	@do_eol
+;---	mov al,09
+;---	stosb
+
+;---	;--- insert utf8 warning -------
+;---	xor edx,edx
+;---	mov ecx,UZ_INFO_UTF8
+;---	call [lang.get_uz]
+;---	mov rsi,rax
+;---	rep movsb
+;---	@do_eol
 	
-	mov al,09
-	stosb
-	;--- insert top info -------
-	xor edx,edx
-	mov ecx,UZ_INFO_TOP
-	call [lang.get_uz]
-	mov rsi,rax
-	rep movsb
-	@do_eol
+;---	mov al,09
+;---	stosb
+;---	;--- insert top info -------
+;---	xor edx,edx
+;---	mov ecx,UZ_INFO_TOP
+;---	call [lang.get_uz]
+;---	mov rsi,rax
+;---	rep movsb
+;---	@do_eol
 
-	mov al,09
-	stosb
-	;--- insert copyright -------
-	xor edx,edx
-	mov ecx,UZ_INFO_COPYR
-	call [lang.get_uz]
-	mov rsi,rax
-	rep movsb
-	@do_eol
-	@do_eol
+;---	mov al,09
+;---	stosb
+;---	;--- insert copyright -------
+;---	xor edx,edx
+;---	mov ecx,UZ_INFO_COPYR
+;---	call [lang.get_uz]
+;---	mov rsi,rax
+;---	rep movsb
+;---	@do_eol
+;---	@do_eol
 
 	;--- version -----------
 	mov al,09

@@ -77,3 +77,6 @@
 #define TOOL_LNAME  2209
 #define TOOL_LPARA  2210
 #define TMPL_TLB  2103
+#define DOC_DLG  1600
+#define DOC_LVWA  1601
+#define DOC_LVWB  1602

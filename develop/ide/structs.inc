@@ -83,6 +83,12 @@
 						dq ?
 	ends
 
+	struct DOCDLG
+		hDlg		dq 0
+		hLvwA		dq 0
+		hLvwB		dq 0
+						dq 0
+	ends
 	
 	struct IODLG
 		param		dq 0  ;--- IN param	
@@ -153,7 +159,9 @@
 	LF_OPENED	equ 100h ;--- file is opened
 	LF_MODIF	equ 200h ;--- modified
 	LF_BLANK	equ 400h ;--- new item without disk-storage
-	
+
+	LF_BM	equ 1		;--- file has bookmark in the .info field
+
 
 	NOASK_SAVE 		= 1
 	ASK_SAVE 			= 2
@@ -186,7 +194,7 @@
 
 		;-------------------------------------
 		type		dw 0	;--- LF_?
-						db 0	;---
+		info		db 0	;--- bookmark etc
 		iBlank	db 0 	;--- index blank
 		iIcon		dd 0	;--- index icon
 		hIcon		dq 0	;--- icon handle

@@ -1,4 +1,9 @@
 
+- version 1.0.16 (27.01.2013 ) Bookmark 
+- Bookmarks and save file info on [tmp\]
+  
+- version 1.0.15 (21.01.2013 ) "" 
+
 - version 1.0.14 (21.01.2013 ) "" 
   +GUI Open Documents shows selected active document
 

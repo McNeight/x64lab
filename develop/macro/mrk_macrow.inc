@@ -62,6 +62,21 @@ macro @rect2reg argreg,argrect {
 }
 
 
+macro @min v1,v2{
+	;--- use RAX,RCX,RDX
+	;--- ret RAX minimum
+	mov rcx,v1  
+	mov rdx,v2
+               ;--- 10,15          4,3
+	mov rax,rcx  ;--- EAX 10         EAX 4 
+	sub rax,rdx  ;--- EAX -5         EAX 1
+	sbb rdx,rdx  ;--- EDX -1         EDX 0
+	and rdx,rax  ;--- EDX -5         EDX 0
+	sub rcx,rax  ;--- ECX 10-(-5)=15 ECX 4-1=3
+	add rcx,rdx  ;--- ECX 15+(-5)=10 ECX 3+0=3
+	mov rax,rcx  ;--- EAX 10         EAX 3
+}
+
 
 macro @frame arg{
 		;---

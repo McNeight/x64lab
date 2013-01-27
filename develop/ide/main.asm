@@ -69,6 +69,7 @@ section '.code' code readable executable
 	include "shared\unicode.asm"
 
 	include "config.asm"
+	include "doc.asm"
 	include "hex.asm"
 	include "window.asm"
 	include "edit.asm"
@@ -116,6 +117,7 @@ start:
 		sizeof.DEVT+\
 		sizeof.TMPL+\
 		sizeof.TOOLDLG+\
+		sizeof.DOCDLG+\
 		sizeof.MPURP+\
 		(sizeof.IODLG*4)+\
 		sizeof.EDIT
@@ -1451,8 +1453,6 @@ winproc:
 	mov rdx,[r9+NMHDR.hwndFrom]
 	cmp rdx,[hTree]
 	jz	wspace.tree_notify
-	cmp rdx,[hDocs]
-	jz	wspace.docs_notify
 
 .wm_notifyE:
 	jmp	.ret0

@@ -64,11 +64,6 @@ sci:
 	pop rbp
 	ret 0
 
-;display_hex 32,WS_EX_STATICEDGE or WS_CHILD or \
-;		WS_TABSTOP or \
-;		WS_VISIBLE
-;		WS_CLIPCHILDREN or \
-
 	;#---------------------------------------------------ö
 	;|                  SET_DEFPROP                      |
 	;ö---------------------------------------------------ü
@@ -77,29 +72,54 @@ sci:
 	;--- in rcx hText
 	push rbx
 	mov rbx,rcx
-
+	
+	;--- margin 0 ---------- bookmark
 	mov r9,SC_MARGIN_SYMBOL
 	mov r8,0
 	mov rcx,rbx
 	call .set_margtype
 
-	mov r9,SC_MARGIN_NUMBER
+	mov r9,16
+	mov r8,0
+	mov rcx,rbx
+	call .set_margwi
+
+	mov r9,\
+		not SC_MASK_FOLDERS
+	mov r8,0
+	mov rcx,rbx
+	call .set_margmask
+
+	mov r9,8 ;--- aero-link
+	mov r8,0
+	mov rcx,rbx
+	call .set_margcurs
+	
+	mov r9,TRUE
+	mov r8,0
+	mov rcx,rbx
+	call .set_margsens
+
+	mov r9,00839BB3h;001B1BDDh
+	mov r8,SC_MARK_CIRCLE
+	mov rcx,rbx
+	call sci.mark_backcol
+
+	;--- margin 1 ---------- line numbers
+	mov r9,\
+		SC_MARGIN_NUMBER
 	mov r8,1
 	mov rcx,rbx
 	call .set_margtype
 
-	mov r9,SC_MARGIN_SYMBOL
-	mov r8,2
+	mov r9,0
+	mov r8,1
 	mov rcx,rbx
-	call .set_margtype
-
-	mov r9,16
-	mov r8,2
-	mov rcx,rbx
-	call .set_margwi
+	call .set_margmask
 
 	mov r9,szCharExt
-	mov r8,STYLE_LINENUMBER
+	mov r8,\
+		STYLE_LINENUMBER
 	mov rcx,rbx
 	call .set_txtwi
 
@@ -108,23 +128,16 @@ sci:
 	mov rcx,rbx
 	call .set_margwi
 
-	mov r9,8
-	mov rcx,rbx
-	call .set_marglx
-
-	mov r9,8
-	mov rcx,rbx
-	call .set_margrx
-
 	mov r9,00AABBCCh
-	mov r8,STYLE_LINENUMBER
+	mov r8,\
+		STYLE_LINENUMBER
 	mov rcx,rbx
 	call .set_backcolor
 
-;	mov r9,0FFFFFFh
-;	mov r8,STYLE_LINENUMBER
-;	mov rcx,rbx
-;	call .set_forecolor
+	;---mov r9,0FFFFFFh
+	;---mov r8,STYLE_LINENUMBER
+	;---mov rcx,rbx
+	;---call .set_forecolor
 
 	mov r9,uzCourierN
 	mov r8,STYLE_LINENUMBER
@@ -135,6 +148,60 @@ sci:
 	mov r8,STYLE_LINENUMBER
 	mov rcx,rbx
 	call .set_fontsize
+
+	;--- margin 2 ---------- gap: future use
+	mov r9,\
+		SC_MARGIN_SYMBOL
+	mov r8,2
+	mov rcx,rbx
+	call .set_margtype
+
+	mov r9,0
+	mov r8,2
+	mov rcx,rbx
+	call .set_margmask
+
+	mov r9,4
+	mov r8,2
+	mov rcx,rbx
+	call .set_margwi
+
+;---	mov r9,099A8C7h
+;---	mov r8,TRUE
+;---	mov rcx,rbx
+;---	call .set_fmargcol
+
+	;--- margin 3 ---------- folding
+	mov r9,\
+		SC_MARGIN_SYMBOL
+	mov r8,3
+	mov rcx,rbx
+	call .set_margtype
+
+	mov r9,\
+		SC_MASK_FOLDERS
+	mov r8,3
+	mov rcx,rbx
+	call .set_margmask
+
+	mov r9,16
+	mov r8,3
+	mov rcx,rbx
+	call .set_margwi
+
+	mov r9,099A8C7h
+	mov r8,TRUE
+	mov rcx,rbx
+	call .set_fmargcol
+
+	;--- text margins --------
+	mov r9,8
+	mov rcx,rbx
+	call .set_marglx
+
+	mov r9,8
+	mov rcx,rbx
+	call .set_margrx
 
 	mov r8,SC_CP_UTF8
 	mov rcx,rbx
@@ -157,13 +224,61 @@ sci:
 	pop rbx
 	ret 0
 
-
 	;#---------------------------------------------------ö
 	;|                WRAPS                              |
 	;ö---------------------------------------------------ü
+
+.mark_next:
+	;--- in R9 int markerMask
+	;---	in R8 int lineStart
+	mov edx,SCI_MARKERNEXT
+	jmp	apiw.sms
+
+.mark_prev:
+	;--- in R9 int markerMask
+	;---	in R8 int lineStart
+	mov edx,SCI_MARKERPREVIOUS
+	jmp	apiw.sms
+
+
+.mark_backcol:
+	;--- R9 int colour
+	;--- R8 int markerNumber
+	mov edx,SCI_MARKERSETBACK
+	jmp	apiw.sms
+
+.mark_forecol:
+	;--- R9 int colour
+	;--- R8 int markerNumber
+	mov edx,SCI_MARKERSETFORE
+	jmp	apiw.sms
+
+.mark_add:
+	;--- in R9 int markerNumber
+	;--- in R8 int line
+	mov edx,SCI_MARKERADD
+	jmp	apiw.sms
+
+.mark_get:
+	;--- in R8 int line
+	mov edx,SCI_MARKERGET
+	jmp	apiw.sms
+
+.mark_del:
+	;--- in R9 int markerNumber
+	;--- in R8 int line
+	mov edx,SCI_MARKERDELETE
+	jmp	apiw.sms
+
+
 .goto_pos:
 	xor r9,r9
 	mov edx,SCI_GOTOPOS
+	jmp	apiw.sms
+
+.goto_line:
+	;--- in R8 line
+	mov edx,SCI_GOTOLINE
 	jmp	apiw.sms
 
 .set_savepoint:
@@ -187,6 +302,33 @@ sci:
 	;--- in r8 codepage
 	xor r9,r9
 	mov edx,SCI_SETCODEPAGE
+	jmp	apiw.sms
+
+.set_fmargcol:
+	;--- in R9 int colour
+	;--- in r8 bool useSetting
+	mov edx,SCI_SETFOLDMARGINCOLOUR
+	jmp	apiw.sms
+
+.set_margcurs:
+	;--- in R9 int cursor
+	;--- in R8 int margin
+	mov edx,SCI_SETMARGINCURSORN
+	jmp	apiw.sms
+
+;---.set_margstyle:
+;---	SCI_MARGINSETSTYLEOFFSET(int style)
+
+.set_margmask:
+	;--- in R9 mask
+	;--- in R8 idx margin
+	mov edx,SCI_SETMARGINMASKN
+	jmp	apiw.sms
+
+.set_margsens:
+	;--- R9 bool sensitive
+	;--- R8 int margin
+	mov edx,SCI_SETMARGINSENSITIVEN
 	jmp	apiw.sms
 
 .set_margrx:
@@ -226,31 +368,6 @@ sci:
 	mov edx,SCI_ADDTEXT
 	jmp	apiw.sms
 
-
-;.get_docp:
-;	mov edx,SCI_GETDOCPOINTER
-;	jmp	apiw.sms
-
-;.set_docp:
-;	;--- in R9 pDoc
-;	mov edx,SCI_SETDOCPOINTER
-;	jmp	apiw.sms
-
-;.add_refdoc:
-;	;--- in R9 pDoc
-;	mov edx,SCI_ADDREFDOCUMENT
-;	jmp	apiw.sms
-
-;.create_doc:
-;	mov edx,SCI_CREATEDOCUMENT
-;	jmp	apiw.sms
-
-;.rel_doc:
-;	;--- in R9 pDoc
-;	mov edx,SCI_RELEASEDOCUMENT
-;	jmp	apiw.sms
-	
-
 .get_txtl:
 	xor r8,r8
 	xor r9,r9
@@ -261,7 +378,6 @@ sci:
 	xor r8,r8
 	mov edx,SCI_GETTEXTRANGE
 	jmp	apiw.sms
-
 	
 	;#---------------------------------------------------ö
 	;|               .DEF_FLAGS                          |
@@ -284,9 +400,9 @@ sci:
 	mov rcx,rbx
 	call .set_savepoint
 
-	mov rcx,rbx
-	xor r8,r8
-	call .goto_pos
+	;---	mov rcx,rbx
+	;---	xor r8,r8
+	;---	call .goto_pos
 
 	pop rbx
 	ret 0
@@ -395,6 +511,7 @@ sci:
 	pop rbx
 	pop rbp
 	ret 0
+
 
 .set_selback:
 	;--- R8
@@ -551,9 +668,19 @@ sci:
 		SCI_LINEFROMPOSITION
 	jmp	apiw.sms
 
+.posfromline:
+	;--- in R8 int line
+	mov edx,\
+		SCI_POSITIONFROMLINE
+	jmp	apiw.sms
+
 .get_lineendpos:
 	mov edx,\
 		SCI_GETLINEENDPOSITION
+	jmp	apiw.sms
+
+.get_firstvisline:
+	mov edx,SCI_GETFIRSTVISIBLELINE
 	jmp	apiw.sms
 
 .beg_undo:
@@ -565,58 +692,6 @@ sci:
 	mov edx,\
 		SCI_ENDUNDOACTION
 	jmp	apiw.sms
-
-;	;#---------------------------------------------------ö
-;	;|                helper wraps                       |
-;	;ö---------------------------------------------------ü
-
-
-;	;------------------------
-;.sci_param2:
-;	xor ecx,ecx
-;	xor edx,edx
-;	jmp .sci_message0
-;	;------------------------
-
-;.get_selnstart:
-;	xor edx,edx
-;	mov eax,SCI_GETSELECTIONNSTART
-;	jmp .sci_message0
-
-;.linelen:
-;	xor edx,edx
-;	mov eax,SCI_LINELENGTH
-;	jmp .sci_message0
-
-
-;.get_selnend:
-;	xor edx,edx
-;	mov eax,SCI_GETSELECTIONNEND
-;	jmp .sci_message0
-
-;.setsel:
-;	mov eax,SCI_SETSEL
-;	jmp .sci_message0
-
-
-;.set_charset:
-;	mov eax,SCI_STYLESETCHARACTERSET
-;	jmp	.sci_message0
-
-;.replsel:
-;	xor ecx,ecx
-;	mov eax,SCI_REPLACESEL
-;	jmp	.sci_message0
-
-;.inserttxt:
-;	mov eax,SCI_INSERTTEXT
-;	jmp	.sci_message0
-
-;.posfromline:
-;	xor edx,edx
-;	mov eax,SCI_POSITIONFROMLINE
-;	jmp	.sci_message0
-
 
 	;#---------------------------------------------------ö
 	;|                  COMMENT                          |
@@ -1072,6 +1147,30 @@ sci:
 	sub rcx,rax
 	ret 0
 
+
+;.get_docp:
+;	mov edx,SCI_GETDOCPOINTER
+;	jmp	apiw.sms
+
+;.set_docp:
+;	;--- in R9 pDoc
+;	mov edx,SCI_SETDOCPOINTER
+;	jmp	apiw.sms
+
+;.add_refdoc:
+;	;--- in R9 pDoc
+;	mov edx,SCI_ADDREFDOCUMENT
+;	jmp	apiw.sms
+
+;.create_doc:
+;	mov edx,SCI_CREATEDOCUMENT
+;	jmp	apiw.sms
+
+;.rel_doc:
+;	;--- in R9 pDoc
+;	mov edx,SCI_RELEASEDOCUMENT
+;	jmp	apiw.sms
+
 ;proc .comment\
 ;	_hsci,\
 ;	_flags
@@ -1345,4 +1444,46 @@ sci:
 
 
 
+
+;	;#---------------------------------------------------ö
+;	;|                helper wraps                       |
+;	;ö---------------------------------------------------ü
+
+
+;	;------------------------
+;.sci_param2:
+;	xor ecx,ecx
+;	xor edx,edx
+;	jmp .sci_message0
+;	;------------------------
+
+;.get_selnstart:
+;	xor edx,edx
+;	mov eax,SCI_GETSELECTIONNSTART
+;	jmp .sci_message0
+
+
+
+;.get_selnend:
+;	xor edx,edx
+;	mov eax,SCI_GETSELECTIONNEND
+;	jmp .sci_message0
+
+;.setsel:
+;	mov eax,SCI_SETSEL
+;	jmp .sci_message0
+
+
+;.set_charset:
+;	mov eax,SCI_STYLESETCHARACTERSET
+;	jmp	.sci_message0
+
+;.replsel:
+;	xor ecx,ecx
+;	mov eax,SCI_REPLACESEL
+;	jmp	.sci_message0
+
+;.inserttxt:
+;	mov eax,SCI_INSERTTEXT
+;	jmp	.sci_message0
 

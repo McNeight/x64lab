@@ -1674,6 +1674,86 @@ end if
 @endusing
 
 	;#---------------------------------------------------ö
+	;|                  QA2QU  			                     |
+	;ö---------------------------------------------------ü
+@using .qa2qu
+.qa2qu:
+	;--- in RCX in buffer, 16 bytes
+	;--- in RDX out buffer, min 32bytes
+	mov r8,rsp
+	and rsp,-16
+	sub rsp,48
+
+	mov rax,[rcx]
+	mov [rsp+40],rax
+	mov rax,[rcx+8]
+	mov [rsp+32],rax
+	
+	movdqa xmm0,dqword[rsp+32]
+	movdqa xmm1,xmm0
+	pxor xmm2,xmm2
+
+	punpcklbw xmm1,xmm2
+	punpckhbw xmm0,xmm2
+
+	movdqa dqword[rsp],xmm0
+	movdqa dqword[rsp+16],xmm1
+
+	mov rax,[rsp]
+	mov [rdx],rax
+	mov rax,[rsp+8]
+	mov [rdx+8],rax
+	mov rax,[rsp+16]
+	mov [rdx+16],rax
+	mov rax,[rsp+24]
+	mov [rdx+24],rax
+	mov rsp,r8
+	ret 0
+@endusing
+
+	;#---------------------------------------------------ö
+	;|                  DD2U   			                     |
+	;ö---------------------------------------------------ü
+@using .dd2u,.dd2a
+.dd2a:
+	mov r10,1
+	jmp	.dd2uB
+.dd2u:
+	;--- IN RCX number to convert
+	;--- IN RDX buf MUST BE min 24 chars
+	;--- RET EAX ptr to decimal unicode string
+	;--- RET RCX len of string
+	mov r10,2
+.dd2uB:
+	mov r8,rdx
+	add r8,24
+	mov r9,r8
+	xor r11,r11
+.dd2uA:
+	mov edx,0CCCCCCCDH
+	mov eax,ecx
+	mul edx
+	mov eax,ecx
+	shr edx,3
+	mov ecx,edx
+	shl edx,3
+	sub eax,ecx
+	sub eax,edx
+	sub eax,ecx
+	sub r8,r10
+	mov word[r8-1],r11w
+	or al,"0"
+	test ecx,ecx
+	mov [r8],al
+	jnz .dd2uA
+	sub r9,r8
+	mov rcx,r9
+	xchg rax,r8
+	ret 0
+@endusing
+
+
+	;#---------------------------------------------------ö
 	;|                  QWORD2A			                     |
 	;ö---------------------------------------------------ü
 

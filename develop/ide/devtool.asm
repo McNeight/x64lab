@@ -1911,37 +1911,37 @@ devtool:
 	mov rdx,rax
 	call art.zeromem
 
+	call wspace.frm_head
+;---	mov al,09
+;---	stosb
+;---	;--- insert utf8 warning -------
+;---	xor edx,edx
+;---	mov ecx,UZ_INFO_UTF8
+;---	call [lang.get_uz]
+;---	mov rsi,rax
+;---	rep movsb
+;---	@do_eol
 	
-	mov al,09
-	stosb
-	;--- insert utf8 warning -------
-	xor edx,edx
-	mov ecx,UZ_INFO_UTF8
-	call [lang.get_uz]
-	mov rsi,rax
-	rep movsb
-	@do_eol
-	
-	mov al,09
-	stosb
-	;--- insert top info -------
-	xor edx,edx
-	mov ecx,UZ_INFO_TOP
-	call [lang.get_uz]
-	mov rsi,rax
-	rep movsb
-	@do_eol
+;---	mov al,09
+;---	stosb
+;---	;--- insert top info -------
+;---	xor edx,edx
+;---	mov ecx,UZ_INFO_TOP
+;---	call [lang.get_uz]
+;---	mov rsi,rax
+;---	rep movsb
+;---	@do_eol
 
-	mov al,09
-	stosb
-	;--- insert copyright -------
-	xor edx,edx
-	mov ecx,UZ_INFO_COPYR
-	call [lang.get_uz]
-	mov rsi,rax
-	rep movsb
-	@do_eol
-	@do_eol
+;---	mov al,09
+;---	stosb
+;---	;--- insert copyright -------
+;---	xor edx,edx
+;---	mov ecx,UZ_INFO_COPYR
+;---	call [lang.get_uz]
+;---	mov rsi,rax
+;---	rep movsb
+;---	@do_eol
+;---	@do_eol
 
 	mov rdx,[.devt.pGrp]
 	test r12,r12

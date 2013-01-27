@@ -26,6 +26,7 @@ section '.data' data readable writeable
 	pDevT		dq sizeof.DEVT
 	pTool		dq sizeof.TOOLDLG
 	pTmpl		dq sizeof.TMPL
+	pDoc		dq sizeof.DOCDLG
 	pKdlg		dq sizeof.KEYDLG
 	pTime		dq sizeof.SYSTIME
 	pKeya		dq (MI_OTHER-MNU_X64LAB) * sizeof.KEYA
@@ -131,10 +132,10 @@ section '.data' data readable writeable
 		uzCmd 		 du "cmd " ;--- 16 bytes
 		uzCscript	 du "cscript",0
 		uzNoLogo	 du "//nologo",0
-		uzR				 du "r /e" ;--- "explore" "r /e"  ',"path"'
-		;---		uzStart		 du "cmd /C  ",0
+		uzR				 du "r /e" 
+		;--- "explore" "r /e"  ',"path"'
+		;--- uzStart du "cmd /C  ",0
 		
-
 		uzTreeClass	du "SysTreeView32",0
 		uzLvwClass	du "SysListView32",0
 		uzStcClass	du "STATIC",0

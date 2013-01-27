@@ -223,12 +223,34 @@ wspace:
 
 	mov rdx,r12
 	mov rcx,rbx
-	call wspace.save_file
+	call .save_file
 
 	test eax,eax
 	jle .close_fileE
 
 .close_fileNA:
+	;--- check for info only on text for now 
+	movzx eax,\
+		[.labf.type]
+	test eax,\
+		LF_BIN
+	jnz	.close_fileNB
+
+	;--- security check: no save on blanks
+	test eax,\
+		LF_BLANK
+	jnz	.close_fileNB
+
+	mov rcx,rbx
+	call doc.save_info
+
+	mov rax,[pDoc]
+	mov rcx,[rax+\
+		DOCDLG.hLvwB]
+	call lvw.del_all
+
+
+.close_fileNB:
 	;--- check for idx and prev item
 	;--- in open docs list
 	mov rdx,rbx
@@ -356,7 +378,7 @@ wspace:
 	jz	.save_file1
 
 	test eax,LF_BIN
-	jnz	.save_file1		;--- TODO: becasue readonly for now
+	jnz	.save_file1		;--- TODO: readonly for now
 
 	test eax,LF_TXT
 	jz	.save_fileF		;--- TODO: err for now
@@ -898,37 +920,38 @@ wspace:
 	mov r14,rax			;--- temp buffer+text
 	lea rdi,[rax+\	;--- RDI start dest text
 		FILE_BUFLEN]
-	
-	mov al,09
-	stosb
-	;--- insert utf8 warning -------
-	xor edx,edx
-	mov ecx,UZ_INFO_UTF8
-	call [lang.get_uz]
-	mov rsi,rax
-	rep movsb
-	@do_eol
-	
-	mov al,09
-	stosb
-	;--- insert top info -------
-	xor edx,edx
-	mov ecx,UZ_INFO_TOP
-	call [lang.get_uz]
-	mov rsi,rax
-	rep movsb
-	@do_eol
 
-	mov al,09
-	stosb
-	;--- insert copyright -------
-	xor edx,edx
-	mov ecx,UZ_INFO_COPYR
-	call [lang.get_uz]
-	mov rsi,rax
-	rep movsb
-	@do_eol
-	@do_eol
+	call .frm_head
+;---	mov al,09
+;---	stosb
+;---	;--- insert utf8 warning -------
+;---	xor edx,edx
+;---	mov ecx,UZ_INFO_UTF8
+;---	call [lang.get_uz]
+;---	mov rsi,rax
+;---	rep movsb
+;---	@do_eol
+	
+;---	mov al,09
+;---	stosb
+;---	;--- insert top info -------
+;---	xor edx,edx
+;---	mov ecx,UZ_INFO_TOP
+;---	call [lang.get_uz]
+;---	mov rsi,rax
+;---	rep movsb
+;---	@do_eol
+
+;---	mov al,09
+;---	stosb
+;---	;--- insert copyright -------
+;---	xor edx,edx
+;---	mov ecx,UZ_INFO_COPYR
+;---	call [lang.get_uz]
+;---	mov rsi,rax
+;---	rep movsb
+;---	@do_eol
+;---	@do_eol
 
 	;--- in RSP found kdirs
 	test r12,r12
@@ -1182,6 +1205,43 @@ wspace:
 	pop rbp
 	ret 0
 
+.frm_head:
+	;--- in RDI dest buffer
+	;--- note: RDI increment to end of string
+	push rsi
+	mov al,09
+	stosb
+	;--- insert utf8 warning -------
+	xor edx,edx
+	mov ecx,UZ_INFO_UTF8
+	call [lang.get_uz]
+	mov rsi,rax
+	rep movsb
+	@do_eol
+	
+	mov al,09
+	stosb
+	;--- insert top info -------
+	xor edx,edx
+	mov ecx,UZ_INFO_TOP
+	call [lang.get_uz]
+	mov rsi,rax
+	rep movsb
+	@do_eol
+
+	mov al,09
+	stosb
+	;--- insert copyright -------
+	xor edx,edx
+	mov ecx,UZ_INFO_COPYR
+	call [lang.get_uz]
+	mov rsi,rax
+	rep movsb
+	@do_eol
+	@do_eol
+
+	pop rsi
+	ret 0
 
 	;#---------------------------------------------------ö
 	;|                   WSPACE.OPEN_FILE                |
@@ -1225,8 +1285,6 @@ wspace:
 
 	mov rcx,rbx
 	call edit.view
-
-
 
 	mov rax,rbx
 
@@ -1463,11 +1521,13 @@ wspace:
 	mov r9,rsp
 	mov rcx,[hDocs]
 	call lvw.ins_item
+	mov rdx,rax
+	jmp	.sel_docA
 
-	add rsp,\
-		sizeof.LVITEMW
-	pop rbx
-	ret 0
+;---	add rsp,\
+;---		sizeof.LVITEMW
+;---	pop rbx
+;---	ret 0
 
 .sel_doc:
  	;--- in RCX labf
@@ -1483,38 +1543,28 @@ wspace:
 	test eax,eax
 	jz .sel_docE
 
-	or rax,-1
-	mov r9,rsp
-	mov r8,rax
 
-	push r9
+.sel_docA:
 	push rdx
-	inc eax
-	
+	push rdx
+
 	;-- clear all states for all items
-	mov [r9+\
-		LVITEMW.stateMask],\
-	LVIS_SELECTED \
-	or LVIS_FOCUSED
-	mov [r9+\
-		LVITEMW.state],eax
+	xor r9,r9
+	mov r8,\
+		LVIS_SELECTED \
+		or LVIS_FOCUSED
+	or rdx,-1
 	mov rcx,[hDocs]
 	call lvw.set_istate
 
 	pop rdx
-	pop r9
-
-	mov [r9+\
-		LVITEMW.stateMask],\
+	mov r8,\
 		LVIS_SELECTED \
 		or LVIS_FOCUSED
-	mov [r9+\
-		LVITEMW.state],\
-		LVIS_SELECTED \
-		or LVIS_FOCUSED
-	mov r8,rdx
+	mov r9,r8
 	mov rcx,[hDocs]
 	call lvw.set_istate
+	pop rax
 
 .sel_docE:
 	add rsp,\
@@ -2594,16 +2644,7 @@ wspace:
 	;ö---------------------------------------------------ü
 
 .setup:
-	push rbp
 	push rbx
-	push rdi
-	push rsi
-	mov rbp,rsp
-
-	sub rsp,\
-		FILE_BUFLEN+\
-		sizea16.LVCOLUMNW
-	mov rdi,rsp
 
 	mov rbx,[pConf]
 	mov r9d,[.conf.wspace.bkcol]
@@ -2615,148 +2656,8 @@ wspace:
 	mov rcx,[hTree]
 	call tree.set_iml
 
-	mov r9d,[.conf.docs.bkcol]
-	mov rcx,[hDocs]
-	call lvw.set_bkcol
-
-	mov r9d,[.conf.docs.bkcol]
-	mov rcx,[hDocs]
-	call lvw.set_txtbkcol
-
-	mov r9,\
-		LVS_EX_CHECKBOXES or\
-		LVS_EX_FULLROWSELECT or \
-		LVS_EX_AUTOSIZECOLUMNS ;or \
-;---		LVS_EX_JUSTIFYCOLUMNS ; or \
-;---		LVS_EX_FLATSB; or \
-;---	LVS_EX_GRIDLINES or \
-;---	LVS_EX_HEADERINALLVIEWS
-;---	LVS_EX_JUSTIFYCOLUMNS
-;---	LVS_EX_DOUBLEBUFFER
-	xor r8,r8
-	mov rcx,[hDocs]
-	call lvw.set_xstyle
-
-	mov r9,[hsmSysList]
-	mov r8,LVSIL_SMALL
-	mov rcx,[hDocs]
-	call lvw.set_iml
-
-	lea rsi,[rsp+\
-		sizea16.LVCOLUMNW]
-
-;	push 0
-;	push 3
-;	push UZ_INFO_CDATE
-;	push 2
-;	push UZ_INFO_SIZE
-;	push 1
-;	push UZ_INFO_TYPE
-;	push 0
-;	push UZ_INFO_BUF
-
-;.setupB:
-;	pop rcx
-;	test rcx,rcx
-;	jz	.setupE
-
-.setupA:
-	mov r8,rsi
-	mov edx,U16
-	mov ecx,UZ_INFO_BUF
-	call [lang.get_uz]
-
-;---	mov [.lvc.pszText],0;rsi
-;---	shl edx,5
-	mov [.lvc.cx],600
-	mov [.lvc.cxIdeal],100
-	mov [.lvc.mask],\
-		LVCF_WIDTH or \
-		LVCF_IDEALWIDTH
-
-;---		LVCF_TEXT or \
-;---		LVCF_FMT or \
-;---		;LVCF_SUBITEM
-
-;---	;pop rax
-	xor eax,eax
-;---	mov [.lvc.fmt],LVCFMT_LEFT
-;---	mov [.lvc.iSubItem],eax
-	mov r9,rdi
-	mov r8,rax
-	mov rcx,[hDocs]
-	call lvw.ins_col
-
-
-.setupE:
-	mov rsp,rbp
-	pop rsi
-	pop rdi
 	pop rbx
-	pop rbp
 	ret 0
-
-	;#---------------------------------------------------ö
-	;|      WSPACE.LVW_NOTIFY                            |
-	;ö---------------------------------------------------ü
-
-.docs_notify:
-	mov edx,[r9+NMHDR.code]
-	cmp edx,\
-		LVN_ITEMCHANGING
-	jz	.docs_schged
-	cmp edx,NM_DBLCLK
-	jz	.docs_dblclk
-	jmp winproc.ret0
-
-.docs_schged:
-	mov rcx,\
-		[r9+NM_LISTVIEW.lParam]
-	test rcx,rcx
-	jz	winproc.ret0
-
-;---	mov eax,[r9+\
-;---		NM_LISTVIEW.uNewState]
-;---	test eax,LVIS_FOCUSED
-;---	jz	winproc.ret0
-
-	test [r9+\
-		NM_LISTVIEW.uNewState],\
-		LVIS_FOCUSED \
-		or LVIS_SELECTED ;or LVIS_FOCUSED
-	jz	winproc.ret0
-
-	mov rsi,[pEdit]
-	cmp rcx,[.pEdit.curlabf]
-	jz	winproc.ret0
-
-	call edit.view
-	jmp winproc.ret0
-
-.docs_dblclk:
-	mov edx,[r9+\
-		NMITEMACTIVATE.iItem]
-	inc edx
-	jz	winproc.ret0
-
-	dec edx
-	xor eax,eax
-
-	sub rsp,\
-		sizea16.LVITEMW
-
-	mov r9,rsp
-	mov [r9+\
-		LVITEMW.iItem],edx
-	mov [r9+\
-		LVITEMW.iSubItem],eax
-	mov rcx,[hDocs]
-	call lvw.get_param
-
-	mov rbx,[rsp+LVITEMW.lParam]
-	test rbx,rbx
-	jz winproc.ret0
-	jmp .tree_dblclkA
 
 	;#---------------------------------------------------ö
 	;|      WSPACE.TREE_NOTIFY                           |
@@ -2977,6 +2878,9 @@ wspace:
 
 	mov rcx,rbx
 	call .sel_doc
+
+	mov rcx,rbx
+	call doc.list_bm
 	
 .tree_schgedB:
 	mov rcx,[.labf.dir]

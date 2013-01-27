@@ -39,6 +39,10 @@
 		define KEY_CHK_NOINV  1106
 		define KEY_STA_ID  		1108
 
+		define DOC_DLG  1600
+		define DOC_LVWA  1601
+		define DOC_LVWB  1602
+
 		define DEVT_DLG  			2048
 		define DEVT_TLB  			2049
 		define DEVT_CBX  			2050
