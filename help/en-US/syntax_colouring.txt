@@ -1,7 +1,6 @@
 
  x64lab
  Syntax Colouring
-
   Syntax colouring enhances readability of documents.
   Colouring informations are stored in the [ext] directory,
   using TOP format files. Example of file with colouring informations is the
@@ -51,9 +50,7 @@
 	commstart  define string to comment-start a block of lines
 	commend    define string to comment-end a block of lines
 
-  
 	- Reload Scintilla Classes
-
    the Menuitem "Edit|Reload Scintilla Classes" allows user to
    reload edited classes. Colouring changes apply after reopening
    eventual current edited files.

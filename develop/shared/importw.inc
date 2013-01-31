@@ -195,6 +195,7 @@
 		MapVirtualKeyW,"MapVirtualKeyW",\
 		MessageBoxW,"MessageBoxW",\
 		MessageBoxExW,"MessageBoxExW",\
+		ModifyMenuW,"ModifyMenuW",\
 		MoveWindow,"MoveWindow",\
 		PostMessageW,"PostMessageW",\
 		PostQuitMessage,"PostQuitMessage",\

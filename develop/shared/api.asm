@@ -196,6 +196,13 @@ apiw:
 	jmp	.prolog0
 @endusing
 
+@using .mnu_mod
+.mnu_mod:
+	mov rax,[ModifyMenuW]
+	jmp	.prologP
+@endusing
+	
+
 @using .get_mnuicount
 .get_mnuicount:
 	mov rax,[GetMenuItemCount]

@@ -553,8 +553,42 @@ edit:
 	jz	.wm_notifyM
 
 	cmp edx,\
+		SCN_MODIFIED
+	jnz	.wm_notifyT2
+	test [r9+\
+		SCNOTIF.modificationType],\
+	SC_MOD_INSERTTEXT
+	jnz	.wm_notifyT3
+
+	test [r9+\
+		SCNOTIF.modificationType],\
+	SC_MOD_DELETETEXT
+	jnz	.wm_notifyT3
+	jmp	.ret0
+
+.wm_notifyT3:
+	mov rsi,r9
+	mov r8d,[r9+\
+		SCNOTIF.position]
+	mov rcx,[.labf.hSci]
+	call sci.linefrompos
+
+	mov rcx,rbx
+	mov rdx,rax
+	mov r8d,[rsi+\
+		SCNOTIF.linesAdded]
+	test ecx,ecx
+	jz	.ret0
+	call doc.update_bm
+	jmp	.ret1
+
+
+
+.wm_notifyT2:
+	cmp edx,\
 		SCN_SAVEPOINTREACHED
 	jnz	.wm_notifyT1
+
 	and [.labf.type],\
 		not LF_MODIF
 	jmp	.ret1
@@ -583,26 +617,9 @@ edit:
 	mov rdx,rax
 	mov rcx,rbx
 	call doc.toggle_bm
-
-;---	mov rdi,rax
-;---	mov r8,rax
-;---	mov rcx,[.labf.hSci]
-;---	call sci.mark_get
-	
-;---	mov rsi,sci.mark_add
-;---	mov rdx,sci.mark_del
-
-;---	test eax,\
-;---		1 shl SC_MARK_CIRCLE
-;---	cmovnz rsi,rdx
-	
-;---	mov r9,SC_MARK_CIRCLE
-;---	mov r8,rdi
-;---	mov rcx,[.labf.hSci]
-;---	call rsi
-
 	or [.labf.info],LF_BM
-	jmp	.ret0
+
+	jmp	.ret1
 
 	;#---------------------------------------------------ö
 	;|             STAT_NOTIFY                           |

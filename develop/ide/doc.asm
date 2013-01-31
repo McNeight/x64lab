@@ -288,7 +288,6 @@ doc:
 	pop rbp
 	ret 0
 
-
 	;#---------------------------------------------------ö
 	;|                  SAVE_BM                          |
 	;ö---------------------------------------------------ü
@@ -392,6 +391,78 @@ doc:
 	pop rbp
 	ret 0
 
+
+   ;ü------------------------------------------ö
+   ;|   update_BM                              |
+   ;#------------------------------------------ä
+
+.update_bm:
+	;--- in RCX labfile
+	;--- in RDX current line
+	;--- in R8 +- lines
+	push rbx
+	push rdi
+	push rsi
+	push r12
+	
+	mov rbx,rcx
+	mov rdi,rdx
+	mov rsi,r8
+
+	mov rax,[pDoc]
+	mov r12,[rax+\
+		DOCDLG.hLvwB]
+
+	jmp	.update_bmA
+	
+.update_bmB:
+	mov rdx,rdi
+	mov rcx,r12
+	call lvw.is_param
+	test eax,eax
+	jz .update_bmE
+
+	sub rsp,\
+		sizeof.LVITEMW
+	mov r9,rsp
+	mov [r9+\
+		LVITEMW.mask],\
+		LVIF_PARAM
+	mov [r9+\
+		LVITEMW.iItem],edx
+	add rax,rsi
+	inc rax
+	mov [r9+\
+		LVITEMW.lParam],rax
+	xor edx,edx
+	mov [r9+\
+		LVITEMW.iSubItem],edx
+	mov rcx,r12
+	call lvw.set_item
+	add rsp,\
+		sizeof.LVITEMW
+	inc rdi
+	
+.update_bmA:
+	mov r9,\
+		1 shl SC_MARK_CIRCLE
+	mov r8,rdi
+	mov rcx,[.labf.hSci]
+	call sci.mark_next
+	mov rdi,rax
+	inc eax
+	jnz .update_bmB
+
+.update_bmE:
+	mov rcx,rbx
+	call .list_bm
+
+	pop r12
+	pop rsi
+	pop rdi
+	pop rbx
+	ret 0
+
    ;ü------------------------------------------ö
    ;|   LIST_BM                                |
    ;#------------------------------------------ä
@@ -400,11 +471,20 @@ doc:
 	;--- in RCX labfile
 	push rbx
 	push rdi
+	push r12
 
 	mov rbx,rcx
 	mov rax,[pDoc]
-	mov rcx,[rax+\
+	mov r12,[rax+\
 		DOCDLG.hLvwB]
+
+	xor r9,r9
+	mov r8,FALSE
+	mov rdx,WM_SETREDRAW
+	mov rcx,r12
+	call apiw.sms
+
+	mov rcx,r12
 	call lvw.del_all
 
 	test [.labf.type],\
@@ -431,6 +511,18 @@ doc:
 	jnz .list_bmA
 
 .list_bmE:
+	xor r9,r9
+	mov r8,TRUE
+	mov rdx,WM_SETREDRAW
+	mov rcx,r12
+	call apiw.sms
+
+	;---	mov r8,TRUE
+	;---	xor edx,edx
+	;---	mov rcx,r12
+	;---	call apiw.invrect
+
+	pop r12
 	pop rdi
 	pop rbx
 	ret 0
@@ -622,41 +714,6 @@ doc:
 	pop rbp
 	ret 0
 
-
-;---.ins_bm:
-;---	ret 0
-;---	lea r9,[rsp+\
-;---		sizeof.SHFILEINFOW]
-
-;---	mov [r9+\
-;---		LVITEMW.iItem],eax
-
-;---	mov ecx,[rsp+\
-;---		SHFILEINFOW.iIcon]
-
-;---	mov [r9+\
-;---		LVITEMW.iImage],ecx
-
-;---	xor eax,eax
-;---	mov [r9+\
-;---		LVITEMW.iSubItem],eax
-
-;---	mov [r9+\
-;---		LVITEMW.lParam],r12
-
-;---	mov [r9+\
-;---		LVITEMW.pszText],r13
-
-;---	mov [r9+\
-;---		LVITEMW.mask],\
-;---		LVIF_PARAM or \
-;---		LVIF_TEXT	or \
-;---		LVIF_IMAGE
-
-;---	mov rcx,[.tmpl.hLvwC]
-;---	call lvw.ins_item
-
-
 	
    ;ü------------------------------------------ö
    ;|   SETUP GUI                              |
@@ -754,9 +811,14 @@ doc:
 	mov rcx,[.doc.hLvwA]
 	call lvw.ins_col
 
+
+
+
+
+
 	mov r9,\
 		LVS_EX_FULLROWSELECT or \
-		LVS_EX_AUTOSIZECOLUMNS
+		LVS_EX_AUTOSIZECOLUMNS or LVS_EX_DOUBLEBUFFER
 	xor r8,r8
 	mov rcx,[.doc.hLvwB]
 	call lvw.set_xstyle
@@ -841,7 +903,7 @@ doc:
 	mov rcx,[rax+\
 		LABFILE.hSci]
 	call sci.goto_line
-	jmp	.ret1
+	jmp	.ret0
 
 	
 

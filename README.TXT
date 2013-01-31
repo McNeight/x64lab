@@ -19,7 +19,7 @@
  - [config\docking.bin]  repositional infos
  - [config\ext\*.*]      classes and file-extensions
  
-  please, save them before unpacking a new build in the
+  please, SAVE them before unpacking a new build in the
   x64lab directory. you can stay up to date for changes
   using Google Projects and Mercurial feeds from
 
@@ -96,6 +96,8 @@ Summary:
 
      the "bin" prefixed package should be unpacked in x64lab. it is
      the last working copy of x64lab
+
+     source files should go in the [develop] directory
  
    -----------------------------------------------------------------
 
