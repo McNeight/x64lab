@@ -47,7 +47,7 @@ struct MDL
 	target		dq 0
 	pLastAct	dq 0
 
-	phit	POINT
+	phit			POINT
 	hShadow		dq 0
 	tmp_ssize	dd 0	;--- total tmp size of side
 	union
@@ -171,7 +171,7 @@ ends
 	FLAGS_ALL	equ \
 		FLOAT_PANEL or \	
 		SHARE_PANEL or \	
-		SHARE_FIRST or \
+		SHARE_FIRST or\
 		IS_HIDDEN	
 
 		;HAS_CONTROL or \	

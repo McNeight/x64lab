@@ -80,3 +80,4 @@
 #define DOC_DLG  1600
 #define DOC_LVWA  1601
 #define DOC_LVWB  1602
+#define CONS_PID  1539

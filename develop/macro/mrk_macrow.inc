@@ -11,8 +11,6 @@
   ;| filename:
   ;ö-------------------------------------------------ä
 
-
-
 struc db [data]	{
 	common
 	. db data
@@ -485,6 +483,296 @@ macro display_list value {
 	\}
 }
 
+macro @m2m arg1,arg2 {
+	push arg2
+	pop arg1
+ }
+
+macro @loword reg,arg
+ {
+	if arg eqtype eax
+		mov reg,arg
+		and reg,0FFFFh
+	else
+		match [name],arg
+		\{
+		movzx reg,word [name]
+		\}
+	end if
+ }
+
+macro @hiword reg,arg {
+	if arg eqtype eax
+		mov reg,arg
+		shr reg,16
+	else
+		match [name],arg 	\{
+		movzx reg,word [name+2]
+	\}
+	end if
+}
+
+	;#---------------------------------------------------ö
+	;|               @xsdbm hash	(my method)            |
+	;ö---------------------------------------------------ü
+
+macro @xsdbm argname,argresult,argprime {
+	common 
+	local	result,char,prime,..tmp
+	argresult equ 0
+	if argprime eq
+		prime = 6121
+	else
+		prime = argprime
+	end if
+	virtual at 0
+		..tmp:
+		db `argname
+		result = prime
+		argname#.#size = $-..tmp
+
+		repeat $
+			load char byte from % - 1
+			result = (char and 0x000000FF) + \
+				(result shl 6) + \
+				(result shl 17) - \
+				result
+		end repeat
+	end virtual
+argresult equ (result and 0xffffffff)
+}
+
+
+	;#---------------------------------------------------ö
+	;|               @xsdbmu utf16                       |
+	;ö---------------------------------------------------ü
+
+macro @xsdbmu argstr,argresult,argprime {
+	common 
+	local	lo,hi,result,cpts,prime,..tmp
+	argresult equ 0
+	if argprime eq
+		prime = 6121
+	else
+		prime = argprime
+	end if
+	virtual at 0
+		..tmp:
+		du argstr
+		result = prime
+
+	;--- 32 bit range ---------
+	repeat $/2
+		load cpts word from %*2 -2
+		lo = (cpts and 0x000000FF)
+		hi = (cpts and 0x0000FF00) shr 8
+		result = ((lo xor hi) and 0x000000FF )+\
+			(result shl 6) + \
+			(result shl 17) - \
+			result
+	end repeat
+	end virtual
+	argresult equ (result and 0xffffffff)
+	;--------------------------------------------
+
+	;---	;--- full 64 bit result on string -----
+	;---	argresult equ result
+	;---		repeat $/2
+	;---			load cpts word from %*2 -2
+	;---			lo = (cpts and 0x000000FF)
+	;---			hi = (cpts and 0x0000FF00) shr 8
+	;---			result = ((lo xor hi) )+\
+	;---				(result shl 6) + \
+	;---				(result shl 17) - \
+	;---				result
+	;---		end repeat
+	;---	end virtual
+	;---	argresult equ result 
+}
+
+
+macro @szhash [argstr]{
+	result equ 0
+	@xsdbm argstr,result
+	HASH_#argstr equ result
+	sz_#argstr db \`argstr,0
+	common
+	@align 2,0
+}
+
+
+
+macro @make_version argmod,packver,argver {
+	@align 8,0CCh
+		@xsdbm argmod,result
+		result equ (result shl 32) or %t
+		;--- get_version
+		;--- RET RAX hashname(HI) OR tstamp (LO)
+		;--- RET RCX packvers(HI) OR version
+		;--- RET RDX POPCOUNT(HI) OR CRC
+		;--- RET R8,R9 0 not used
+	get_version:
+		mov rax,result	;48B8+HASHNAME or TSTAMP
+		mov rcx,(packver shl 32) or	argver	;48B9+SETVERS or VERSION
+		db 49h,0B8H		;R8
+		dq 0					;--- not used
+		db 49h,0B9H		;R9
+		dq 0					;--- not used
+		db 48h,0BAH		;RDX	;--- POPCOUNT + HASHVALUE
+		dq 0
+		ret 0
+		nop
+	;	display "---@ "
+	;	display_hex 64,result
+	;	display "h " ;9,"RAX -> HASHNAME(HI) TSTAMP(LO)",13,10
+	;	display_hex 64,(packver shl 32) or	argver
+	;	display "h ";9,"RCX -> PACKVERSION (HI) VERSION(LO)",13,10
+	;	display `argmod,13,10
+	;	display "---  HNAME   TSTAMP       PACKV  VERS",13,10
+	}
+
+
+
+macro @top_pack argreg,argname,arglevel {
+	local ..tmp
+	@xsdbm argname,..tmp
+	..tmp equ (..tmp shl 8 or argname#.#size)
+	..tmp equ (..tmp shl 8 or arglevel )
+	..tmp equ (..tmp shl 8 or F_HAS_SSYM_BLANKS)
+	..tmp equ (..tmp shl 8 or T_IS_LABEL)
+	mov argreg,..tmp
+}
+
+;;----------------- MACRo for shared.asm -----------------
+	macro @using [name] {
+		composit equ (used name)
+	forward
+		composit equ composit |(used name)
+	common
+		if composit
+		align 2
+	}
+
+	macro @endusing {
+		align 2
+	end if
+	}
+
+
+macro @accels [argflag,argkey,argcmd,argdescr]
+{
+ common
+	count = 0
+	label .num_accels
+		dd 0
+ forward
+	db argflag
+	db 0
+	dw argkey
+	dw argcmd
+	count = count + 1
+common
+	store dword count at .num_accels
+ forward
+	du argdescr
+}
+
+
+
+macro @e_rva [funcname] {
+	common
+	match =TRUE,VERBOSE \{
+		;display 13,10,";--------- hashing API in [",MODULE,"] ------------>",13,10
+		display 13,10,"; Copy this block in your data section "
+		display 13,10,"@i_rva ",MODULE
+	\}
+	align 4
+	forward
+		@xsdbm funcname,result
+		dd result
+	match =TRUE,VERBOSE \{
+		display ",\",13,10,32,`funcname
+	\}
+		dd RVA funcname
+	common
+	match =TRUE,VERBOSE \{
+		display 13,10,13,10
+		;display ";--------- end hashing API function ------------>",13,10
+	\}
+}
+
+
+macro @i_rva modname,[name] {
+	common
+	align 4
+	modname#_bridge:
+		hMod_#modname	 dq 0
+		modname#.#size dw  modname#_table - uzLib_#modname
+		uzLib_#modname du `modname,0;#".dll",0
+	@align 4,0CCh
+	modname#_table:
+	forward
+		if used name
+			;display `name
+			@xsdbm name,result
+ 			dd result			;--- hash
+			name dq 0  		;--- future proc address
+		end if
+	common
+		dd 0
+}
+
+
+macro @topitem name,[argname,arglev,initval] {
+	common
+		align 4
+	forward
+		define status 0
+	match =0 n,status name \{
+		@xsdbm name#.#argname,result
+		name#.#argname#.hash 		= result
+		name#.#argname#.level		= arglev
+		name#.#argname#.info	dd 0
+		name#.#argname#.param	initval
+	align 2
+		define status 1
+		\}
+	match =0,status\{
+		@xsdbm argname,result
+		argname#.hash 		= result
+		argname#.level 		= arglev
+		argname#.info		dd 0
+		argname#.param	initval
+	align 2
+		define status 1
+		\}
+	common
+	match n,name \{	
+		utf8_#name	db `name,0
+	\}
+	forward
+	define status 0
+	match =0 n,status name \{
+		utf8_#name#.#argname	db `argname,0
+		define status 1
+	\}
+	match =0,status\{
+		utf8_#argname	db `argname,0	
+		define status 1
+	\}
+}
+
+	macro @do_eol {
+		mov ax,0A0Dh
+		stosw
+	}
+
+	macro @do_indent{
+		mov al,09h
+		rep stosb
+	}
+
+
 ;macro @log_str strname {
 ;	local ..tmpstring,size@true
 ;	virtual at logdata + incr@du 
@@ -674,286 +962,6 @@ macro display_list value {
 ;		localName aStruct	
 ;	end virtual
 ;}
-
-
-macro @m2m arg1,arg2 {
-	push arg2
-	pop arg1
- }
-
-macro @loword reg,arg
- {
-	if arg eqtype eax
-		mov reg,arg
-		and reg,0FFFFh
-	else
-		match [name],arg
-		\{
-		movzx reg,word [name]
-		\}
-	end if
- }
-
-macro @hiword reg,arg {
-	if arg eqtype eax
-		mov reg,arg
-		shr reg,16
-	else
-		match [name],arg 	\{
-		movzx reg,word [name+2]
-	\}
-	end if
-}
-
-	;#---------------------------------------------------ö
-	;|               @xsdbm hash	(my method)            |
-	;ö---------------------------------------------------ü
-
-macro @xsdbm argname,argresult,argprime {
-	common 
-	local	result,char,prime,..tmp
-	argresult equ 0
-	if argprime eq
-		prime = 6121
-	else
-		prime = argprime
-	end if
-	virtual at 0
-		..tmp:
-		db `argname
-		result = prime
-		argname#.#size = $-..tmp
-
-		repeat $
-			load char byte from % - 1
-			result = (char and 0x000000FF) + \
-				(result shl 6) + \
-				(result shl 17) - \
-				result
-		end repeat
-	end virtual
-argresult equ (result and 0xffffffff)
-}
-
-
-	;#---------------------------------------------------ö
-	;|               @xsdbmu utf16                       |
-	;ö---------------------------------------------------ü
-
-macro @xsdbmu argstr,argresult,argprime {
-	common 
-	local	lo,hi,result,cpts,prime,..tmp
-	argresult equ 0
-	if argprime eq
-		prime = 6121
-	else
-		prime = argprime
-	end if
-	virtual at 0
-		..tmp:
-		du argstr
-		result = prime
-
-	;--- 32 bit range ---------
-	repeat $/2
-		load cpts word from %*2 -2
-		lo = (cpts and 0x000000FF)
-		hi = (cpts and 0x0000FF00) shr 8
-		result = ((lo xor hi) and 0x000000FF )+\
-			(result shl 6) + \
-			(result shl 17) - \
-			result
-	end repeat
-	end virtual
-	argresult equ (result and 0xffffffff)
-	;--------------------------------------------
-
-	;---	;--- full 64 bit result on string -----
-	;---	argresult equ result
-	;---		repeat $/2
-	;---			load cpts word from %*2 -2
-	;---			lo = (cpts and 0x000000FF)
-	;---			hi = (cpts and 0x0000FF00) shr 8
-	;---			result = ((lo xor hi) )+\
-	;---				(result shl 6) + \
-	;---				(result shl 17) - \
-	;---				result
-	;---		end repeat
-	;---	end virtual
-	;---	argresult equ result 
-}
-
-
-macro @szhash [argstr]{
-	result equ 0
-	@xsdbm argstr,result
-	HASH_#argstr equ result
-	.sz_#argstr db \`argstr,0
-	common
-	@align 2,0
-}
-
-
-
-macro @make_version argmod,packver,argver {
-	@align 8,0CCh
-		@xsdbm argmod,result
-		result equ (result shl 32) or %t
-		;--- get_version
-		;--- RET RAX hashname(HI) OR tstamp (LO)
-		;--- RET RCX packvers(HI) OR version
-		;--- RET RDX POPCOUNT(HI) OR CRC
-		;--- RET R8,R9 0 not used
-	get_version:
-		mov rax,result	;48B8+HASHNAME or TSTAMP
-		mov rcx,(packver shl 32) or	argver	;48B9+SETVERS or VERSION
-		db 49h,0B8H		;R8
-		dq 0					;--- not used
-		db 49h,0B9H		;R9
-		dq 0					;--- not used
-		db 48h,0BAH		;RDX	;--- POPCOUNT + HASHVALUE
-		dq 0
-		ret 0
-		nop
-	;	display "---@ "
-	;	display_hex 64,result
-	;	display "h " ;9,"RAX -> HASHNAME(HI) TSTAMP(LO)",13,10
-	;	display_hex 64,(packver shl 32) or	argver
-	;	display "h ";9,"RCX -> PACKVERSION (HI) VERSION(LO)",13,10
-	;	display `argmod,13,10
-	;	display "---  HNAME   TSTAMP       PACKV  VERS",13,10
-	}
-
-
-
-macro @top_pack argreg,argname,arglevel {
-	local ..tmp
-	@xsdbm argname,..tmp
-	..tmp equ (..tmp shl 8 or argname#.#size)
-	..tmp equ (..tmp shl 8 or arglevel )
-	..tmp equ (..tmp shl 8 or F_HAS_SSYM_BLANKS)
-	..tmp equ (..tmp shl 8 or T_IS_LABEL)
-	mov argreg,..tmp
-}
-
-;;----------------- MACRo for shared.asm -----------------
-	macro @using [name] {
-		composit equ (used name)
-	forward
-		composit equ composit |(used name)
-	common
-		if composit
-		align 2
-	}
-
-	macro @endusing {
-		align 2
-	end if
-	}
-
-
-macro @accels [argflag,argkey,argcmd,argdescr]
-{
- common
-	count = 0
-	label .num_accels
-		dd 0
- forward
-	db argflag
-	db 0
-	dw argkey
-	dw argcmd
-	count = count + 1
-common
-	store dword count at .num_accels
- forward
-	du argdescr
-}
-
-
-
-macro @e_rva [funcname] {
-	common
-	match =TRUE,VERBOSE \{
-		;display 13,10,";--------- hashing API in [",MODULE,"] ------------>",13,10
-		display 13,10,"; Copy this block in your data section "
-		display 13,10,"@i_rva ",MODULE
-	\}
-	align 4
-	forward
-		@xsdbm funcname,result
-		dd result
-	match =TRUE,VERBOSE \{
-		display ",\",13,10,32,`funcname
-	\}
-		dd RVA funcname
-	common
-	match =TRUE,VERBOSE \{
-		display 13,10,13,10
-		;display ";--------- end hashing API function ------------>",13,10
-	\}
-}
-
-
-macro @i_rva modname,[name] {
-	common
-	align 4
-	modname#_bridge:
-		hMod_#modname	 dq 0
-		modname#.#size dw  modname#_table - uzLib_#modname
-		uzLib_#modname du `modname,0;#".dll",0
-	@align 4,0CCh
-	modname#_table:
-	forward
-		if used name
-			;display `name
-			@xsdbm name,result
- 			dd result			;--- hash
-			name dq 0  		;--- future proc address
-		end if
-	common
-		dd 0
-}
-
-
-macro @topitem name,[argname,arglev,initval] {
-	common
-		align 4
-	forward
-		define status 0
-	match =0 n,status name \{
-		@xsdbm name#.#argname,result
-		name#.#argname#.hash 		= result
-		name#.#argname#.level		= arglev
-		name#.#argname#.info	dd 0
-		name#.#argname#.param	initval
-	align 2
-		define status 1
-		\}
-	match =0,status\{
-		@xsdbm argname,result
-		argname#.hash 		= result
-		argname#.level 		= arglev
-		argname#.info		dd 0
-		argname#.param	initval
-	align 2
-		define status 1
-		\}
-	common
-	match n,name \{	
-		utf8_#name	db `name,0
-	\}
-	forward
-	define status 0
-	match =0 n,status name \{
-		utf8_#name#.#argname	db `argname,0
-		define status 1
-	\}
-	match =0,status\{
-		utf8_#argname	db `argname,0	
-		define status 1
-	\}
-}
 
 
 ;;--- set constant in reg if reg=0 (FALSE) or reg#0 (TRUE)
@@ -1355,12 +1363,3 @@ macro @topitem name,[argname,arglev,initval] {
 ;;  purge exitselect
 ;; }
 
-	macro @do_eol {
-		mov ax,0A0Dh
-		stosw
-	}
-
-	macro @do_indent{
-		mov al,09h
-		rep stosb
-	}

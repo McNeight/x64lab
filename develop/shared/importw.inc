@@ -11,8 +11,6 @@
   ;| filename:
   ;ö-------------------------------------------------ä
 
-
-
 	section '.idata' import data readable writeable
 
 	define status 0
@@ -118,6 +116,7 @@
 		ChildWindowFromPoint,"ChildWindowFromPoint",\
 		ChildWindowFromPointEx,"ChildWindowFromPointEx",\
 		ClientToScreen,"ClientToScreen",\
+		CreateCaret,"CreateCaret",\
 		CreateAcceleratorTableW,"CreateAcceleratorTableW",\
 		CreateDialogParamW,"CreateDialogParamW",\
 		CreateMenu,"CreateMenu",\
@@ -130,6 +129,7 @@
 		DeleteMenu,"DeleteMenu",\
 		DestroyAcceleratorTable,"DestroyAcceleratorTable",\
 		DestroyIcon,"DestroyIcon",\
+		DestroyCaret,"DestroyCaret",\
 		DestroyMenu,"DestroyMenu",\
 		DestroyWindow,"DestroyWindow",\
 		DialogBoxParamW,"DialogBoxParamW",\
@@ -150,6 +150,7 @@
 		FillRect,"FillRect",\
 		GetActiveWindow,"GetActiveWindow",\
 		GetCapture,"GetCapture",\
+		GetClassNameW,"GetClassNameW",\
 		GetClientRect,"GetClientRect",\
 		GetCursor,"GetCursor",\
 		GetCursorPos,"GetCursorPos",\
@@ -177,6 +178,7 @@
 		GetWindowPlacement,"GetWindowPlacement",\
 		GetWindowRect,"GetWindowRect",\
 		GetWindowTextW,"GetWindowTextW",\
+		HideCaret,"HideCaret",\
 		InsertMenuItemW,"InsertMenuItemW",\
 		IntersectRect,"IntersectRect",\
 		InvalidateRect,"InvalidateRect",\
@@ -223,6 +225,7 @@
 		SetWindowLongPtrW,"SetWindowLongPtrW",\
 		SetWindowPos,"SetWindowPos",\
 		SetWindowRgn,"SetWindowRgn",\
+		ShowCaret,"ShowCaret",\
 		ShowWindow,"ShowWindow",\
 		SubtractRect,"SubtractRect",\
 		SystemParametersInfoW,"SystemParametersInfoW",\

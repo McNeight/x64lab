@@ -272,7 +272,10 @@ ends
 	struct CONS PLUGGED
 		hCbx			dq 0
 		hSci			dq 0
-		cmd				db 512 dup (0)
+		hCbxEdit	dq 0
+		pCbexEOld	dq 0	;--- old winproc CbexEdit
+
+		cmd				db FILE_BUFLEN*2 dup (0)
 		part0			dd 0
 		part_enc	dd 0
 		part_dir 	dd 0
@@ -350,6 +353,23 @@ ends
 	ends
 
 
+	struct LABENV
+		next   dq ?
+		v_len  dw ?
+		n_len  dw ?
+		n_hash dd ?
+		;--- aligned 16 utf16 name
+		;--- aligned 16 utf16 value
+	ends
+
+	struct LABPATH
+		next  dq ?
+		v_len dw ?
+					dw ?
+					dd ?
+		;--- aligned 16 utf16 value
+	ends
+
 	struct CONFIG
 		version	dw 64h
 		lcid		dw 0		;--- lang cultural id
@@ -360,6 +380,9 @@ ends
 						dd ?
 						dd ?
 		;-------------------------
+		env			dq 0	;--- point to LABENV pairs NAME=VALUE
+		path		dq 0	;--- point to LABPATH path is cumulative
+		;-------------------------
 		lang8		db 16 dup (?)
 		;-------------------------
 		lang16  db 32 dup (?)
@@ -367,7 +390,7 @@ ends
 		update				dd FALSE
 		session				dd 0
 		wspace.bkcol	dd 0D9FFFFh
-		cons.bkcol		dd 0AABBCCh
+		cons.back			dd 0FFFFFFh
 
 		;-------------------------
 		docs.bkcol	dd 0CCBBAAh

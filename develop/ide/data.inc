@@ -14,7 +14,7 @@
 section '.data' data readable writeable
 	curDir	dq sizeof.DIR
 	dirHash	dq 400h*8
-	envHash	dq 80h*8
+;---	envHash	dq 80h*8
 	extHash dq 100h*8
 	
 	pConf		dq sizeof.CONFIG
@@ -228,29 +228,30 @@ section '.data' data readable writeable
 		;	MI_PA_COPY,		18,OWN,DIF,\
 		;	MI_PA_SETPROP,18,OWN,DIF
 		
-		;--- utf8 strings for config/config.utf8 items
-		macro @cfg_items [argid,argval]{
-		 forward
-			;--- because string must be "utf-8" not ascii
-			sz_#argid db argval,0
-		 }
+	@szhash\
+		\	;-------- scintilla
+		back,bold,\
+		clearall,commline,commstart,commend,\
+		font,fontsize,fore,\
+		italic,\
+		keyword,\
+		lexer,\
+		multisel,\
+		stylebits,selback,style,\
+		tabwidth,\
+		\	;------- config
+		atime,\
+		cons,cdate,ctime,curs,\
+		docs,\
+		fshow,\
+		language,\
+		owner,\
+		pos,\
+		tree,\
+		session,\
+		version,\
+		wspace	
 
-		@cfg_items\
-		 wspace,"wspace",\
-		 version,"version",\
-		 session,"session",\
-	 	 fshow,"fshow",\
-		 cons,"cons",\
-		 docs,"docs",\
-		 prop,"prop",\
-		 pos,"pos",\
-		 tree,"tree",\
-		 bkcol,"bkcol",\
-		 language,"language",\
-		 owner,"owner",\
-		 cdate,"cdate",\
-		 ctime,"ctime",\
-		 atime,"atime"
 
 		display "--- Size of data "
 		display_decimal $-$$

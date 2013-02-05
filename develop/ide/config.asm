@@ -414,7 +414,7 @@ config:
 	push rbx
 	push rsi
 	push rdi	;--- pConf
-	push r12
+	push r12	;--- TOBJECT
 	push r13	;--- for lang.dll
 
 	mov rbp,rsp
@@ -468,8 +468,8 @@ config:
 	mov [.conf.update],\
 		CFG_UPDATE
 
-	mov [.conf.cons.bkcol],\
-		CFG_CONS_BKCOL
+	mov [.conf.cons.back],\
+		CFG_CONS_BACK
 
 	mov [.conf.wspace.bkcol],\
 		CFG_TREE_BKCOL
@@ -540,6 +540,9 @@ config:
 	mov eax,[rsi+\
 		TITEM.hash]
 
+	cmp eax,HASH_cons
+	jz	.open_cons
+
 	mov ecx,[rsi+\
 		TITEM.attrib]
 
@@ -550,19 +553,65 @@ config:
 	add rdx,rcx
 	;	cmp eax,hash_version
 	;	jz	.openV
-	cmp eax,hash_fshow
+	cmp eax,HASH_fshow
 	jz	.open_fshow
-	cmp eax,hash_pos
+	cmp eax,HASH_pos
 	jz	.open_pos
-	cmp eax,hash_session
+	cmp eax,HASH_session
 	jz	.open_sess
-	cmp eax,hash_wspace
+	cmp eax,HASH_wspace
 	jz	.open_wsp
-	cmp eax,hash_language
+	cmp eax,HASH_language
 	jz	.open_lang
-	cmp eax,hash_owner
+	cmp eax,HASH_owner
 	jz	.open_owner
 	jmp	.openB
+
+.open_cons:
+	push rsi
+	test [rsi+\
+		TITEM.type],TOBJECT
+	jz	.open_consE
+	mov esi,[rsi+\
+		TITEM.child]
+	jmp	.open_consM
+
+.open_consE:
+	pop rsi
+	jmp	.openB
+
+.open_consN:
+	mov esi,[rsi+\
+		TITEM.next]
+
+.open_consM:
+	test esi,esi
+	jz	.open_consE
+	add rsi,rbx
+
+	mov edx,[rsi+\
+		TITEM.attrib]
+	mov eax,[rsi+\
+		TITEM.hash]
+
+	test edx,edx
+	jz	.open_consN
+
+	cmp eax,HASH_back
+	jz	.open_cons_back
+	jmp	.open_consN
+	
+.open_cons_back:
+	add rdx,rbx
+	
+	mov eax,[rdx+\
+		TITEM.lo_dword]
+	mov [.conf.cons.back],eax
+	jmp	.open_consN
+
+;---	cons:(
+;---		back:11223344h
+;---	)
 
 .open_fshow:
 	xor eax,eax
@@ -782,38 +831,6 @@ config:
 
 	call wspace.frm_head
 
-;---	mov al,09
-;---	stosb
-
-;---	;--- insert utf8 warning -------
-;---	xor edx,edx
-;---	mov ecx,UZ_INFO_UTF8
-;---	call [lang.get_uz]
-;---	mov rsi,rax
-;---	rep movsb
-;---	@do_eol
-	
-;---	mov al,09
-;---	stosb
-;---	;--- insert top info -------
-;---	xor edx,edx
-;---	mov ecx,UZ_INFO_TOP
-;---	call [lang.get_uz]
-;---	mov rsi,rax
-;---	rep movsb
-;---	@do_eol
-
-;---	mov al,09
-;---	stosb
-;---	;--- insert copyright -------
-;---	xor edx,edx
-;---	mov ecx,UZ_INFO_COPYR
-;---	call [lang.get_uz]
-;---	mov rsi,rax
-;---	rep movsb
-;---	@do_eol
-;---	@do_eol
-
 	;--- version -----------
 	mov al,09
 	stosb
@@ -977,6 +994,43 @@ config:
 
 	add rsp,32+\
 		sizeof.WINDOWPLACEMENT
+
+	;--- console block -------
+	mov al,09
+	stosb
+	mov esi,sz_cons
+	mov rcx,sz_cons.size-1
+	rep movsb
+	mov ax,':('
+	stosw
+	@do_eol
+
+	;--- console backcolor -----
+	mov ecx,2
+	@do_indent
+	mov esi,sz_back
+	mov rcx,sz_back.size-1
+	rep movsb
+	mov ax,':0'
+	stosw
+
+	sub rsp,32
+	mov rdx,rsp
+	mov ecx,[rbx+\
+		CONFIG.cons.back]
+	call art.qword2a
+	mov rsi,rdx
+	add rsi,rcx
+	mov rcx,rax
+	rep movsb
+	mov al,"h"
+	stosb
+	@do_eol
+	add rsp,32
+
+	mov ax,"	)"
+	stosw
+	@do_eol
 
 .writeF:
 	xor eax,eax

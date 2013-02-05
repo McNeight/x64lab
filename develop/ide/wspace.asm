@@ -2518,32 +2518,34 @@ wspace:
 
 
 	
-.env2hash:
-	;--- in RCX env
-	;--- RET R8 len
-	;--- RET additional data from .is_dhash
-	push .is_ehash
-	jmp	.dir2hashA
+;---.env2hash:
+;---	;--- in RCX env
+;---	;--- RET R8 len
+;---	;--- RET additional data from .is_dhash
+;---	push .is_ehash
+;---	jmp	.dir2hashA
 
 .dir2hash:
 	;--- in RCX path
 	;--- RET R8 len
 	;--- RET additional data from .is_dhash
-	push .is_dhash
+;	push .is_dhash
+	push 0
 
-.dir2hashA:
+;---.dir2hashA:
 	call utf16.zsdbm
-	xchg rdx,[rsp]
+	mov [rsp],rdx
+	;xchg rdx,[rsp]
 	mov rcx,rax
-	call rdx
+	call .is_dhash
 	pop r8
 	ret 0
 
-.is_ehash:
-	mov r9,rcx
-	mov rdx,[envHash]
-	and ecx,7Fh
-	jmp	.is_dhashE
+;---.is_ehash:
+;---	mov r9,rcx
+;---	mov rdx,[envHash]
+;---	and ecx,7Fh
+;---	jmp	.is_dhashE
 
 .is_dhash:
 	;--- in RCX hash
@@ -2580,6 +2582,7 @@ wspace:
 .is_dhashD:
 	lea r8,[rax+\
 		DIR.hnext]
+
 .is_dhashB:
 	clc
 	xchg rax,r8

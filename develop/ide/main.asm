@@ -86,6 +86,7 @@ section '.code' code readable executable
 	include "devtool.asm"
 	include "ext.asm"
 	include "lang.asm"
+	include "script.asm"
 	include "template.asm"
 
 start:
@@ -106,7 +107,6 @@ start:
 	mov eax,\
 		sizeof.DIR+\
 		400h*8+\	;--- dirHash
-		80h*8+\		;--- envHash
 		100h*8+\	;--- extHash
 		((MI_OTHER-MNU_X64LAB) * sizeof.KEYA)+\
 		sizeof.SYSTIME+\
@@ -408,16 +408,16 @@ winproc:
 	cmp r8,[tMP_LANG]
 	jz	.mp_lang
 
-;---	;---ModifyMenu(hSubMenu, nID, MF_BYCOMMAND | MF_OWNERDRAW, nID, szText);
-;---	cmp r8,[tMP_WSPACE]
-;---	jnz	.ret0
-;---;---@break
-;---	mov r9,MI_WS_LOAD
-;---	mov r10,uzDefault
-;---	mov r8,MF_BYCOMMAND or MF_OWNERDRAW ;or MF_STRING ;or MF_POPUP 
-;---	mov edx,MI_WS_LOAD
-;---	mov rcx,[hMnuMain]
-;---	call apiw.mnu_mod
+	;---	;---ModifyMenu(hSubMenu, nID, MF_BYCOMMAND | MF_OWNERDRAW, nID, szText);
+	;---	cmp r8,[tMP_WSPACE]
+	;---	jnz	.ret0
+	;---;---@break
+	;---	mov r9,MI_WS_LOAD
+	;---	mov r10,uzDefault
+	;---	mov r8,MF_BYCOMMAND or MF_OWNERDRAW ;or MF_STRING ;or MF_POPUP 
+	;---	mov edx,MI_WS_LOAD
+	;---	mov rcx,[hMnuMain]
+	;---	call apiw.mnu_mod
 	jmp	.ret0
 
 	;ü------------------------------------------ö
@@ -605,7 +605,7 @@ winproc:
 	jmp	.mi_ws_exit
 
 	;ü------------------------------------------ö
-	;|     MI_SCI_UNCOMMLine                      |
+	;|     MI_SCI_UNCOMMLine                    |
 	;#------------------------------------------ä
 	;ü------------------------------------------ö
 	;|     MI_SCI_COMMLine                      |

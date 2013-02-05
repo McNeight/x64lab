@@ -736,12 +736,6 @@ apiw:
 	jmp	.prolog0
 @endusing
 
-@using .winfpt
-.winfpt:
-	mov rax,[WindowFromPoint]
-	jmp	.prolog0
-@endusing
-
 @using .en_win
 .en_win:
 	mov rax,[EnableWindow]
@@ -791,6 +785,13 @@ apiw:
 	jmp	.prolog0
 @endusing
 
+@using .active
+.active:
+	mov rax,[SetActiveWindow]
+	jmp	.prolog0
+@endusing
+
+
 @using .set_wpos
 	;--- in RCX hWnd
 	;--- in RDX hWndInsertAfter
@@ -809,6 +810,12 @@ apiw:
 	push r10
 	mov rax,[SetWindowPos]
 	jmp	.epilog0
+@endusing
+
+@using .winfpt
+.winfpt:
+	mov rax,[WindowFromPoint]
+	jmp	.prolog0
 @endusing
 
 
@@ -891,6 +898,31 @@ apiw:
    ;ü------------------------------------------ö
    ;|   USER                                   |
    ;#------------------------------------------ä
+@using .create_caret
+.create_caret:
+	mov rax,[CreateCaret]
+	jmp	.prolog0
+@endusing
+	
+@using .destr_caret
+.destr_caret:
+	mov rax,[DestroyCaret]
+	jmp	.prolog0
+@endusing
+
+@using .show_caret
+.show_caret:
+	mov rax,[ShowCaret]
+	jmp	.prolog0
+@endusing
+
+@using .hide_caret
+.hide_caret:
+	mov rax,[HideCaret]
+	jmp	.prolog0
+@endusing
+
+
 @using .destr_icon
 .destr_icon:
 	mov rax,[DestroyIcon]
@@ -965,6 +997,12 @@ apiw:
 	jmp	.prolog0
 @endusing
 
+
+@using .cwproc
+.cwproc:
+	mov rax,[CallWindowProcW]
+	jmp .prologP
+@endusing
 
    ;ü------------------------------------------ö
    ;|   RESOURCES                              |

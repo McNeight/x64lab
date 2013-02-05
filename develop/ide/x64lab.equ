@@ -250,33 +250,6 @@
 	UZ_TMPL_NET	equ 2057h
 	UZ_TMPL_SET	equ 2058h
 
-
-
-
-
-	;--- hash equ for config/config.utf8 items
-  macro @cfg_hash [argid]{
-	 forward
-   result equ 0
-   @xsdbm argid,result
-     hash_#argid equ result
-   }
-
-  @cfg_hash\
-   wspace,\
-   version,\
-	 session,\
-	 fshow,\
-   pos,\
-   tree,\
-   bkcol,\
-	 language,\
-	 owner,\
-	 cdate,\
-   ctime,\
-   adate,\
-   atime
-
 	CFG_FSHOW				equ TRUE
 	CFG_FLOG				equ FALSE
 	CFG_DEF_LCID		equ 0409h
@@ -284,10 +257,10 @@
 	CFG_UPDATE			equ FALSE
 	CFG_POS 				equ 2BC032000000000h
 
-	CFG_CONS_BKCOL	equ 0AABBCCh
+	CFG_CONS_BACK		equ 0FFFFFFh
 	CFG_TREE_BKCOL 	equ 0D9FFFFh
 	CFG_DOCS_BKCOL 	equ 00DADCD6h
-	CFG_DEVT_BKCOL equ 00DADADAh
+	CFG_DEVT_BKCOL 	equ 00DADADAh
 
 	;--- used for docking info default values ---
 	CFG_MPURP_DOCK_ID		equ 010D63AF1h

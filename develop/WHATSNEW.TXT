@@ -1,4 +1,9 @@
 
+- version 1.0.20 (05.02.2013 ) scripting 
+  +GUI Highlight caption of current docking panel
+	+GUI Click on bookmark shows text centered vertically
+  +CFG Save Console backcolor in [config\config.utf8]
+
 - version 1.0.19 (31.01.2013 ) Bookmark 
 - +GUI improvement on Bookmark. listview updates lines
 

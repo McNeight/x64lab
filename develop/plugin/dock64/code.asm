@@ -629,6 +629,11 @@ dock64:
 		[.pnl.id]
 	movzx edx,\
 		[.pnl.type]
+;---	test dl,IS_HID
+;---	jz	@f
+;---	xor dl,IS_HID
+;---	or dl,IS_FLO
+;---@@:
 	mov eax,edx
 	shl rdx,16
 	mov dh,\
@@ -1962,9 +1967,6 @@ dock64:
 	;--- RDX msg
 	;--- R8 wparam
 	;--- R9 lparam
-;	cmp edx,\
-;		WM_WINDOWPOSCHANGING
-;	jz	.layout_float
 	test ecx,ecx
 	jnz	@f
 	ret 0
@@ -1976,7 +1978,7 @@ dock64:
 		WM_WINDOWPOSCHANGED
 	jz	.layoutA
 	cmp edx,\
-		WM_SIZE;WINDOWPOSCHANGED
+		WM_SIZE
 	jz	.layoutA
 	ret 0
 
@@ -1994,11 +1996,11 @@ dock64:
 	mov rbx,rdx
 	and eax,0FFF0h
 
-;	push rax
-;	mov r8,rax
-;	mov rdx,[.pnl.hwnd]
-;	call art.cout2XX
-;	pop rax
+;---	push rax
+;---	mov r8,rax
+;---	mov rdx,[.pnl.hwnd]
+;---	call art.cout2XX
+;---	pop rax
 
 	mov esi,SW_HIDE	
 	cmp ax,SC_MINIMIZE

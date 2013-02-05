@@ -108,10 +108,10 @@ doc:
 		LABFILE.hSci]
 	call sci.mark_add
 	
-;---	mov edx,[rdi+\
-;---		TITEM.lo_dword]
-;---	mov rcx,rbx
-;---	call .ins_bm
+	;---	mov edx,[rdi+\
+	;---		TITEM.lo_dword]
+	;---	mov rcx,rbx
+	;---	call .ins_bm
 
 	jmp	.load_bmA
 		
@@ -390,7 +390,6 @@ doc:
 	pop rbx
 	pop rbp
 	ret 0
-
 
    ;ü------------------------------------------ö
    ;|   update_BM                              |
@@ -674,8 +673,8 @@ doc:
 	mov rcx,r14
 	call utf8.to16
 
-;---	test rax,rax
-;---	jz	.saveE
+	;---	test rax,rax
+	;---	jz	.saveE
 
 	lea rdi,[rsp+\
 		sizea16.LVITEMW]
@@ -765,29 +764,29 @@ doc:
 	mov rcx,[.doc.hLvwA]
 	call lvw.set_iml
 
-;---	lea rsi,[rsp+\
-;---		sizea16.LVCOLUMNW]
+	;---	lea rsi,[rsp+\
+	;---		sizea16.LVCOLUMNW]
 
-;---;	push 0
-;---;	push 3
-;---;	push UZ_INFO_CDATE
-;---;	push 2
-;---;	push UZ_INFO_SIZE
-;---;	push 1
-;---;	push UZ_INFO_TYPE
-;---;	push 0
-;---;	push UZ_INFO_BUF
+	;---;	push 0
+	;---;	push 3
+	;---;	push UZ_INFO_CDATE
+	;---;	push 2
+	;---;	push UZ_INFO_SIZE
+	;---;	push 1
+	;---;	push UZ_INFO_TYPE
+	;---;	push 0
+	;---;	push UZ_INFO_BUF
 
-;---;.setupB:
-;---;	pop rcx
-;---;	test rcx,rcx
-;---;	jz	.setupE
+	;---;.setupB:
+	;---;	pop rcx
+	;---;	test rcx,rcx
+	;---;	jz	.setupE
 
-;---.setupA:
-;---	mov r8,rsi
-;---	mov edx,U16
-;---	mov ecx,UZ_INFO_BUF
-;---	call [lang.get_uz]
+	;---.setupA:
+	;---	mov r8,rsi
+	;---	mov edx,U16
+	;---	mov ecx,UZ_INFO_BUF
+	;---	call [lang.get_uz]
 
 	mov [.lvc.mask],\
 		LVCF_IDEALWIDTH or \
@@ -796,14 +795,14 @@ doc:
 	mov [.lvc.cx],600
 	mov [.lvc.cxIdeal],100
 
-	;---		LVCF_FMT or \
+	;---	LVCF_FMT or \
 	;---	mov [.lvc.fmt],LVCFMT_LEFT
-;---		LVCF_TEXT or \
-
-;---	mov [.lvc.pszText],uzDefault;0;rsi
+	;---	LVCF_TEXT or \
+	;---	mov [.lvc.pszText],uzDefault;0;rsi
 	;---	mov [.lvc.cchTextMax],-1
-	;---		;LVCF_SUBITEM
-	;---	;pop rax
+	;---	LVCF_SUBITEM
+	;---	pop rax
+
 	xor eax,eax
 	;---	mov [.lvc.iSubItem],eax
 	mov r9,rsi
@@ -812,13 +811,10 @@ doc:
 	call lvw.ins_col
 
 
-
-
-
-
 	mov r9,\
 		LVS_EX_FULLROWSELECT or \
-		LVS_EX_AUTOSIZECOLUMNS or LVS_EX_DOUBLEBUFFER
+		LVS_EX_AUTOSIZECOLUMNS or \
+		LVS_EX_DOUBLEBUFFER
 	xor r8,r8
 	mov rcx,[.doc.hLvwB]
 	call lvw.set_xstyle
@@ -894,18 +890,58 @@ doc:
 	jz	.ret0
 
 	mov rsi,[pEdit]
-	mov rax,[rsi+\
+	mov rdi,[rsi+\
 		EDIT.curlabf]
-	test [rax+LABFILE.type],\
+	test [rdi+LABFILE.type],\
 		LF_TXT
 	jz	.ret0
-	
-	mov rcx,[rax+\
+
+	;---	push r8
+	;---	mov r8,1
+	;---	mov rcx,[rdi+\
+	;---		LABFILE.hSci]
+	;---	call sci.set_focus
+	;---	pop r8
+	push r12
+	push r13
+	mov r12,r8
+
+;@break
+	mov rcx,[rdi+\
+		LABFILE.hSci]
+	call sci.screenlines
+	shr eax,1
+	mov r13,rax
+
+	mov r8,r12
+	mov rcx,[rdi+\
 		LABFILE.hSci]
 	call sci.goto_line
-	jmp	.ret0
+
+	mov rcx,[rdi+\
+		LABFILE.hSci]
+	call sci.get_firstvisline
+	add r13,rax
+
+;---	mov r8,r13
+;---	mov rcx,[rdi+\
+;---		LABFILE.hSci]
+;---	call sci.goto_line
+
+	sub r12,r13
+	mov r9d,r12d
+	xor r8,r8
+	mov rcx,[rdi+\
+		LABFILE.hSci]
+	call sci.linescroll
 
 	
+
+	pop r13
+	pop r12
+
+
+	jmp	.ret0
 
 .wm_notifyA:
 	mov edx,[r9+NMHDR.code]
@@ -938,6 +974,14 @@ doc:
 	mov rcx,[rsi+\
 		EDIT.curlabf]
 	call .list_bm
+
+;---	mov rax,[rsi+\
+;---		EDIT.curlabf]
+;---	mov r8,1
+;---	mov rcx,[rax+\
+;---		LABFILE.hSci]
+;---	call sci.set_focus
+
 	jmp .ret0
 
 .notify_dblclkA:

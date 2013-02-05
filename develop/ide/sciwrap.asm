@@ -12,26 +12,6 @@
   ;ö-------------------------------------------------ä
 
 sci:
-
-;--- hash for classes and styles
-@szhash lexer,\
-	multisel,\
-	stylebits,\
-	tabwidth,\
-	selback,\
-	keyword,\
-	style,\
-	back,\
-	bold,\
-	fore,\
-	font,\
-	fontsize,\
-	italic,\
-	clearall,\
-	commline,\
-	commstart,\
-	commend
-
 	;#---------------------------------------------------ö
 	;|                CREATE                             |
 	;ö---------------------------------------------------ü
@@ -53,8 +33,7 @@ sci:
 	mov [rdx+10h],rax
 	mov [rdx+8h],rax
 	mov [rdx],rax
-	mov r9,WS_CHILD or \
-		WS_TABSTOP or \
+	mov r9,WS_CHILD or WS_TABSTOP or \
 		WS_VISIBLE
 	xor r8,r8
 	mov rdx,uzSciClass
@@ -134,10 +113,10 @@ sci:
 	mov rcx,rbx
 	call .set_backcolor
 
-	;---mov r9,0FFFFFFh
-	;---mov r8,STYLE_LINENUMBER
-	;---mov rcx,rbx
-	;---call .set_forecolor
+;---	;---mov r9,0FFFFFFh
+;---	;---mov r8,STYLE_LINENUMBER
+;---	;---mov rcx,rbx
+;---	;---call .set_forecolor
 
 	mov r9,uzCourierN
 	mov r8,STYLE_LINENUMBER
@@ -270,6 +249,10 @@ sci:
 	mov edx,SCI_MARKERDELETE
 	jmp	apiw.sms
 
+.set_focus:
+	;--- in R8 bool focus
+	mov edx,SCI_SETFOCUS
+	jmp	apiw.sms
 
 .goto_pos:
 	xor r9,r9
@@ -399,10 +382,6 @@ sci:
 
 	mov rcx,rbx
 	call .set_savepoint
-
-	;---	mov rcx,rbx
-	;---	xor r8,r8
-	;---	call .goto_pos
 
 	pop rbx
 	ret 0
@@ -592,6 +571,8 @@ sci:
 		SCI_SELECTIONISRECTANGLE
 	jmp	apiw.sms
 
+	;---------------------------------
+
 .get_sels:
 	mov edx,\
 		SCI_GETSELECTIONS
@@ -627,6 +608,11 @@ sci:
 	SCI_SETMULTIPASTE
 	jmp	apiw.sms
 
+.set_sel:
+	;--- in R9 , int currentPos
+	;--- in R8 (int anchorPos
+	mov edx,SCI_SETSEL
+	jmp	apiw.sms	
 
 .tgtfromsel:
 	mov edx,\
@@ -663,6 +649,15 @@ sci:
 		SCI_REPLACETARGET
 	jmp	apiw.sms
 
+	;------------------------------------
+
+.linescroll:
+	;--- in R9 int line
+	;--- in R8 int column
+	mov edx,SCI_LINESCROLL
+	jmp	apiw.sms
+
+
 .linefrompos:
 	mov edx,\
 		SCI_LINEFROMPOSITION
@@ -681,6 +676,15 @@ sci:
 
 .get_firstvisline:
 	mov edx,SCI_GETFIRSTVISIBLELINE
+	jmp	apiw.sms
+
+.set_firstvisline:
+	;--- in R8 int lineDisplay
+	mov edx,SCI_SETFIRSTVISIBLELINE
+	jmp	apiw.sms
+
+.screenlines:
+	mov edx,SCI_LINESONSCREEN
 	jmp	apiw.sms
 
 .beg_undo:

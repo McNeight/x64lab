@@ -521,7 +521,20 @@ edit:
 	jz	.wm_size
 	cmp edx,WM_NOTIFY
 	jz	.wm_notify
+	;---	cmp edx,WM_COMMAND
+	;---	jz	.wm_command
 	jmp	.ret0
+
+	;---.wm_command:
+	;---	shr r8,16
+	;---	cmp r8,SCEN_SETFOCUS
+	;---	jnz	.ret0
+	;---;	@break
+	;---	mov rsi,[pEdit]
+	;---	mov rbx,[.pEdit.curlabf]
+	;---	mov rcx,[.labf.hView]
+	;---	call apiw.active
+	;---	jmp	.ret0
 
 .wm_notify:
 	xor edx,edx
@@ -618,7 +631,6 @@ edit:
 	mov rcx,rbx
 	call doc.toggle_bm
 	or [.labf.info],LF_BM
-
 	jmp	.ret1
 
 	;#---------------------------------------------------ö
@@ -794,10 +806,3 @@ edit:
 
 .exit:
 	@wepi
-
-
-
-
-
-
-
