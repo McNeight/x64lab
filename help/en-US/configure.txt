@@ -1,0 +1,94 @@
+
+ x64lab
+ Configure
+
+ x64lab may be configured in several ways. at the moment i write
+ we are in a growing phase. lot of flags and settings even when
+ available, will not be read or written back in configuration files.
+ this is because i am mainly concentrated on design.
+
+ this document will cover the file [config\config.utf8] that gets
+ modified, read and written back.
+ configuration files ending in .utf8 are utf-8 text formatted
+ documents. the contains TOP datas.
+
+ TOP stays for Text-Object-Parsed documents.
+ the [config\config.utf8] has a TOP structure. let examine it:
+
+
+
+  ;-----------------------------------------------------------
+ 	;--- Warning!! utf8 no-BOM äöüß
+	;--- TOP format file for x64lab
+	;--- Copyright Marc Rainer Kranz 2009-2012
+
+	version:"1.0.25"
+	session:0E2h
+	wspace:"%X64LABD%\project\welcome.x64lab"
+	language:"en-US"
+	owner:"Mr.Biberkopf"
+	fshow:01
+	pos:04300599002100F5h
+
+	cons:(
+		back:0FFFFFFh
+		env:"include","E:\fasm\include"
+		env:"path","%path%;E:\fasm"
+	)
+
+  ;------------------------------------------------------------
+
+  lines starting with ; 20,21,22,23 are comments
+
+  line 33, cons enable configuration for the "Console" window.
+   an object in () follows. descriptions and items in the object
+   relates to the console settings.
+
+  line 34, set the backcolor, white in the case
+
+  line 35, creates and sets an application environment variable "include".
+   that environment variable is known at an application
+   run-time level. the value of it corresponds to "E:\fasm\include".
+   exiting from x64lab, that variable will automatically
+   unset by the OS. but it remains there if you start a
+   console shell using the menu "Open console here" in x64lab
+   from the path menu and then, exiting x64lab, you mantain that console open
+   because you need it for other work.
+
+  line 36, sets the path variable, incrementing it after expansion.
+   you can get the same result after typing the following command in a consol shell:
+   path=%path%;E:\fasm
+
+  the "env" setting may unset previously defined variable.
+  using a null string "" as value. example
+
+  env:"path",""
+
+  this will discard the value of "path" at application run-time level.
+  exiting application, OS will give back you the value of it.
+
+  the "env" setting is cumulative. example without expansion:
+  having the following three lines
+
+  env:"spezi","0"
+  env:"pepsi","2"
+  env:"spezi","1"
+  
+  x64lab will attribute the variable "spezi" the value "1" finally.
+
+
+
+  
+  
+
+
+  
+
+  
+  
+
+       
+
+
+
+   
