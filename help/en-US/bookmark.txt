@@ -1,0 +1,42 @@
+
+ x64lab
+ Bookmarks
+
+  Bookmarks enable fast access to references in your textual documents.
+  in a near future i will implement them on binary files too.
+  once you set a bookmark on a line in you source code, information
+  will be read again from x64lab when reopening that source file.
+  information for each textual document will be stored in the [tmp]
+  directory of x64lab, in a TOP file format.
+  
+  i have limited this capability to 65535 bookmarks for each document.
+  if you dont add bookmark in a source file, no information will be stored
+  about it.
+  
+ - How to add a bookmark.
+
+   while reading text files, user can add bookmarks simply clicking 
+   on the left margin, left to the line number. a brown circular hotspot
+   appears there. the bookmark is set and listed in the "Open documents"
+   window, the lower list, indicating the line in the document and 
+   eventual text at that line.
+
+   clicking again on the brown hotspot on the left margin will remove
+   the bookmark. it works essentially as a toggle.
+
+ - How to access bookmarked documents.
+
+   user can access bookmarked documents from the "Open documents"
+   window, the lower list. open the target textual file; after clicking 
+   on one of the (eventually saved) items, editor will show that line 
+   in the source document.
+
+
+   
+
+
+
+   
+
+   
+  

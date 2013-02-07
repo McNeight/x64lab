@@ -343,8 +343,7 @@ devtool:
 	mov r14d,[rsp+RECT.right]
 	sub r14d,[rsp+RECT.left]
 
-	mov rax,SWP_NOZORDER or\
-		SWP_NOMOVE
+	mov rax,SWP_NOZORDER or	SWP_NOMOVE
 	mov r9d,[rsp+RECT.top]
 	mov r8d,[rsp+RECT.left]
 	mov rdx,HWND_TOP
@@ -375,6 +374,7 @@ devtool:
 	mov rdx,HWND_TOP
 	mov rcx,[.devt.hLvw]
 	call apiw.set_wpos	
+
 	pop r15
 	pop r14
 	pop r13

@@ -595,8 +595,6 @@ edit:
 	call doc.update_bm
 	jmp	.ret1
 
-
-
 .wm_notifyT2:
 	cmp edx,\
 		SCN_SAVEPOINTREACHED
@@ -614,23 +612,34 @@ edit:
 		LF_MODIF
 	jmp	.ret1
 
-
 .wm_notifyM:
 	mov eax,[r9+SCNOTIF.line]
 	mov eax,[r9+\
 		SCNOTIF.margin]
 	test eax,eax
-	jnz	.ret0
+	jnz	.ret1
+
+	;---push r9
+	;---	mov r8,1
+	;---	mov rcx,[.labf.hSci]
+	;---	call apiw.active
+	;---;	call apiw.set_focus
+	;---pop r9
 
 	mov r8d,[r9+\
 		SCNOTIF.position]
 	mov rcx,[.labf.hSci]
 	call sci.linefrompos
+	mov rdi,rax
 
 	mov rdx,rax
 	mov rcx,rbx
 	call doc.toggle_bm
 	or [.labf.info],LF_BM
+
+	;---	mov r8,1
+	;---	mov rcx,[.labf.hSci]
+	;---	call sci.set_focus
 	jmp	.ret1
 
 	;#---------------------------------------------------ö
@@ -663,7 +672,6 @@ edit:
 	mov rcx,rax
 	call mnu.set_dir
 	jmp	.ret0
-	
 	
 	;#---------------------------------------------------ö
 	;|             EDIT.wm_size                          |

@@ -333,7 +333,7 @@ dock64:
 
 	mov rdx,uzPanelClass
 	mov ecx,WS_EX_TOOLWINDOW\
-		or WS_EX_TOPMOST
+		or WS_EX_TOPMOST ;or WS_EX_COMPOSITED
 	call [CreateWindowExW]
 	xor edx,edx
 	test rax,rax

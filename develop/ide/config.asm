@@ -416,6 +416,8 @@ config:
 	push rdi	;--- pConf
 	push r12	;--- TOBJECT
 	push r13	;--- for lang.dll
+	push r14	;--- tmp
+	push r15	;--- tmp
 
 	mov rbp,rsp
 	and rsp,-16
@@ -513,7 +515,6 @@ config:
 		CFG_EDIT_FLAGS
 
 	;-------------------------
-
 	xor eax,eax
 	mov edx,uzConfName
 	mov rcx,rsp
@@ -599,19 +600,70 @@ config:
 
 	cmp eax,HASH_back
 	jz	.open_cons_back
+	cmp eax,HASH_env
+	jz	.open_cons_env
 	jmp	.open_consN
-	
-.open_cons_back:
+
+.open_cons_env:
+	;---	cons:(
+	;---		env:"X64LAB","E:\x64lab"
+	;---	)
 	add rdx,rbx
+	xor eax,eax
+	xor r14,r14
+	xor r15,r15
+
+	;--- check NAME
+	cmp [rdx+\
+		TITEM.type],TQUOTED
+	jnz	.open_consN
 	
+	cmp [rdx+\
+		TITEM.len],ax
+	jz	.open_consN
+	lea r14,[rdx+\
+		TITEM.value]
+
+	;--- check VALUE
+	mov ecx,[rdx+\
+		TITEM.attrib]
+	test ecx,ecx
+	jz	.open_cons_envA
+	add rcx,rbx
+
+	cmp [rcx+\
+		TITEM.len],ax
+	jz	.open_cons_envA
+
+	cmp [rcx+\
+		TITEM.type],TQUOTED
+	jnz	.open_cons_envA
+
+	lea r15,[rcx+\
+		TITEM.value]
+
+.open_cons_envA:
+	;--- in R14 TITEM name
+	;--- in R15 TITEM value
+	mov r8,\
+		FSCR_LAB or \
+		FSCR_SET or \
+		FSCR_816
+	xor r9,r9
+	mov rdx,r15
+	mov rcx,r14
+	call script.env
+	jmp	.open_consN
+
+.open_cons_back:
+	;---	cons:(
+	;---		back:11223344h
+	;---	)
+	add rdx,rbx
 	mov eax,[rdx+\
 		TITEM.lo_dword]
 	mov [.conf.cons.back],eax
 	jmp	.open_consN
-
-;---	cons:(
-;---		back:11223344h
-;---	)
 
 .open_fshow:
 	xor eax,eax
@@ -711,9 +763,9 @@ config:
 	lea rdx,[rsp+\
 		FILE_BUFLEN]
 	call utf8.to16
+
 	;mov r12,rax
 	;--- CF error
-
 	;	lea rcx,[rsp+FILE_BUFLEN]
 	;	call art.is_file
 	;	jz	.openB
@@ -800,6 +852,8 @@ config:
 .openE:
 	mov rax,r13
 	mov rsp,rbp
+	pop r15
+	pop r14
 	pop r13
 	pop r12
 	pop rsi
@@ -821,14 +875,38 @@ config:
 	push r13
 	mov rbp,rsp
 
-	xor rax,rax
-	@frame 8192+\
-		FILE_BUFLEN*2
-
 	mov rbx,[pConf]
+	mov eax,4096+\
+		FILE_BUFLEN*2
+	;--- calc env space
+	mov rcx,\
+		[rbx+CONFIG.env]
+	xor r8,r8
+
+.writeB:
+	test ecx,ecx
+	jz	.writeA
+	movzx rdx,[rcx+\
+		LABENV.nlen]
+	add r8,rdx
+	add r8,16
+	movzx rdx,[rcx+\
+		LABENV.vlen]
+	add r8,rdx
+	mov rcx,[rcx+\
+		LABENV.next]
+	jmp	.writeB
+	
+.writeA:
+	mov rcx,r8
+	@nearest 128,rcx
+	add eax,ecx
+
+	@frame rax
 	lea rdi,[rsp+\
 		FILE_BUFLEN*2]
 
+	xor eax,eax
 	call wspace.frm_head
 
 	;--- version -----------
@@ -908,7 +986,6 @@ config:
 	stosb
 	@do_eol
 
-
 	;--- owner -----------
 	mov al,09
 	stosb
@@ -925,7 +1002,6 @@ config:
 	mov al,'"'
 	stosb
 	@do_eol
-
 	
 	;--- fshow ----------------
 	mov al,09
@@ -1028,6 +1104,67 @@ config:
 	@do_eol
 	add rsp,32
 
+	;--- console env -----
+	mov rcx,[rbx+\
+		CONFIG.env]
+	test ecx,ecx
+	jz	.writeCE
+
+.writeCN:
+	mov r13,rdi	;--- save pointer to block
+	push [rcx+LABENV.next]
+	mov r12,rcx
+
+	mov ecx,2
+	@do_indent
+	mov esi,sz_env
+	mov rcx,sz_env.size-1
+	rep movsb
+	mov ax,':"'
+	stosw
+
+	lea rcx,[r12+\
+		sizeof.LABENV]
+	mov rdx,rdi
+	call utf16.to8
+	jnc .writeCNA
+	mov r13,rdi
+	jmp	.writeCNB
+
+.writeCNA:
+	add rdi,rax
+	mov eax,'",'
+	stosw
+	mov al,'"'
+	stosb
+
+	movzx ecx,[r12+\
+		LABENV.nlen]
+	@nearest 16,ecx
+	add rcx,r12
+	add rcx,\
+		sizeof.LABENV
+	mov rdx,rdi
+	call utf16.to8
+	jnc .writeCNC
+	mov r13,rdi
+	jmp	.writeCNB
+
+.writeCNC:
+	add rdi,rax
+	mov al,'"'
+	stosb
+	@do_eol
+	
+.writeCNB:
+	mov rcx,r12
+	call art.a16free
+	
+	pop rcx
+	test ecx,ecx
+	jnz .writeCN
+	
+.writeCE:
 	mov ax,"	)"
 	stosw
 	@do_eol

@@ -201,7 +201,7 @@ apiw:
 	mov rax,[ModifyMenuW]
 	jmp	.prologP
 @endusing
-	
+
 
 @using .get_mnuicount
 .get_mnuicount:
@@ -239,8 +239,6 @@ apiw:
 	call [TrackPopupMenu]
 	jmp	.epilog1
 @endusing
-
-
 
 	;#---------------------------------------------------ö
 	;|           THEMES                                  |
@@ -297,13 +295,11 @@ apiw:
 	push rcx
 	push rdx
 	mov rax,[ExpandEnvironmentStringsW]
-	mov r8,MAX_UTF16_FILE_CPTS
+	mov r8,MAX_UTF16_ENVV_CPTS;MAX_UTF16_FILE_CPTS
 	call .prolog0
 	pop rdx
 	pop rcx
 	ret 0
-;	mov rax,[ExpandEnvironmentStringsW]
-;	jmp	.prolog0
 @endusing
 
 @using .set_wl
@@ -616,6 +612,12 @@ apiw:
 	jmp	.prolog0
 @endusing
 	
+@using .valrect
+.valrect:
+	mov rax,[ValidateRect]
+	jmp	.prolog0
+@endusing
+
 @using .scr2cli
 .scr2cli:
 	;--- in RCX hwnd
@@ -637,6 +639,15 @@ apiw:
 	;--- in RCX hwnd
 	;--- in RDX pRect
 	mov rax,[GetClientRect]
+	jmp	.prolog0
+@endusing
+
+@using .get_updrect
+.get_updrect:
+	;--- in RCX hwnd
+	;--- in RDX pRect
+	;--- in R8 ferase
+	mov rax,[GetUpdateRect]
 	jmp	.prolog0
 @endusing
 
@@ -1073,6 +1084,13 @@ apiw:
 	mov rax,[EndDialog]
 	jmp	.prolog0
 @endusing
+
+@using .is_dlgmsg
+.is_dlgmsg:
+	mov rax,[IsDialogMessageW]
+	jmp	.prolog0
+@endusing
+
 
 @using .get_dlgitem
 .get_dlgitem:

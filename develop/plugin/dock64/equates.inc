@@ -133,7 +133,6 @@ ends
 	dummy1	equ 0100'0000b
 	DOCKER	equ 1000'0000b
 
-
 	;--- use this alignment/exclusion/type -----
 	ALIGN_LEFT		equ 0000'0001b
 	ALIGN_TOP			equ 0000'0010b
@@ -215,7 +214,7 @@ ends
 
 	CHILD_STYLE	equ \
 		WS_VISIBLE or \
-		WS_CHILD ;or WS_CLIPCHILDREN or WS_CLIPSIBLINGS ;or WS_OVERLAPPED;or WS_CLIPSIBLINGS ;or WS_DLGFRAME ;or WS_CAPTION ;\
+		WS_CHILD ;or WS_CLIPCHILDREN ;or WS_CLIPSIBLINGS ;or WS_OVERLAPPED;or WS_DLGFRAME ;or WS_CAPTION ;\
 			; or WS_THICKFRAME; WS_BORDER or 
 
 	;----- themes -------------

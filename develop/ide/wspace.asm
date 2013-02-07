@@ -2669,15 +2669,15 @@ wspace:
 .tree_notify:
 	mov edx,[r9+NMHDR.code]
 
+	cmp edx,\
+		TVN_ITEMEXPANDEDW
+	jz	.tree_exped
+
 	cmp edx,NM_DBLCLK
 	jz	.tree_dblclk
 
 	cmp edx,NM_KILLFOCUS
 	jz	.tree_killfoc
-
-	cmp edx,\
-		TVN_ITEMEXPANDEDW
-	jz	.tree_exped
 
 	cmp edx,\
 		TVN_GETDISPINFOW
@@ -2693,16 +2693,6 @@ wspace:
 	; cmp edx,NM_RCLICK
 	;	jz	.tree_rclick
 
-
-.tree_killfoc:
-	;--- workaround when selecting
-	;--- the same/other item after
-  ;--- gaining focus
-	xor r9,r9
-	mov rcx,[hTree]
-	call tree.sel_item
-	jmp	winproc.ret0
-
 	;#---------------------------------------------------ö
 	;|      WSPACE.TREE_EXPED                            |
 	;ö---------------------------------------------------ü
@@ -2716,10 +2706,19 @@ wspace:
 		NMTREEVIEWW.itemNew.lParam]
 	test rbx,rbx
 	jz	winproc.ret0
-
 	mov [.labf.state],al
-	;mov rdx,[pLabfWsp]
+	;--- follows avoid dblclk action when on node
 
+.tree_killfoc:
+	;--- workaround when selecting
+	;--- the same/other item after
+  ;--- gaining focus
+	xor r9,r9
+	mov rcx,[hTree]
+	call tree.sel_item
+	jmp	winproc.ret0
+
+	;mov rdx,[pLabfWsp]
 	;test [.labf.type],\
 	;	LF_FILE
 	;jnz winproc.ret1
@@ -2729,7 +2728,6 @@ wspace:
 	;TVE_EXPAND	  		= 0002h
 	;TVE_EXPANDPARTIAL = 4000h
 	;TVE_COLLAPSERESET = 8000h
-	jmp	winproc.ret0
 
 	;#---------------------------------------------------ö
 	;|      WSPACE.TREE_DBLCLK                           |
@@ -2742,7 +2740,6 @@ wspace:
 		sizea16.TVITEMW+\
 		FILE_BUFLEN
 
-;@break
 	mov rcx,rdi
 	call tree.get_sel
 	test rax,rax
@@ -2815,7 +2812,7 @@ wspace:
 		sizeof.LABFILE]
 	mov [rcx+\
 		TVITEMW.pszText],rax
-	jmp	winproc.ret0
+	jmp	winproc.ret1
 
 	;#---------------------------------------------------ö
 	;|      WSPACE.TREE_SCHGED                           |
@@ -2888,72 +2885,5 @@ wspace:
 .tree_schgedB:
 	mov rcx,[.labf.dir]
 	call mnu.set_dir
-	jmp	winproc.ret0
+	jmp	winproc.ret1
 
-
-	;#---------------------------------------------------ö
-	;|     .SPAWN                                        |
-	;ö---------------------------------------------------ü
-
-.spawn:
-	;--- in RCX appname
-	;--- in RDX cmdline
-	;--- in R8 lpCurrentDirectory
-	push rbp
-	push rdi
-	push rsi
-
-	mov rsi,rcx
-	mov rbp,rsp
-	and rsp,-16
-
-	sub rsp,\
-		sizea16.STARTUPINFO+\
-		sizea16.PROCESS_INFORMATION
-
-	mov rdi,rsp
-	mov ecx,\
-		(sizea16.STARTUPINFO+\
-		sizea16.PROCESS_INFORMATION) / 8
-	xor eax,eax
-	rep stosq
-
-	mov rdi,rdx
-
-	mov rax,rsp
-	lea rdx,[rsp+\
-		sizea16.STARTUPINFO]
-
-	mov [rax+\
-		STARTUPINFO.cb],\
-		sizeof.STARTUPINFO
-
-	mov [rax+\
-		STARTUPINFO.dwFlags],\
-	STARTF_USESHOWWINDOW
-
-	mov [rax+\
-		STARTUPINFO.wShowWindow],\
-	SW_SHOWNORMAL
-	
-	xor ecx,ecx
-
-	push rdx ;--- PROCESS_INFORMATION
-	push rax ;--- STARTUPINFO
-	push r8  ;--- lpCurrentDirectory
-	push rcx ;--- lpEnvironment
-	push rcx ;--- dwCreationFlags
-	push rcx ;--- bInheritHandles
-
-	xor r9,r9
-	xor r8,r8
-	mov rdx,rdi
-	mov rcx,rsi
-	sub rsp,20h
-	call [CreateProcessW]
-
-	mov rsp,rbp
-	pop rsi
-	pop rdi
-	pop rbp
-	ret 0

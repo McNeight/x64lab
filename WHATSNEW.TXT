@@ -1,4 +1,14 @@
 
+- version 1.0.27 (07.02.2013 ) "" 
+  +HLP Added [help\en-US\configure.txt]
+
+- version 1.0.26 (06.02.2013 ) "" 
+- +CFG Load/Save env "name","value" in [config\config.utf8]
+- +FIL Added [ide\script.asm]
+
+- version 1.0.24 (06.02.2013 ) "" 
+  +GUI Removing focus for dblclk on tree node
+
 - version 1.0.20 (05.02.2013 ) scripting 
   +GUI Highlight caption of current docking panel
 	+GUI Click on bookmark shows text centered vertically
@@ -95,6 +105,7 @@
     - DIR paths and directory
     - FIL inserted or deleted files
     - GUI related modifications
+    - HLP help or help files
     - MNU affeting menus
     - NOT note/description
     - REP affecting repository

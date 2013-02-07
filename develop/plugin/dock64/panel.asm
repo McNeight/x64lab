@@ -44,7 +44,7 @@ panel:
 	jz	.wm_lbutdw
 	cmp edx,WM_SYSCOMMAND
 	jz	.wm_syscomm
-	cmp rdx,WM_MOUSEACTIVATE
+	cmp edx,WM_MOUSEACTIVATE
 	jz	.wm_mactivate
 	cmp edx,WM_CREATE
 	jz	.wm_create
@@ -62,35 +62,37 @@ panel:
 .err_gs:
 	ret 0
 
-
 .wm_mactivate:
+	;--- TODO custom paint: control needs no repaint
 	call .get_struct
 	jz	.ret0
-	
+
 	mov rax,[.mdl.pLastAct]
 	test rax,rax
-	jz	.wm_mactivateA
+	jz	.wm_mactivateB
 	cmp rax,rbx
-	jz	.ret0
+	jz	.wm_mactivateA
 
 	mov rcx,[rax+PNL.hwnd]
-	mov [rax+PNL.active],FALSE
+	mov [rax+\
+		PNL.active],FALSE
 
 	xor r8,r8
 	xor rdx,rdx
 	call apiw.invrect
-	
-.wm_mactivateA:
-	mov [.pnl.active],TRUE
-	mov r8,FALSE;TRUE
+
+.wm_mactivateB:
+	xor r8,r8
 	xor rdx,rdx
 	mov rcx,[.pnl.hwnd]
 	call apiw.invrect
-
-.wm_mactivateB:	
+	
+.wm_mactivateA:
+	mov [.pnl.active],TRUE
+	mov eax,MA_ACTIVATE
 	mov [.mdl.pLastAct],rbx
-	mov rax,MA_ACTIVATE
 	jmp	.exit
+
 
 .wm_syscomm:
 	call .get_struct
@@ -776,6 +778,7 @@ panel:
 .wm_paint:
 	call .get_struct
 	jz	.ret0
+
 	test [.pnl.type],\
 		IS_HID
 	jnz	.ret0
@@ -786,7 +789,6 @@ panel:
 	mov rax,rsp
 	push r12
 	push r13
-
 	mov r12,rax
 
 	lea r9,[rax+\
@@ -956,9 +958,9 @@ panel:
 	mov rcx,rdi
 	call apiw.fillrect
 
+	cmp [.pnl.active],TRUE
 	mov r8,[hBrActCapt]
 	mov r9,[hBrInactCapt]
-	cmp [.pnl.active],TRUE
 	cmovnz r8,r9
 
 	lea rdx,[.pnl.caprc]
@@ -1014,10 +1016,10 @@ panel:
 	mov rdx,r12
 	mov rcx,[.hwnd]
 	call apiw.end_paint
+
 	pop r13
 	pop r12
 	jmp	.defwndproc
-
 
 .defwndproc:
 	mov r9,[.lparam]

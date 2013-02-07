@@ -749,7 +749,7 @@ doc:
 	mov r9,\
 		LVS_EX_CHECKBOXES or\
 		LVS_EX_FULLROWSELECT or \
-		LVS_EX_AUTOSIZECOLUMNS;\
+		LVS_EX_AUTOSIZECOLUMNS
 	;---LVS_EX_JUSTIFYCOLUMNS ; or \
 	;---LVS_EX_AUTOSIZECOLUMNS ;or \
 	;---LVS_EX_GRIDLINES or \
@@ -810,11 +810,9 @@ doc:
 	mov rcx,[.doc.hLvwA]
 	call lvw.ins_col
 
-
 	mov r9,\
 		LVS_EX_FULLROWSELECT or \
-		LVS_EX_AUTOSIZECOLUMNS or \
-		LVS_EX_DOUBLEBUFFER
+		LVS_EX_AUTOSIZECOLUMNS or LVS_EX_DOUBLEBUFFER
 	xor r8,r8
 	mov rcx,[.doc.hLvwB]
 	call lvw.set_xstyle
@@ -829,7 +827,6 @@ doc:
 	mov r8,rax
 	mov rcx,[.doc.hLvwB]
 	call lvw.ins_col
-
 
 	add rsp,\
 		sizeof.LVCOLUMNW
@@ -885,8 +882,7 @@ doc:
 
 	test [r9+\
 		NM_LISTVIEW.uNewState],\
-		LVIS_FOCUSED \
-		or LVIS_SELECTED
+		LVIS_SELECTED ;or 		LVIS_FOCUSED 
 	jz	.ret0
 
 	mov rsi,[pEdit]
@@ -907,6 +903,7 @@ doc:
 	mov r12,r8
 
 ;@break
+
 	mov rcx,[rdi+\
 		LABFILE.hSci]
 	call sci.screenlines
@@ -935,13 +932,9 @@ doc:
 		LABFILE.hSci]
 	call sci.linescroll
 
-	
-
 	pop r13
 	pop r12
-
-
-	jmp	.ret0
+	jmp	.ret1
 
 .wm_notifyA:
 	mov edx,[r9+NMHDR.code]
@@ -1105,6 +1098,3 @@ doc:
 
 .exit:
 	@wepi
-
-
-

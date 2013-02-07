@@ -41,8 +41,7 @@ plug:
 	cmp edx,\
 		WM_INITDIALOG
 	jz	.wm_initdialog
-	cmp edx,WM_SIZE;\
-		;WM_WINDOWPOSCHANGED
+	cmp edx,WM_SIZE;\WM_WINDOWPOSCHANGED
 	jz	.wm_poschged
 	cmp edx,WM_NOTIFY
 	jz	.wm_message

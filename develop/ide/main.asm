@@ -259,7 +259,7 @@ start:
 		or WS_CLIPCHILDREN ;or WS_CLIPSIBLINGS
 	mov r8,uzTitle
 	mov rdx,uzClass
-	mov rcx,WS_EX_WINDOWEDGE 
+	mov rcx,WS_EX_WINDOWEDGE ;or WS_EX_COMPOSITED
 	call [CreateWindowExW]
 	test rax,rax
 	jz .err_startD
@@ -289,6 +289,24 @@ start:
 	test eax,eax
 	jz	.end_msg_loop
 
+	;---	mov rax,[pDoc]
+	;---	mov rcx,[rax+DOCDLG.hDlg]
+	;---	test rcx,rcx
+	;---	jz	.no_dialog
+
+	;---	mov rdx,rdi
+	;---	call apiw.is_dlgmsg
+	;---	test eax,eax
+	;---	jnz .begin_msg_loop
+		
+	;---	mov rax,[pDevT]
+	;---	mov rcx,[rax+DEVT.hwnd]
+	;---	mov rdx,rdi
+	;---	call apiw.is_dlgmsg
+	;---	test eax,eax
+	;---	jnz	.begin_msg_loop
+
+.no_dialog:
 	mov rdx,[hAccel]
 	test rdx,rdx
 	jz	.no_accel
@@ -599,7 +617,7 @@ winproc:
 	lea r8,[rax+DIR.dir]
 	mov rdx,rsp
 	xor rcx,rcx
-	call wspace.spawn
+	call script.spawn
 	test eax,eax
 	jz	.ret0
 	jmp	.mi_ws_exit
@@ -744,7 +762,7 @@ winproc:
 	stosd
 
 	mov rdx,rsp
-	call wspace.spawn
+	call script.spawn
 
 	;---	call mnu.get_dir
 	;---	test rax,rax
@@ -757,8 +775,6 @@ winproc:
 	;---	xor ecx,ecx
 	;---	call apiw.shexec
 	jmp	.ret0
-
-
 
 	;ü------------------------------------------ö
 	;|     MI_ED_RELSCICLS                      |

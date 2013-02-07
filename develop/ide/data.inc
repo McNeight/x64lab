@@ -243,6 +243,7 @@ section '.data' data readable writeable
 		atime,\
 		cons,cdate,ctime,curs,\
 		docs,\
+		env,\
 		fshow,\
 		language,\
 		owner,\

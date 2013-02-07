@@ -8,7 +8,6 @@
 		.:"%X64LABD%\help"
 		.:"%X64LABD%\config"
 		.:"%X64LABD%"
-		.:"E:\x64lab\develop\project"
 	)
 
 	04:0402E79AC91795914h,"README.TXT"
@@ -26,6 +25,7 @@
 			04:017EE02DF38B7DC4Fh,"syntax_colouring.txt"
 			04:017EE02DF38B7DC4Fh,"template.txt"
 			04:017EE02DF38B7DC4Fh,"bookmark.txt"
+			04:017EE02DF38B7DC4Fh,"configure.txt"
 		)
 	)
 	03:09D49C9DF9F910599h,"ext"(

@@ -72,40 +72,14 @@ win:
 		or TVS_LINESATROOT\
 		or TVS_EDITLABELS\
 		or TVS_HASBUTTONS	;or TVS_SHOWSELALWAYS
+;---		or WS_BORDER\
 	xor r8,r8
 	mov rdx,uzTreeClass
-	mov rcx,WS_EX_WINDOWEDGE
+	mov rcx,WS_EX_WINDOWEDGE ;or WS_EX_COMPOSITED
 	call r12
 	test rax,rax
 	jz .controlsE
 	mov [hTree],rax
-
-;---	xor eax,eax
-;---	mov [rdi+58h],rax
-;---	mov [rdi+50h],rsi
-;---	mov [rdi+48h],rax
-;---	mov [rdi+40h],rbx
-
-;---	mov [rdi+38h],rax
-;---	mov [rdi+30h],rax
-;---	mov [rdi+28h],rax
-;---	mov [rdi+20h],rax
-;---	mov r9,WS_CHILD\
-;---		or WS_VISIBLE\
-;---		or TVS_HASBUTTONS	\
-;---		or TVS_SHOWSELALWAYS
-;---;---		or LVS_NOCOLUMNHEADER \
-;---;---		or LVS_SHOWSELALWAYS \
-;---;---		or LVS_REPORT
-;---	;or LVS_SMALLICON or LVS_ALIGNLEFT or LVS_SINGLESEL
-;---	;mov r9,0x50810105
-;---	xor r8,r8
-;---	mov rdx,uzTreeClass;uzLvwClass
-;---	mov rcx,0;WS_EX_WINDOWEDGE;;WS_EX_CLIENTEDGE;WS_EX_STATICEDGE;0;
-;---	call r12
-;---	test rax,rax
-;---	jz .controlsE
-;---	mov [hDocs],rax
 
 	;--- load [config\docking.bin]
 	push 0
@@ -481,7 +455,6 @@ tip:
 	pop rbx
 	pop rbp
 	ret 0
-
 
    ;ü------------------------------------------ö
    ;|   TOOL  BAR                              |

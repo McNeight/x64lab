@@ -20,6 +20,14 @@
 
 	DIR_DEFDIR		equ 1
 	DIR_HASREF		equ 2
+
+	;--- script flags --------------
+	FSCR_GET equ 0
+	FSCR_SET equ 1
+	FSCR_LAB equ 2
+	FSCR_816 equ 4	;--- convert utf-8 to utf-16
+	FSCR_168 equ 8	;--- convert utf-16 to utf-8
+
 	
 	struct DIR
 		hash	dq ?
@@ -89,7 +97,7 @@
 		hLvwB		dq 0
 						dq 0
 	ends
-	
+
 	struct IODLG
 		param		dq 0  ;--- IN param	
 		ldir		dq 0  ;--- last dir
@@ -122,6 +130,7 @@
 		name	db 28 dup (0)
 	ends
 
+
 	MAX_COMMLINE_LEN equ 62
 
 	struct EXT_CLASS
@@ -145,7 +154,6 @@
 					dq ?
 	ends
 
-
 	;-------- LABFILE -------------
 	LF_NULL		equ 0
 	LF_WSP		equ 1		;--- workspace marker
@@ -165,7 +173,6 @@
 
 	NOASK_SAVE 		= 1
 	ASK_SAVE 			= 2
-	
 
 	struct LABFILE
 						dq 0
@@ -241,12 +248,12 @@ ends
 
 	
 	struct PLUGGER
+		hDlg		dq 0
 		id			dd 0
 		selped	db 0
 		cyper		db 0
 		flags		db 0	;--- external/gui
 		iniped	db 0	;--- eventual inital plugged
-		hDlg		dq 0
 		hPanel	dq 0
 		f_resize	dq 0
 		f_destroy	dq 0
@@ -352,23 +359,21 @@ ends
 		text	du 128 dup (?) ;--- text of dragged item
 	ends
 
-
 	struct LABENV
-		next   dq ?
-		v_len  dw ?
-		n_len  dw ?
-		n_hash dd ?
-		;--- aligned 16 utf16 name
-		;--- aligned 16 utf16 value
+		next dq ?
+		hash dd ?
+		nlen dw ?
+		vlen dw ?
+		;--- aligned 16 utf16 name: value obtained at runtime
 	ends
+
+
 
 	struct LABPATH
 		next  dq ?
-		v_len dw ?
-					dw ?
-					dd ?
-		;--- aligned 16 utf16 value
+		dir 	dq ?
 	ends
+
 
 	struct CONFIG
 		version	dw 64h

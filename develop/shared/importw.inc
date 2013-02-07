@@ -182,6 +182,7 @@
 		InsertMenuItemW,"InsertMenuItemW",\
 		IntersectRect,"IntersectRect",\
 		InvalidateRect,"InvalidateRect",\
+		IsDialogMessageW,"IsDialogMessageW",\
 		IsWindow,"IsWindow",\
 		LoadAcceleratorsW,"LoadAcceleratorsW",\
 		LoadBitmapW,"LoadBitmapW",\

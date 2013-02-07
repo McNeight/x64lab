@@ -11,8 +11,6 @@
   ;| filename:
   ;ö-------------------------------------------------ä
 
-
-
 define INVALID_POSITION -1
 define SCI_START 2000
 define SCI_OPTIONAL_START 3000
