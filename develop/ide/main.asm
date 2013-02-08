@@ -289,15 +289,26 @@ start:
 	test eax,eax
 	jz	.end_msg_loop
 
-	;---	mov rax,[pMp]
-	;---	mov rcx,[rax+MPURP.hDlg]
-	;---	test rcx,rcx
-	;---	jz	.no_dialog
 
-	;---	mov rdx,rdi
-	;---	call apiw.is_dlgmsg
-	;---	test eax,eax
-	;---	jnz .begin_msg_loop
+	mov rax,[pDevT]
+	mov rcx,[rax+DEVT.hwnd]
+	test rcx,rcx
+	jz	.no_dialog
+
+	mov rdx,rdi
+	call apiw.is_dlgmsg
+	test eax,eax
+	jnz .begin_msg_loop
+
+;---	mov rax,[pMp]
+;---	mov rcx,[rax+MPURP.hDlg]
+;---	test rcx,rcx
+;---	jz	.no_dialog
+
+;---	mov rdx,rdi
+;---	call apiw.is_dlgmsg
+;---	test eax,eax
+;---	jnz .begin_msg_loop
 
 	;---	mov rax,[pEdit]
 	;---	mov rdx,[rax]
@@ -423,6 +434,9 @@ winproc:
 	jz	.wm_poschged
 ;---	cmp edx,\
 ;---		WM_EXITSIZEMOVE
+;---	jz	.wm_poschged
+;---	cmp edx,\
+;---		WM_ENTERSIZEMOVE
 ;---	jz	.wm_poschged
 	cmp edx,WM_DRAWITEM
 	jz	.wm_drawitem

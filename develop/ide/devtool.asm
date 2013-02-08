@@ -37,8 +37,8 @@ devtool:
 		rbx rsi rdi
 
 	cmp edx,\
-		WM_WINDOWPOSCHANGED
-	jz	.wm_poschged
+		WM_SIZE
+	jz	.wm_size
 	cmp edx,WM_COMMAND
 	jz	.wm_command
 	cmp edx,WM_NOTIFY
@@ -276,7 +276,6 @@ devtool:
 	jz	.cbx_command
 	cmp r9,[.devt.hTlb]
 	jz	.tlb_command
-	;@break
 	jmp	.ret0
 
 .tlb_command:
@@ -314,7 +313,7 @@ devtool:
 	jmp	.ret0
 
 
-.wm_poschged:
+.wm_size:
 	push r12
 	push r13
 	push r14
@@ -343,7 +342,8 @@ devtool:
 	mov r14d,[rsp+RECT.right]
 	sub r14d,[rsp+RECT.left]
 
-	mov rax,SWP_NOZORDER or	SWP_NOMOVE
+	mov rax,SWP_NOZORDER \
+		or	SWP_NOMOVE
 	mov r9d,[rsp+RECT.top]
 	mov r8d,[rsp+RECT.left]
 	mov rdx,HWND_TOP
@@ -414,10 +414,13 @@ devtool:
 	mov r8,LVSIL_NORMAL
 	mov rcx,[.devt.hLvw]
 	call lvw.set_iml
+;---jmp	@f
+;---jmp	.ret1
 
 	mov r8,LV_VIEW_ICON
 	mov rcx,[.devt.hLvw]
 	call lvw.set_view
+;---@@:
 
 	;-------------------------
 	mov rdx,DEVT_TLB
@@ -525,7 +528,6 @@ devtool:
 
 	xor ecx,ecx
 	call .viewgroup
-
 	jmp	.ret1
 
 .ret1:				;message processed
@@ -547,6 +549,7 @@ devtool:
 .viewgroup:
 	;--- in RCX idx
 	;--- ret RAX 0,item
+
 	push rbx
 	push rsi
 	push r12
@@ -1912,37 +1915,6 @@ devtool:
 	call art.zeromem
 
 	call wspace.frm_head
-;---	mov al,09
-;---	stosb
-;---	;--- insert utf8 warning -------
-;---	xor edx,edx
-;---	mov ecx,UZ_INFO_UTF8
-;---	call [lang.get_uz]
-;---	mov rsi,rax
-;---	rep movsb
-;---	@do_eol
-	
-;---	mov al,09
-;---	stosb
-;---	;--- insert top info -------
-;---	xor edx,edx
-;---	mov ecx,UZ_INFO_TOP
-;---	call [lang.get_uz]
-;---	mov rsi,rax
-;---	rep movsb
-;---	@do_eol
-
-;---	mov al,09
-;---	stosb
-;---	;--- insert copyright -------
-;---	xor edx,edx
-;---	mov ecx,UZ_INFO_COPYR
-;---	call [lang.get_uz]
-;---	mov rsi,rax
-;---	rep movsb
-;---	@do_eol
-;---	@do_eol
-
 	mov rdx,[.devt.pGrp]
 	test r12,r12
 	jnz	.writeA4

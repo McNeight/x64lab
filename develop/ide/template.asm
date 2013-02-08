@@ -27,8 +27,8 @@ tmpl:
 		WM_NOTIFY
 	jz	.wm_notify
 	cmp edx,\
-		WM_WINDOWPOSCHANGED
-	jz	.wm_poschged
+		WM_SIZE
+	jz	.wm_size
 	cmp edx,\
 		WM_COMMAND
 	jz	.wm_command
@@ -467,7 +467,7 @@ tmpl:
 	jmp	.ret1
 
 
-.wm_poschged:
+.wm_size:
 	mov rbx,[pTmpl]
 	sub rsp,\
 		sizeof.RECT

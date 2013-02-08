@@ -234,6 +234,7 @@ mpurp:
 
 	pop rax
 	mov [.mp.selped],al
+
 	xor r9,r9
 	xor r8,r8
 	mov edx,WM_SIZE
@@ -247,19 +248,6 @@ mpurp:
 	call apiw.show
 	jmp	.ret1
 
-;---	dec eax
-;---	dec eax
-;---	jns	.cat_commandA
-
-;---	mov [.mp.idCat],ax
-;---	mov [.mp.iFilt],ax
-
-;---	mov rcx,[.mp.hCbxFilt]
-;---	call cbex.reset
-
-;---	mov rcx,[.mp.hLview]
-;---	call lvw.del_all
-;---	jmp	.ret1
 
 .ret1:				;message processed
 	xor rax,rax

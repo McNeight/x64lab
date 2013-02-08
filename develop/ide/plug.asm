@@ -37,12 +37,15 @@ plug:
 .proc:
 @wpro rbp,\
 		rbx rsi rdi
-
+;---	cmp edx,WM_ENTERSIZEMOVE
+;---	jz	.pepsi
+;---	cmp edx,WM_EXITSIZEMOVE
+;---	jz	.pepsi
 	cmp edx,\
 		WM_INITDIALOG
 	jz	.wm_initdialog
-	cmp edx,WM_SIZE;\WM_WINDOWPOSCHANGED
-	jz	.wm_poschged
+	cmp edx,WM_SIZE;WM_WINDOWPOSCHANGED
+	jz	.wm_size
 	cmp edx,WM_NOTIFY
 	jz	.wm_message
 	cmp edx,WM_COMMAND
@@ -50,6 +53,21 @@ plug:
 	cmp edx,WM_DESTROY
 	jz	.wm_message
 	jmp	.ret0
+
+;---.pepsi:
+;---	call .get_data
+;---	jz	.ret0
+;---	mov eax,[.per.id]
+;---	cmp eax,PER_MPURP
+;---	jnz	.ret0
+
+;---;---	mov rcx,[.hwnd]
+;---;---	call apiw.get_wlxstyle
+;---;---	xor eax,WS_EX_COMPOSITED
+;---	mov r8,WS_EX_COMPOSITED;rax
+;---	mov rcx,[.hwnd]
+;---	call apiw.set_wlxstyle
+;---	jmp	.ret1
 
 .get_data:
 	;--- RET RAX = RBX 0,data
@@ -63,7 +81,7 @@ plug:
 	jz	.ret0
 	mov eax,[.per.id]
 	cmp eax,PER_MPURP
-	jnz	.ret0
+	jnz	.ret1
 
 	mov r9,[.lparam]
 	mov r8,[.wparam]
@@ -73,7 +91,7 @@ plug:
 	jmp	.exit
 
 
-.wm_poschged:
+.wm_size:
 	;--- first get per -----
 	call .get_data
 	test eax,eax

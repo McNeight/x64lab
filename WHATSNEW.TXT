@@ -1,5 +1,5 @@
 
-- version 1.0.28 (08.02.2013 ) tempogui 
+- version 1.0.28 (08.02.2013 ) "" 
 - version 1.0.27 (07.02.2013 ) "" 
   +HLP Added [help\en-US\configure.txt]
 

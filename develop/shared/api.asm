@@ -322,6 +322,12 @@ apiw:
 	jmp	.set_wl
 @endusing
 
+@using .get_wlxstyle
+.get_wlxstyle:
+	mov rdx,GWLP_EXSTYLE
+	jmp	.get_wl
+@endusing
+
 @using .set_wlstyle
 .set_wlstyle:
 	mov rdx,GWLP_STYLE
