@@ -214,8 +214,15 @@ ends
 
 	CHILD_STYLE	equ \
 		WS_VISIBLE or \
-		WS_CHILD ;or WS_CLIPCHILDREN ;or WS_CLIPSIBLINGS ;or WS_OVERLAPPED;or WS_DLGFRAME ;or WS_CAPTION ;\
-			; or WS_THICKFRAME; WS_BORDER or 
+		WS_CHILD 
+		;or WS_OVERLAPPED
+		;or WS_CLIPCHILDREN
+		;or WS_CLIPSIBLINGS 
+		;or WS_OVERLAPPED;
+		;or WS_DLGFRAME 
+		;or WS_CAPTION ;\
+		;or WS_THICKFRAME;
+		;or WS_BORDER or 
 
 	;----- themes -------------
 

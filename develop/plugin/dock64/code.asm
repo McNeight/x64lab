@@ -2220,10 +2220,30 @@ dock64:
 	mov [.pnl.wrc.right],r8d
 	mov [.pnl.wrc.bottom],r9d
 
-	push SWP_NOZORDER \
+;---	xor r9,r9
+;---	mov r8,FALSE
+;---	mov rdx,WM_SETREDRAW
+;---	mov rcx,[.pnl.hwnd]
+;---	call apiw.sms
+
+;---	mov r11,TRUE
+;---	mov r10,r9
+;---	mov r9d,[.pnl.wrc.right]
+;---	mov r8d,[.pnl.wrc.top]
+;---	mov edx,[.pnl.wrc.left]
+;---	mov rcx,[.pnl.hwnd]
+;---	call apiw.movewin
+
+;---	xor r9,r9
+;---	mov r8,TRUE
+;---	mov rdx,WM_SETREDRAW
+;---	mov rcx,[.pnl.hControl]
+;---	call apiw.sms
+
+	push 0\
 		or SWP_NOACTIVATE\
 		or SWP_NOCOPYBITS\
-		or 0;SWP_FRAMECHANGED;0;SWP_NOREDRAW
+		or SWP_NOZORDER
 	push r9
 	push r8
 	push rdx

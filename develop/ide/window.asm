@@ -75,7 +75,8 @@ win:
 ;---		or WS_BORDER\
 	xor r8,r8
 	mov rdx,uzTreeClass
-	mov rcx,WS_EX_WINDOWEDGE ;or WS_EX_COMPOSITED
+	mov rcx,WS_EX_WINDOWEDGE \
+		or WS_EX_COMPOSITED	;--- TODO: remove this
 	call r12
 	test rax,rax
 	jz .controlsE

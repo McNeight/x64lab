@@ -10,7 +10,7 @@
  this document will cover the file [config\config.utf8] that gets
  modified, read and written back.
  configuration files ending in .utf8 are utf-8 text formatted
- documents. the contains TOP datas.
+ documents. they contains TOP datas.
 
  TOP stays for Text-Object-Parsed documents.
  the [config\config.utf8] has a TOP structure. let examine it:
@@ -49,7 +49,7 @@
   line 35, creates and sets an application environment variable "include".
    that environment variable is known at an application
    run-time level. the value of it corresponds to "E:\fasm\include".
-   exiting from x64lab, that variable will automatically
+   exiting from x64lab, that variable will be automatically
    unset by the OS. but it remains there if you start a
    console shell using the menu "Open console here" in x64lab
    from the path menu and then, exiting x64lab, you mantain that console open

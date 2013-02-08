@@ -897,6 +897,7 @@ panel:
 	mov [.pnl.ctrc.left],ecx
 	mov eax,[.pnl.caprc.right]
 	add eax,r9d
+
 	mov [.pnl.ctrc.right],eax
 	mov eax,[.pnl.caprc.bottom]
 	add eax,edx
@@ -915,6 +916,7 @@ panel:
 	mov [.pnl.ctrc.left],ecx
 	mov eax,[.pnl.caprc.right]
 	add eax,r9d
+
 	mov [.pnl.ctrc.right],eax
 	mov eax,[.pnl.caprc.bottom]
 	add eax,edx
@@ -951,7 +953,7 @@ panel:
 	mov r8d,[.pnl.ctrc.top]
 	mov edx,[.pnl.ctrc.left]
 	mov rcx,rdi
-	call apiw.excl_cliprect	
+	call apiw.excl_cliprect
 
 	mov r8,[hBrPanel]
 	lea rdx,[.pnl.crc]
