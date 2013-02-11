@@ -484,9 +484,10 @@ devtool:
 		FILE_BUFLEN
 
 	mov r8,rsp
-	mov edx,U16
-	mov ecx,UZ_MSG_TADDG
-	call [lang.get_uz]
+	mov edx,UZ_MSG_TADDG
+	mov rcx,[pLangRes]
+	call lang.get_uz
+
 
 	mov rcx,[.devt.hCbx]
 	call cbex.get_edit
@@ -833,9 +834,9 @@ devtool:
 	mov rsi,rdx
 
 	mov r8,rsp
-	mov edx,U16
-	mov ecx,UZ_MSG_U_TGREM
-	call [lang.get_uz]
+	mov edx,UZ_MSG_U_TGREM
+	mov rcx,[pLangRes]
+	call lang.get_uz
 
 	mov rdi,rax
 	add rdi,rsp
@@ -1410,9 +1411,10 @@ devtool:
 	;--- default group
 	lea r8,[rsp+\
 		sizeof.DEVTITEM]
-	mov edx,U16
-	mov ecx,UZ_TOOLGEN
-	call [lang.get_uz]
+	mov edx,UZ_TOOLGEN
+	mov rcx,[pLangRes]
+	call lang.get_uz
+
 	add eax,4
 	mov [rsp+\
 		DEVTITEM.oparam],eax
@@ -1557,10 +1559,10 @@ devtool:
 
 	lea r8,[rsp+\
 		sizeof.LVITEMW]
-	mov edx,U16
-	mov ecx,UZ_TOOLPICK
-	call [lang.get_uz]
-	
+	mov edx,UZ_TOOLPICK
+	mov rcx,[pLangRes]
+	call lang.get_uz
+
 	;--- in RCX title
 	;--- in RDX filespec
 	;--- in R8 flags
@@ -1923,9 +1925,11 @@ devtool:
 	mov eax,'	.:"'
 	stosd
 
-	xor edx,edx
-	mov ecx,UZ_TOOLGEN
-	call [lang.get_uz]
+	xor r8,r8
+	mov edx,UZ_TOOLGEN
+	mov rcx,[pLangRes]
+	call lang.get_uz
+
 	mov rsi,rax
 	rep movsb
 	mov ax,'"('

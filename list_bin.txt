@@ -14,7 +14,7 @@ ext\*
 template\*
 
 tool\lang.vbs
-lang\en-US\lang.dll
+lang\en-US.bin
 plugin\bk64.dll
 plugin\dock64.dll
 plugin\top64.dll

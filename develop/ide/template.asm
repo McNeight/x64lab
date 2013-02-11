@@ -456,14 +456,14 @@ tmpl:
 	jz	.ret0
 
 	;--- TODO: check len
-	mov ecx,[rsp+\
+	mov edx,[rsp+\
 		TBBUTTON.idCommand]
 	lea r8,[rdi+\
 		NMTTDISPINFO.szText]	;--- max 80 cpts
 	mov [rdi+\
 		NMTTDISPINFO.lpszText],r8
-	mov edx,U16
-	call [lang.get_uz]
+	mov rcx,[pLangRes]
+	call lang.get_uz
 	jmp	.ret1
 
 

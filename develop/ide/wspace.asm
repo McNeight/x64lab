@@ -78,9 +78,9 @@ wspace:
 	
 	lea r8,[rdi+\
 		FILE_BUFLEN]
-	mov edx,U16
-	mov ecx,UZ_IO_SAVEWSP
-	call [lang.get_uz]
+	mov rcx,[pLangRes]
+	mov edx,UZ_IO_SAVEWSP
+	call lang.get_uz
 
 	lea r8,[rdi+\
 		FILE_BUFLEN]
@@ -427,9 +427,9 @@ wspace:
 	;--- 2) prompt user for file to be saved
 	lea r8,[rdi+\
 		FILE_BUFLEN]
-	mov edx,U16
-	mov ecx,UZ_FSAVE
-	call [lang.get_uz]
+	mov edx,UZ_FSAVE
+	mov rcx,[pLangRes]
+	call lang.get_uz
 
 	lea r8,[rdi+\
 		FILE_BUFLEN]
@@ -475,9 +475,10 @@ wspace:
 
 	lea r8,[rdi+\
 		FILE_BUFLEN]
-	mov edx,U16
-	mov ecx,UZ_OVERWFILE
-	call [lang.get_uz]
+	mov edx,UZ_OVERWFILE
+	mov rcx,[pLangRes]
+	call lang.get_uz
+
 
 .save_fileC:
 	lea r8,[rdi+\
@@ -809,9 +810,10 @@ wspace:
 
 	lea r8,[rdi+\
 		FILE_BUFLEN]
-	mov edx,U16
-	mov ecx,UZ_OVERWFILE
-	call [lang.get_uz]
+	mov edx,UZ_OVERWFILE
+	mov rcx,[pLangRes]
+	call lang.get_uz
+
 
 .save_wspC:
 	lea r8,[rdi+\
@@ -1212,9 +1214,10 @@ wspace:
 	mov al,09
 	stosb
 	;--- insert utf8 warning -------
-	xor edx,edx
-	mov ecx,UZ_INFO_UTF8
-	call [lang.get_uz]
+	xor r8,r8
+	mov edx,UZ_INFO_UTF8
+	mov rcx,[pLangRes]
+	call lang.get_uz
 	mov rsi,rax
 	rep movsb
 	@do_eol
@@ -1222,9 +1225,10 @@ wspace:
 	mov al,09
 	stosb
 	;--- insert top info -------
-	xor edx,edx
-	mov ecx,UZ_INFO_TOP
-	call [lang.get_uz]
+	xor r8,r8
+	mov edx,UZ_INFO_TOP
+	mov rcx,[pLangRes]
+	call lang.get_uz
 	mov rsi,rax
 	rep movsb
 	@do_eol
@@ -1232,9 +1236,10 @@ wspace:
 	mov al,09
 	stosb
 	;--- insert copyright -------
-	xor edx,edx
-	mov ecx,UZ_INFO_COPYR
-	call [lang.get_uz]
+	mov edx,UZ_INFO_COPYR
+	xor r8,r8
+	mov rcx,[pLangRes]
+	call lang.get_uz
 	mov rsi,rax
 	rep movsb
 	@do_eol
@@ -1396,9 +1401,10 @@ wspace:
 
 	lea r8,[rdi+\
 		FILE_BUFLEN]
-	mov edx,U16
-	mov ecx,UZ_OVERWFILE
-	call [lang.get_uz]
+	mov edx,UZ_OVERWFILE
+	mov rcx,[pLangRes]
+	call lang.get_uz
+
 
 .new_fileC:
 	lea r8,[rdi+\
@@ -2337,9 +2343,9 @@ wspace:
 	lea rsi,[rsp+\
 		sizeof.LABFILE]
 	mov r8,rsi
-	mov edx,U16
-	mov ecx,UZ_EDIT_UNTL
-	call [lang.get_uz]
+	mov edx,UZ_EDIT_UNTL
+	mov rcx,[pLangRes]
+	call lang.get_uz
 
 	shr eax,1
 	mov [rsp+\

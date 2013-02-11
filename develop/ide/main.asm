@@ -48,6 +48,7 @@
 	include "plugin\top64\equates.inc"
 	include "plugin\bk64\equates.inc"
 
+
 	include "x64lab.equ"
 	include "structs.inc"
 	include "shared\art.equ"
@@ -392,7 +393,7 @@ start:
 .err_start:
 	call ext.discard
 	call ext.discard_bin
-	call config.unset_lang
+	call lang.unset
 	call config.unset_libs
 
 .err_startA:
@@ -622,9 +623,9 @@ winproc:
 	sub rsp,\
 		FILE_BUFLEN
 	mov r8,rsp
-	mov edx,U16
-	mov ecx,UZ_RESTART
-	call [lang.get_uz]
+	mov edx,UZ_RESTART
+	mov rcx,[pLangRes]
+	call lang.get_uz
 
 	mov rdx,rsp
 	mov r8,uzTitle
@@ -827,13 +828,14 @@ winproc:
 	test eax,eax
 	jz	.ret0
 
-	mov ecx,UZ_MSG_SCIREL
 
 	sub rsp,\
 		FILE_BUFLEN
+	mov edx,UZ_MSG_SCIREL
 	mov r8,rsp
-	mov edx,U16
-	call [lang.get_uz]
+	mov rcx,[pLangRes]
+	call lang.get_uz
+
 
 	mov r8,uzTitle
 	mov rdx,rsp
@@ -897,9 +899,10 @@ winproc:
 	;--- please,choose an item in treeview
 	sub rsp,FILE_BUFLEN
 	mov r8,rsp
-	mov edx,U16
-	mov ecx,UZ_INFO_SELITEM
-	call [lang.get_uz]
+	mov edx,UZ_INFO_SELITEM
+	mov rcx,[pLangRes]
+	call lang.get_uz
+
 
 	mov r8,uzTitle
 	mov rdx,rsp
@@ -1166,9 +1169,10 @@ winproc:
 .mi_ed_remitemA:
 	;--- item has subitems
 	mov r8,rsp
-	mov edx,U16
-	mov ecx,UZ_MSG_REMITEM
-	call [lang.get_uz]
+	mov edx,UZ_MSG_REMITEM
+	mov rcx,[pLangRes]
+	call lang.get_uz
+
 
 	mov r8,uzTitle
 	mov rdx,rsp
@@ -1320,9 +1324,9 @@ winproc:
 	sub rsp,\
 		FILE_BUFLEN
 	mov r8,rsp
-	mov edx,U16
-	mov ecx,UZ_MSG_LNK
-	call [lang.get_uz]
+	mov edx,UZ_MSG_LNK
+	mov rcx,[pLangRes]
+	call lang.get_uz
 
 	mov r8,uzTitle
 	mov rdx,rsp

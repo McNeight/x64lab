@@ -1104,8 +1104,7 @@ align 8
 
 @using .get_ext
 .get_ext:
-	;--- in RCX uzString: path+file.ext
-
+	;--- in RCX uzString: path+file.ext utf16
 	;--- RET RAX 0,pExtension	"asm"
 	;--- RET RCX numchars	3
 	;--- RET RDX original string

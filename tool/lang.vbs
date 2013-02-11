@@ -77,14 +77,8 @@
 		WScript.Quit (1)
 	end if
 	
-	If not fso.FolderExists(loc_dir & strLang) then 
-		std_out.writeline " Create local folder for language plugin [" & loc_dir & strLang & "]"
-		fso.CreateFolder(loc_dir & strLang)
-		std_out.writeblanklines(1)
-	end if
-
 	std_out.writeline " Download plugin..."
-	download "http://x64lab.googlecode.com/hg/lang/" & strLang & "/lang.dll", loc_dir & strLang & "\lang.dll"
+	download "http://x64lab.googlecode.com/hg/lang/" & strLang & ".bin", loc_dir & strLang & ".bin"
 	set fso = Nothing
 	set file = Nothing
 	std_out.writeline " Ok. Restarting x64lab..."

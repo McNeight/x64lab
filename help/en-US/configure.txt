@@ -75,20 +75,3 @@
   env:"spezi","1"
   
   x64lab will attribute the variable "spezi" the value "1" finally.
-
-
-
-  
-  
-
-
-  
-
-  
-  
-
-       
-
-
-
-   

@@ -10,7 +10,7 @@
   directory of x64lab, in a TOP file format.
   
   i have limited this capability to 65535 bookmarks for each document.
-  if you dont add bookmark in a source file, no information will be stored
+  if you dont add any bookmark in a source file, no information will be stored
   about it.
   
  - How to add a bookmark.

@@ -601,13 +601,13 @@ accel:
 	push KEY_STA_ID
 
 	mov rdi,[.hwnd]
-	mov rcx,MI_CONF_KEY
+	mov edx,MI_CONF_KEY
 	jmp	.wm_initdA1
  
 .wm_initdA:
 	mov rcx,[.hwnd]
 	call apiw.get_dlgitem
-	pop rcx
+	pop rdx
 	pop r8
 
 	mov rdi,rax
@@ -615,8 +615,8 @@ accel:
 
 .wm_initdA1:
 	mov r8,rsi
-	mov edx,U16
-	call [lang.get_uz]
+	mov rcx,[pLangRes]
+	call lang.get_uz
 
 	mov r9,rsi
 	mov rcx,rdi

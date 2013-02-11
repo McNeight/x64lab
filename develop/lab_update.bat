@@ -12,7 +12,7 @@ copy config\x64lab.bmp ..\config /Y
 copy config\docking.bin ..\config /Y
 
 xcopy ext ..\ext\ /E /Y
-xcopy lang\en-US\lang.dll ..\lang\en-US\ /Y
+copy lang\en-US.bin ..\lang\en-US.bin /Y
 
 copy plugin\dock64.dll ..\plugin /Y
 copy plugin\HexView.dll ..\plugin /Y

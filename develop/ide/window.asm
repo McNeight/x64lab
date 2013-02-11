@@ -269,12 +269,12 @@ win:
 
 	push rax
 	push CFG_MPURP_DOCK_ID
-	mov ecx,UZ_MPWIN
+	mov edx,UZ_MPWIN
 
 .controlsA:
 	mov r8,rdi
-	mov edx,U16
-	call [lang.get_uz]
+	mov rcx,[pLangRes]
+	call lang.get_uz
 
 	pop rdx
 	pop r8
@@ -287,8 +287,8 @@ win:
 		PNL.hwnd]
 	call .set_text
 
-	pop rcx
-	test rcx,rcx
+	pop rdx
+	test rdx,rdx
 	jnz	.controlsA
 
 	;--- last is the Editor Panel

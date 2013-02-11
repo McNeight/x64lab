@@ -337,74 +337,6 @@ config:
 	pop rdi
 	ret 0
 
-	;ü-----------------------------------------ö
-	;|     DEF_LANG                            |
-	;#-----------------------------------------ä
-
-.def_lang:
-	;--- in RCX langname
-	;--- ret RAX bridge
-	push rbx
-	push rdi
-
-	xor edx,edx
-	sub rsp,\
-		FILE_BUFLEN
-	mov rax,rsp
-	xor ebx,ebx
-
-	;--- make lang\CURLANG
-	push rdx
-	push rcx
-	push uzSlash
-	push uzLangName
-	push rax
-	push rdx
-	call art.catstrw
-
-	mov rdx,rsp
-	mov rcx,\
-		lang_bridge
-	call bridge.attach
-	test rax,rax
-	jz .def_langE
-
-	mov rdi,[pTime]
-	mov rbx,rax
-
-	lea r8,[rdi+\
-		SYSTIME.uzTmFrm]
-	mov edx,U16
-	mov ecx,UZ_TIMEFRM 
-	call [lang.get_uz] 	;--- "HH':'mm':'ss"
-	
-	lea r8,[rdi+\
-		SYSTIME.uzDtFrm]
-	mov edx,U16
-	mov ecx,UZ_DATEFRM 
-	call [lang.get_uz] 	;--- "dddd','dd'.'MMMM'.'yyyy"
-
-	mov rdi,[pConf]
-	lea r8,[.conf.owner]
-	mov edx,U16
-	mov ecx,UZ_DEFUSER
-	call [lang.get_uz] 	;--- "Mr.Biberkopf"
-
-.def_langE:
-	add rsp,\
-		FILE_BUFLEN
-
-	mov rax,rbx
-	pop rdi
-	pop rbx
-	ret 0
-
-.unset_lang:
-	mov rcx,[pOmni]
-	call art.a16free
-	mov rcx,lang_bridge
-	call bridge.detach
-	ret 0
 
 	;#---------------------------------------------------ö
 	;|                   OPEN CONFIG config.utf8         |
@@ -746,7 +678,7 @@ config:
 	call utf8.to16
 
 	pop rcx
-	call .def_lang
+	call lang.def
 
 	pop rcx
 	test rax,rax
@@ -795,9 +727,10 @@ config:
 	mov rcx,rbx
 	call [top64.free]
 
-	;--- check lang.dll
+	;--- check en-US
 	test r13,r13
 	jnz	.openF1
+@break
 
 	mov eax,\
 		CFG_DEF_LCID
@@ -814,7 +747,7 @@ config:
 
 	xchg rcx,r8
 	xchg rdi,rdx
-	call .def_lang
+	call lang.def
 	test rax,rax
 	jz	.openE
 
@@ -829,25 +762,28 @@ config:
 	xchg rdx,rdi
 
 .openF1:
-	call [lang.info_uz]
+	mov rcx,r13
+	call lang.info_uz
 	mov [.conf.lcid],r10w
 
 	@nearest 16,eax			;<--- ave size 16 aligned
+	shl eax,2
+	mov ecx,MNU_COUNT
+	@nearest 16,ecx
 	add eax,\
 		sizeof.OMNI
 	@nearest 16,eax			
-	shl eax,2
 	mul ecx
 
-	mov rcx,rax
+	xchg rcx,rax
 	call art.a16malloc
 	mov [pOmni],rax
 	test rax,rax
 	jnz .openE
 
+	mov rcx,r13
+	call art.vfree
 	xor r13,r13
-	mov rcx,lang_bridge
-	call bridge.detach
 	
 .openE:
 	mov rax,r13

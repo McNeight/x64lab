@@ -85,73 +85,67 @@
 
 	iMPURP_DEVT	equ 0
 
-	MNU_X64LAB equ 1000h
+	macro @mnu_equ [argitem] {
+		common
+		MNU_COUNT equ 0
+		forward
+			argitem
+			MNU_COUNT equ MNU_COUNT + 1
+		}
+
 	MI_USER    equ 1100h
 	MI_OTHER	 equ 1200h
 	MI_LANG		 equ 1300h
-	
-	MP_WSPACE      equ 1001h
-   MI_WS_LOAD    equ 1002h
-   MI_WS_NEW     equ 1003h
-   MI_WS_ADD     equ 1005h
-   MI_WS_BACK    equ 1006h
-   MI_WS_EXP     equ 1007h
-   MI_WS_SAVE    equ 1008h
-   MI_WS_SAVET   equ 1009h
-   MI_WS_RECODE  equ 100Ah
-   MP_WS_REC     equ 100Bh
-   MI_WS_EXIT    equ 100Ch
 
-	MP_FILE       equ 1020h
-   MI_FI_OPEN   equ 1021h
-   MI_FI_NEWF   equ 1022h
-   MI_FI_NEWB   equ 1023h
-   MI_FI_IMP    equ 1024h
-   MI_FI_CLOSE  equ 1025h
-   MI_FI_CCOPY  equ 1026h
-   MI_FI_SAVE   equ 1027h
-   MI_FI_SAVEAS equ 1028h
-   MI_FI_ENCO   equ 1029h
-   MI_FI_BACK   equ 102Ah
-
-	MP_EDIT   				equ 1040h
-	 MI_ED_LNK  			equ 1041h
-   MI_ED_REMITEM		equ 1042h
-	 MI_ED_RELSCICLS	equ 1043h
-
-	MP_CONF   				equ 1060h
-	 MI_CONF_KEY			equ 1061h
-  MP_LANG 					equ 1062h
-	
-  MP_DEVT   		equ 1070h
-	 MI_DEVT_ADD	equ 1071h
-	 MI_DEVT_ADDG equ 1072h
-	 MI_DEVT_REM	equ 1073h
-	 MI_DEVT_REMG equ 1074h
-	;---	 MI_DEVT_MAN  equ 1075h
-	;---	 MI_DEVT_REL  equ 1076h
-
-	MP_SCI				equ 1077h
-	 MI_SCI_COMML	equ 1078h
-	 MI_SCI_COMMB	equ 1079h
-	 MI_SCI_UNCOMML	equ 107Ah
-	 MI_SCI_UNCOMMB	equ 107Bh
-	
-	MP_UPD				equ 1080h
-	MI_UPD_LANG		equ 1081h
-
-
-	MP_PATH        equ 10A0h
-	 MI_PA_CONS    equ 10A1h
-   MI_PA_BROWSE  equ 10A2h
-   MI_PA_FIND    equ 10A3h
-   MI_PA_COPY    equ 10A4h
-   MI_PA_SETPROP equ 10A5h
-
-
-;  MP_WIN    		equ 1060h
-;	MP_HELP   		equ 1090h
-
+	@mnu_equ \
+		MNU_X64LAB equ 1000h,\
+		MP_WSPACE				equ 1001h,\
+			MI_WS_LOAD		equ 1002h,\
+			MI_WS_NEW			equ 1003h,\
+			MI_WS_ADD     equ 1005h,\
+			MI_WS_BACK    equ 1006h,\
+			MI_WS_EXP     equ 1007h,\
+			MI_WS_SAVE    equ 1008h,\
+			MI_WS_SAVET   equ 1009h,\
+			MI_WS_RECODE  equ 100Ah,\
+			MP_WS_REC     equ 100Bh,\
+			MI_WS_EXIT    equ 100Ch,\
+		MP_FILE       equ 1020h,\
+			MI_FI_OPEN   	equ 1021h,\
+			MI_FI_NEWF   	equ 1022h,\
+			MI_FI_NEWB   	equ 1023h,\
+			MI_FI_IMP    	equ 1024h,\
+			MI_FI_CLOSE  	equ 1025h,\
+			MI_FI_CCOPY  	equ 1026h,\
+			MI_FI_SAVE   	equ 1027h,\
+			MI_FI_SAVEAS 	equ 1028h,\
+			MI_FI_ENCO   	equ 1029h,\
+			MI_FI_BACK   	equ 102Ah,\
+		MP_EDIT   				equ 1040h,\
+			MI_ED_LNK  			equ 1041h,\
+			MI_ED_REMITEM		equ 1042h,\
+			MI_ED_RELSCICLS	equ 1043h,\
+		MP_CONF   				equ 1060h,\
+			MI_CONF_KEY			equ 1061h,\
+		MP_LANG 					equ 1062h,\
+		MP_DEVT   			equ 1070h,\
+			MI_DEVT_ADD			equ 1071h,\
+			MI_DEVT_ADDG 		equ 1072h,\
+			MI_DEVT_REM			equ 1073h,\
+			MI_DEVT_REMG 		equ 1074h,\
+		MP_SCI					equ 1077h,\
+			MI_SCI_COMML		equ 1078h,\
+			MI_SCI_COMMB		equ 1079h,\
+			MI_SCI_UNCOMML	equ 107Ah,\
+			MI_SCI_UNCOMMB	equ 107Bh,\
+		MP_UPD					equ 1080h,\
+			MI_UPD_LANG			equ 1081h,\
+		MP_PATH        	equ 10A0h,\
+			MI_PA_CONS    	equ 10A1h,\
+			MI_PA_BROWSE  	equ 10A2h,\
+			MI_PA_FIND    	equ 10A3h,\
+			MI_PA_COPY    	equ 10A4h,\
+			MI_PA_SETPROP 	equ 10A5h
 
 	;----------------------------------------------------
 	;--- strings id usable in lang.dll ------------------

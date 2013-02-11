@@ -14,7 +14,6 @@
 section '.data' data readable writeable
 	curDir	dq sizeof.DIR
 	dirHash	dq 400h*8
-;---	envHash	dq 80h*8
 	extHash dq 100h*8
 	
 	pConf		dq sizeof.CONFIG
@@ -39,6 +38,7 @@ section '.data' data readable writeable
 
 	pExtClass	dq 0
 	pBinExt		dq 0
+	pLangRes	dq 0
 
 	hTree			dq 0
 	hRootWsp	dq 0
@@ -88,7 +88,6 @@ section '.data' data readable writeable
 		rexpSOL2b	db "\)\(.*\)"
 		rexpTAG2	db "\2",0
 		szDefLang	db "en-US",0
-		szParam		db "param",0
 
 		align 2
 		tmMnuSize	SIZE 6,28
@@ -122,9 +121,7 @@ section '.data' data readable writeable
 		uzUtf8Ext  du ".utf8",0
 		uzBinExt   du "."
 		uzBinName	 du "bin",0
-		uzCfgExt   du ".cfg",0
 		uzPngExt   du ".png",0
-		uzEmfExt   du ".emf",0
 		uzExeExt   du ".exe",0
 		uzSciExt   du ".sci",0
 		uzBmpExt	 du ".bmp",0
@@ -251,7 +248,7 @@ section '.data' data readable writeable
 		tree,\
 		session,\
 		version,\
-		wspace	
+		wspace
 
 
 		display "--- Size of data "

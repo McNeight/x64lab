@@ -16,6 +16,9 @@ lang:
 		.mii MENUITEMINFOW
 	end virtual
 
+	virtual at rdi
+		.conf CONFIG
+	end virtual
 
 .reload:
 	;--- in RCX lcid
@@ -45,7 +48,7 @@ lang:
 
 	mov rbx,[pConf]
 	mov [rbx+\
-		CONFIG.lcid],ax
+		CONFIG.lcid],cx
 
 	mov rcx,rsi
 	lea rdx,[rbx+\
@@ -58,9 +61,9 @@ lang:
 	call utf16.to8
 
 	mov r8,rsi
-	mov edx,U16
-	mov ecx,UZ_RESTART
-	call [lang.get_uz]
+	mov edx,UZ_RESTART
+	mov rcx,[pLangRes]
+	call lang.get_uz
 
 	mov rdx,rsi
 	mov r8,uzTitle
@@ -89,9 +92,10 @@ lang:
 	xor edx,edx
 	mov rdi,rsp
 
-	mov al,"*"
+;@break
+	mov eax,"*"
 	stosw
-	mov rax,qword[uzDll]
+	mov rax,qword[uzBinExt]
 	stosq
 	xor eax,eax
 	stosw
@@ -100,12 +104,13 @@ lang:
 	stosq
 	stosq
 
-	;--- check for [lang\???] files
-	push rdx
-	push uzLangName
-	push rdi
-	push rdx
-	call art.catstrw
+	mov rdx,rdi
+	mov rax,\
+		qword[uzLangName]
+	stosq
+	xor eax,eax
+	stosq
+	mov rcx,rdx
 
 	;---	in RCX upath		;--- example "E:" or "E:\mydir"
 	;---	in RDX uattr		;--- FILE_ATTRIBUTE_HIDDEN
@@ -119,8 +124,7 @@ lang:
 	xor r8,r8
 	inc r8
 	mov r9,rsp
-	mov edx,FILE_ATTRIBUTE_DIRECTORY
-	mov rcx,rdi
+	mov edx,FILE_ATTRIBUTE_NORMAL
 	call [bk64.listfiles]
 
 	mov rsp,rbp
@@ -136,7 +140,6 @@ lang:
 	;--- in R8h lenpath
 	;--- in R9 uparam
 	;--- ret RAX = 1 continue, 0 stop search
-
 	test rdx,rdx
 	jz	.cb_langA
 
@@ -144,15 +147,27 @@ lang:
 		WIN32_FIND_DATA.dwFileAttributes]
 	test eax,\
 		FILE_ATTRIBUTE_DIRECTORY
-	jz  .cb_langA
+	jnz  .cb_langA
 
-	mov r10,[r9]
-	lea rax,[rdx+\
+	;---	test eax,\
+	;---		FILE_ATTRIBUTE_ARCHIVE
+	;---	jz  .cb_langA
+	lea rcx,[rdx+\
 		WIN32_FIND_DATA.cFileName]
+	push r9
+	push rcx
+	call art.get_ext
+	pop rcx
+	xor r10,r10
+	pop r9
+	test eax,eax
+	jz .cb_langB
+	mov [rax-2],r10
+	mov rdx,[r9]
 	inc dword[r9]
-	mov rdx,r10
-	mov rcx,rax
 	call .set_item
+
+.cb_langB:
 
  .cb_langA:
 	xor eax,eax
@@ -161,7 +176,7 @@ lang:
 
 
 .set_item:
-	;--- in RCX subpath [en]
+	;--- in RCX lcid filename [en-US]
 	;--- in RDX ord id
 	push rbp
 	push rbx
@@ -180,7 +195,7 @@ lang:
 	lea rdi,[rsp+\
 		sizeof.MENUITEMINFOW]
 	mov r12,rdx
-	
+
 	;--- check against bad locales
 	;--- min VISTA
 	mov rcx,rsi
@@ -188,13 +203,11 @@ lang:
 	test eax,eax
 	jz	.set_itemE
 
-	;--- check [lang\xxxx\lang.dll]
+	;--- check again [lang\xxxx.bin]
 	xor edx,edx
 
 	push rdx
-	push uzDll
-	push uzLangName
-	push uzSlash
+	push uzBinExt
 	push rsi
 	push uzSlash
 	push uzLangName
@@ -279,10 +292,10 @@ lang:
 	mov rcx,[tMP_LANG]
 	call apiw.mni_ins_bypos
 
-	lea r8,[rsp+\
-		sizeof.MENUITEMINFOW]
-	mov rdx,r13
-	call art.cout2XU
+;---	lea r8,[rsp+\
+;---		sizeof.MENUITEMINFOW]
+;---	mov rdx,r13
+;---	call art.cout2XU
 
 .set_itemE:
 	mov rsp,rbp
@@ -292,4 +305,175 @@ lang:
 	pop rdi
 	pop rbx
 	pop rbp
+	ret 0
+
+
+
+
+.info_uz:
+	;--- in RCX pMem
+	;--- ret RAX ave dlen/ids
+	;--- ret ECX pMem->header
+	;--- ret RDX lang string
+	;--- ret R8 ids
+	;--- ret R9 dlen
+	;--- ret R10 lcid
+	movzx eax,[rcx+\
+		RESTABLE.dave]
+	lea rdx,[rcx+\
+		RESTABLE.lang]
+	movzx r9,[rcx+\
+		RESTABLE.dlen]
+	movzx r10,[rcx+\
+		RESTABLE.lcid]
+	movzx r8d,[rcx+\
+		RESTABLE.ids]
+	ret 0
+
+.get_uz:
+	;--- in RCX pMem
+	;--- in RDX id
+	;--- in/out R8 buffer/0
+	;---
+	;--- to get original string ------
+	;--- in RCX pMem
+	;--- in RDX id
+	;--- in R8=0
+
+	;--- RET RAX len
+	;--- RET RCX dest string
+	;--- RET RDX id/-1 no translation
+
+	movzx r9,[rcx+\
+		RESTABLE.resi]
+	mov eax,edx
+	and eax,0FFh
+	add r9,rcx
+	movzx eax,\
+		word[r9+rax*2]
+	add r9,512
+	jmp	.get_uzN
+
+
+.get_uzN1:
+	movzx eax,\
+		[r11+RESDEF.next]
+
+.get_uzN:
+	inc ax
+	jnz	.get_uzN2
+
+.get_uzE:
+	movzx eax,[rcx+\
+		sizeof.RESTABLE+\
+		RESDEF.len]
+	or rdx,-1
+	lea rcx,[rcx+\
+		sizeof.RESTABLE+\
+		sizeof.RESDEF]
+	jmp	.get_uzN3
+
+.get_uzN2:
+	dec ax
+	lea r11,[r9+rax]
+	cmp dx,[r11+\
+		RESDEF.id]
+	jnz	.get_uzN1
+
+	movzx eax,[r11+\
+		RESDEF.len]
+
+	lea rcx,[r11+\
+		sizeof.RESDEF]
+
+	movzx rdx,[r11+\
+		RESDEF.id]
+
+.get_uzN3:
+	test r8,r8
+	jnz	.get_uzC
+	xchg rax,rcx
+	ret 0
+
+.get_uzC:
+	push r8
+	push rdx
+
+	xchg eax,eax
+	xchg rdx,r8
+	call utf8.to16
+
+	pop rdx
+	pop rcx
+	ret 0
+
+
+
+	;ü-----------------------------------------ö
+	;|     DEF_LANG                            |
+	;#-----------------------------------------ä
+
+.def:
+	;--- in RCX langname
+	;--- ret RAX bridge
+	push rbx
+	push rdi
+
+	xor edx,edx
+	sub rsp,\
+		FILE_BUFLEN
+	mov rax,rsp
+	xor ebx,ebx
+
+	;--- make lang\CURLANG
+	push rdx
+	push uzBinExt
+	push rcx
+	push uzSlash
+	push uzLangName
+	push rax
+	push rdx
+	call art.catstrw
+
+	mov rcx,rsp
+	call art.fload
+	test eax,eax
+	jz .def_langE
+
+	mov rdi,[pTime]
+	mov rbx,rax
+	mov [pLangRes],rax
+
+	lea r8,[rdi+\
+		SYSTIME.uzTmFrm]
+	mov edx,UZ_TIMEFRM
+	mov rcx,rbx
+	call lang.get_uz 	;--- "HH':'mm':'ss"
+	
+	lea r8,[rdi+\
+		SYSTIME.uzDtFrm]
+	mov rcx,rbx
+	mov edx,UZ_DATEFRM 
+	call lang.get_uz 	;--- "dddd','dd'.'MMMM'.'yyyy"
+
+	mov rdi,[pConf]
+	lea r8,[.conf.owner]
+	mov rcx,rbx
+	mov edx,UZ_DEFUSER
+	call lang.get_uz 	;--- "Mr.Biberkopf"
+
+.def_langE:
+	add rsp,\
+		FILE_BUFLEN
+
+	mov rax,rbx
+	pop rdi
+	pop rbx
+	ret 0
+
+.unset:
+	mov rcx,[pOmni]
+	call art.a16free
+	mov rcx,[pLangRes]
+	call art.vfree
 	ret 0

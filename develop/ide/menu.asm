@@ -166,7 +166,7 @@ mnu:
 .mp_addB1:
 	dec eax
 	stosw
-	mov ecx,eax
+	mov edx,eax
 	mov [.mii.wID],eax
 
 	lodsw	
@@ -176,8 +176,8 @@ mnu:
 	mov [.mii.dwTypeData],rdi
 
 	mov r8,rdi
-	mov edx,U16
-	call [lang.get_uz]
+	mov rcx,[pLangRes]
+	call lang.get_uz
 
 	mov word[rdi-2],ax	;--- len
 	add rdi,rax

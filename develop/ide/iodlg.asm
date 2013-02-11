@@ -237,20 +237,20 @@ iodlg:
 	push [.hu.hOk]
 	push UZ_OK
 	push [.hu.hCanc]
-	mov ecx,UZ_NO
+	mov edx,UZ_NO
 
 .wm_initdB:
 	;--- set strings --------
 	mov r8,rdi
-	mov edx,U16
-	call [lang.get_uz]
+	mov rcx,[pLangRes]
+	call lang.get_uz
 
 	mov r9,rdi
 	pop rcx
 	call win.set_text
 
-	pop rcx
-	test ecx,ecx
+	pop rdx
+	test edx,edx
 	jnz	.wm_initdB
 
 	mov rsp,rdi
@@ -618,12 +618,12 @@ iodlg:
 	lea rbx,[rax+HU.hDlg-8]
 
 .set_stringsA:
-	mov rcx,rax
+	mov rdx,rax
 	mov r8,rdi
 	inc rax
-	mov edx,U16
 	jz .set_stringsB
-	call [lang.get_uz]
+	mov rcx,[pLangRes]
+	call lang.get_uz
 
 	mov r9,rdi
 	mov rcx,[rbx]

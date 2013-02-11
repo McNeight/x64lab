@@ -1,4 +1,9 @@
 
+- version 1.0.29 (11.02.2013 ) "" 
+  +DES Rewrite of language plugin. Be sure to update
+   application to this version. lang.dll files discontinued
+   in favour of a new improved simpler solution.
+
 - version 1.0.28 (08.02.2013 ) "" 
 - version 1.0.27 (07.02.2013 ) "" 
   +HLP Added [help\en-US\configure.txt]
@@ -97,12 +102,13 @@
 		├───tmp
 		└───tool
  
-  +NOT We using the following prefixing to describe
+  +NOT We use the following prefixing to describe
        updates and type of corrections. prefixes are affecting
     - ALG affecting change in the algorithms
     - API related to OS functions or x64lab
     - BEH behaviour/interaction
     - CFG configuration files
+    - DES affecting design
     - DIR paths and directory
     - FIL inserted or deleted files
     - GUI related modifications

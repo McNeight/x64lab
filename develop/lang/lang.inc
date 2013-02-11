@@ -11,6 +11,8 @@
   ;| filename:
   ;ö-------------------------------------------------ä
 
+	VERBOSE equ TRUE
+
 	UR	equ 1	;--- read only
 	UW	equ 2	;--- can write
 	U8	equ 8	;--- utf8
@@ -20,72 +22,81 @@
 		lang db 16 dup (0)
 		lcid dw 0 ;--- culture name
 		ids	 dw 0
-		tlen dw 0 ;--- total len inclusive RESDEF struc
-		ulen dw 0 ;--- total len only zero-string
-			 dw 4 dup (9090h)
+		dlen dw 0 ;--- data len
+		flen dw 0 ;--- file len
+		dave dw 0 ;--- avverage data len
+		resi dw 0
+				dw 0,0
 	ends
 
 	struct RESDEF
 		id		dw 0
-		next	dw 0	;--- offset from res_r/-1
-		set		db 0
-		type	db 0
-					dw 0
-		len		dw 0	;--- essential
+		next	dw 0	;--- offset from res_r
+		len		dw 0	;--- essential len 
 		;--- follow utf8+0+0 aligned 2 string
 	ends
-
-	macro @make_lang argidname,arglcid{
-	align 16
+	
+	macro @make_lang argidname,arglcid,\
+		argnotransl*,[argid,argstr]{
+	common
+		local .tmpNT
 		label res_h		;--- header
 		.lang db argidname,0
 		@align 16,0
 		.lcid	dw arglcid
 		.ids	dw 0
-		.tlen	dw 0
-		.ulen	dw 0
-					dw 4 dup (9090h)
+		.dlen	dw 0
+		.flen dw 0
+		.dave dw 0			
+		.resi dw res_i
+			dw 2 dup (9090h)
+		dd -1
+		dw 0
+		label .tmpNT
+			argnotransl
+		store WORD ($-.tmpNT) at (.tmpNT -2)
+		dw 0
+		@align 16,0
 		label res_i		;--- indexes
 			dw 256 dup (-1)
 		label res_r		;--- resource utf8 str
 		ids=0
-		tlen=0
-		ulen=0
-	}
-	
-	macro @make_uz	[argid,argset,argtype,argstr]{
-			local ..tmp,..tmq,..tmz
-			label ..tmq
+		dlen=0
+		flen=0
+
+		forward
+		local tmN,tmL,tmQ,tmR,tmZ
+		label tmQ
 			dw argid
+		label tmN
 			dw 0			;--- next
-			db argset	;--- string set
-			db argtype
+		label tmL
 			dw 0
-			dw ..tmp-$-2
-			label ..tmz
+		label tmR
 			argstr
-			label ..tmp
+		store WORD ($-tmR) at tmL
 			dw 0
 			@align 2,0
 			ids = ids + 1
-			tlen = tlen + $-..tmq
-			ulen = ulen + (..tmp-..tmz)+2
+			dlen = dlen + ($-tmR)
 
 			load ref WORD from res_i+((argid and 0FFh)*2)
-			store WORD ..tmq-res_r at res_i+((argid and 0FFh)*2)
-			store WORD ref at ..tmq+2
+			store WORD tmQ-res_r at res_i+((argid and 0FFh)*2)
+			store WORD ref at tmN
 
 		common
 			store WORD ids at res_h.ids
-			store WORD tlen at res_h.tlen
-			store WORD ulen at res_h.ulen
+			store WORD dlen at res_h.dlen
+		@align 16,0
+			store WORD $ at res_h.flen
+			store WORD (dlen/ids) at res_h.dave
 
 		match =TRUE,VERBOSE\{
 			display "(AVE.) TLEN = "
-			display_decimal tlen/ids
+			display_decimal dlen/ids
 			display 13,10
-			display "(AVE.) ULEN = "
-			display_decimal (ulen)/ids
+			display "fLEN = "
+			display_decimal $
 			display 13,10
 		\}
 	}

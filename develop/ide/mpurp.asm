@@ -105,13 +105,13 @@ mpurp:
 	push 0
 	push UZ_TEMPLATE
 	push 11
-	mov ecx,MP_DEVT
+	mov edx,MP_DEVT
 
 .customA:
-	push rcx
+	push rdx
 	mov r8,rdi
-	mov edx,U16
-	call [lang.get_uz]
+	mov rcx,[pLangRes]
+	call lang.get_uz
 	
 	;--- in RCX hCb
 	;--- in RDX string
@@ -128,8 +128,8 @@ mpurp:
 	mov rcx,rsi
 	call cbex.ins_item
 
-	pop rcx
-	test rcx,rcx
+	pop rdx
+	test rdx,rdx
 	jnz .customA
 
 	xor r8,r8
