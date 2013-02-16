@@ -1,4 +1,7 @@
 
+- version 1.0.31 (16.02.2013 ) reloc 
+  +OPS readable in the .reloc section for Win8
+
 - version 1.0.29 (11.02.2013 ) "" 
   +DES Rewrite of language plugin. Be sure to update
    application to this version. lang.dll files discontinued
@@ -115,6 +118,7 @@
     - HLP help or help files
     - MNU affeting menus
     - NOT note/description
+    - OPS operating system
     - REP affecting repository
     - RES resources
   

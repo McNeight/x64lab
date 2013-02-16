@@ -436,7 +436,7 @@ lang:
 	call art.catstrw
 
 	mov rcx,rsp
-	call art.fload
+	call art.mfload
 	test eax,eax
 	jz .def_langE
 
@@ -475,5 +475,5 @@ lang:
 	mov rcx,[pOmni]
 	call art.a16free
 	mov rcx,[pLangRes]
-	call art.vfree
+	call art.a16free
 	ret 0

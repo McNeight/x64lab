@@ -230,5 +230,5 @@ entrydll:
 		section '.rsrc' resource from items data readable }
 	
 	match =TRUE,INC_FIX	{	
-		section '.reloc' fixups data discardable }
+		section '.reloc' fixups data readable discardable }
 

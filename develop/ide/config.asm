@@ -730,7 +730,7 @@ config:
 	;--- check en-US
 	test r13,r13
 	jnz	.openF1
-@break
+;@break
 
 	mov eax,\
 		CFG_DEF_LCID
@@ -782,7 +782,7 @@ config:
 	jnz .openE
 
 	mov rcx,r13
-	call art.vfree
+	call art.a16free
 	xor r13,r13
 	
 .openE:

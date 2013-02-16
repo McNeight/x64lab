@@ -8,6 +8,9 @@
   will be read again from x64lab when reopening that source file.
   information for each textual document will be stored in the [tmp]
   directory of x64lab, in a TOP file format.
+
+  you can find an instructional videoclip+music at
+  http://youtu.be/M8GYXjeZkjc
   
   i have limited this capability to 65535 bookmarks for each document.
   if you dont add any bookmark in a source file, no information will be stored

@@ -1345,16 +1345,26 @@ end if
 	;#---------------------------------------------------ö
 	;|         .LOADFILE           	                     |
 	;ö---------------------------------------------------ü
-@using .fload
+@using .fload,.mfload
+.mfload:
+	mov dl,1
+	jmp	.floadA
+
 .fload:
 	;--- in RCX filename
+	;--- in RDX 0-> virtual alloc, 1->malloc
 	;--- RET RAX pmem / 0
 	;--- RET RCX original file size (aligned 16 and on 4kb page)
 	;--- RET RDX error code
+	xor dl,dl
+
+.floadA:
 	push rbp
 	push rbx
 	push rdi
+	push rsi
 	push r12
+	movzx rsi,dl
 
 	xor ebp,ebp			;--- err filename
 	xor ebx,ebx
@@ -1383,8 +1393,17 @@ end if
 	@nearest 16,rcx
 
 	dec ebp					;--- err valloc -4
+	dec esi
+	js	.floadB
+	call .a16malloc
+	jmp	.floadC
+
+.floadB:
 	mov edx,ecx
 	call .valloc
+
+.floadC:
+	inc esi
 	test rax,rax
 	jz	.exit_floadA
 
@@ -1400,7 +1419,16 @@ end if
 .exit_fload:
 	;--- err reading
 	mov rcx,rdi
+	dec esi
+	js .exit_floadC
+	call .a16free
+	jmp	.exit_floadD
+
+.exit_floadC:
 	call .vfree
+
+.exit_floadD:
+	inc esi
 	xor edi,edi
 	
 .exit_floadA:
@@ -1412,6 +1440,7 @@ end if
 	xchg rcx,r12
 	xchg rax,rdi
 	pop r12
+	pop rsi
 	pop rdi
 	pop rbx
 	pop rbp
