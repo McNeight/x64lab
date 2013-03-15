@@ -51,10 +51,16 @@ doc:
 	call .frm_tmpname
 
 ;@break
+	and [rbx+\
+		LABFILE.info],not LF_BM
+
 	mov rcx,rsp
 	call [top64.parse]
 	test rax,rax
 	jz	.load_infoE
+
+	or [rbx+\
+		LABFILE.info],LF_BM
 
 	mov r12,rax
 	mov rsi,rax

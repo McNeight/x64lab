@@ -151,7 +151,49 @@
 		clsid	dq ?
 		next	dq ?	;--- next extension slot
 		hash	dq ?
-					dq ?
+		cmds	dq ?	;--- commands memory
+	ends
+
+	;---- blocks in the [ext\asm.assembly]
+	;---	%d drive
+	;---	%f filename.ext
+	;---		%n name in filename
+	;---		%e extension
+	;---	%h hash
+	;---	%p path
+	;---	%r random
+	;---	%t timestamp
+	;---	# ;--- command exec and redirect output here
+	;---	> ;--- set x64lab
+	;---	< ;--- get x64lab
+	;---	? ;--- help x64lab
+	;---	- ;--- execute command and close shell
+	;---	+ ;--- execute command and stay open
+	;---  command item example
+	;---	polib:(
+	;---		enb:(
+	;---     .:"path","%path%;K:\masm32\bin"
+	;---    )
+	;---		;--- first commandline option for "polib"
+	;---		#:"polib.exe //OUT:%n.lib //MAKEDEF:%n.def %n.%e"
+	;---		;--- second commandline option for "polib"
+	;---		#:"polib.exe //LIST %n.lib"
+	;---	)
+
+	struct CMD_SLOT
+		next	dq 0
+		type	db 0	;--- #,>,<,?,-,+
+					db 0
+		len		dw 0
+		stuff	dd 0	;--- "polib.exe //OUT:%n.lib //MAKEDEF:%n.def %n.%e"
+		;--- stuff aligned 16
+	ends
+
+	struct CMD_ITEM
+		next	dq 0
+		hash	dq 0	;--- user named item "polib"
+		envb	dq 0	;--- points to an envblock
+		cmds	dq 0	;--- points to CMD_SLOT
 	ends
 
 	;-------- LABFILE -------------
@@ -173,6 +215,7 @@
 
 	NOASK_SAVE 		= 1
 	ASK_SAVE 			= 2
+
 
 	struct LABFILE
 						dq 0

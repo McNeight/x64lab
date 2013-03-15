@@ -15,6 +15,11 @@ sci:
 	;#---------------------------------------------------ö
 	;|                CREATE                             |
 	;ö---------------------------------------------------ü
+	virtual at rbx
+		.labf LABFILE
+	end virtual
+
+
 .create:
 	;--- in RCX parent
 	push rbp
@@ -391,7 +396,7 @@ sci:
 	;ö---------------------------------------------------ü
 
 .save:
-	;--- in RCX hSci
+	;--- in RCX labfile hSci
 	;--- in RDX path+file
 	;--- in R8 encoding
 	;--- RET RAX 0/1
@@ -417,7 +422,7 @@ sci:
 	mov r13,r8
 
 	;--- get text len
-	mov rcx,rbx
+	mov rcx,[.labf.hSci];rbx
 	call .get_txtl
 
 	;--- TODO: warning on zero len
@@ -443,7 +448,7 @@ sci:
 	mov [rsp+\
 		TEXTRANGEW.chrg.cpMin],ecx
 	mov r9,rsp
-	mov rcx,rbx
+	mov rcx,[.labf.hSci];rbx
 	call .get_txtr
 	test rax,rax
 	jz	.saveE
@@ -473,8 +478,12 @@ sci:
 	mov rcx,rdi
 	call art.vfree
 
-	mov rcx,rbx
+	mov rcx,[.labf.hSci];rbx
 	call .set_savepoint
+
+	mov rcx,rbx
+	call doc.save_info
+
 	
 	inc r12
 

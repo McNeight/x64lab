@@ -153,12 +153,12 @@ edit:
 	call sci.set_defprop
 
 	;--- TODO: eventual unicode conversion
-;---	mov rcx,rbx
-;---	add rcx,\
-;---		sizeof.LABFILE
-;---	call ext.load
-;---	test eax,eax
-;---	jz	.openB2
+	;---	mov rcx,rbx
+	;---	add rcx,\
+	;---		sizeof.LABFILE
+	;---	call ext.load
+	;---	test eax,eax
+	;---	jz	.openB2
 	test r14,r14
 	jz .openB2
 
@@ -593,6 +593,7 @@ edit:
 	test ecx,ecx
 	jz	.ret0
 	call doc.update_bm
+;---	or [.labf.info],LF_BM
 	jmp	.ret1
 
 .wm_notifyT2:

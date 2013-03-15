@@ -1,4 +1,9 @@
 
+- version 1.0.32 (15.03.2013 ) "" 
+  +HLP Customizing a lexer file videoclip+musik at
+   http://youtu.be/EjKOBqoyktM
+  +GUI improving bookmark [saving file -> save curr linepos
+
 - version 1.0.31 (16.02.2013 ) reloc 
   +OPS readable in the .reloc section for Win8
 
@@ -71,8 +76,6 @@
 		├───├───└───en-US
 		├───├───ide
 		├───├───lang
-		├───├───├───en-US
-		├───├───└───pl-PL
 		├───├───macro
 		├───├───plugin
 		├───├───├───bk64
@@ -93,8 +96,6 @@
 		├───help
 		├───└───en-US
 		├───lang
-		├───├───en-US
-		├───└───pl-PL
 		├───packed
 		├───plugin
 		├───project

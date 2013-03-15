@@ -241,8 +241,8 @@ wspace:
 		LF_BLANK
 	jnz	.close_fileNB
 
-	mov rcx,rbx
-	call doc.save_info
+;---	mov rcx,rbx
+;---	call doc.save_info
 
 	mov rax,[pDoc]
 	mov rcx,[rax+\
@@ -374,9 +374,21 @@ wspace:
 	mov rsi,[pIo]
 	mov edi,eax
 
-	test eax,LF_MODIF
+	test eax,\
+		LF_MODIF
+	jnz	.save_fileM
+
+	test eax,LF_TXT		;--- skip all but text
 	jz	.save_file1
 
+	or [.labf.info],LF_BM
+
+	mov rcx,rbx
+	call doc.save_info
+	jmp	.save_file1
+
+
+.save_fileM:
 	test eax,LF_BIN
 	jnz	.save_file1		;--- TODO: readonly for now
 
@@ -496,7 +508,7 @@ wspace:
 .save_fileA:
 	xor r8,r8
 	mov rdx,rdi
-	mov rcx,[.labf.hView]
+	mov rcx,rbx;[.labf.hView]
 	call sci.save
 
 	test eax,eax
@@ -869,7 +881,6 @@ wspace:
 	call tree.list
 
 	;--- calculate num known dirs/ datasize ------
-
 	mov rbx,rsi	;--- save datasize
 	mov rsi,rsp	;--- RSI point to labf,last is 0
 	xor eax,eax
@@ -924,36 +935,6 @@ wspace:
 		FILE_BUFLEN]
 
 	call .frm_head
-;---	mov al,09
-;---	stosb
-;---	;--- insert utf8 warning -------
-;---	xor edx,edx
-;---	mov ecx,UZ_INFO_UTF8
-;---	call [lang.get_uz]
-;---	mov rsi,rax
-;---	rep movsb
-;---	@do_eol
-	
-;---	mov al,09
-;---	stosb
-;---	;--- insert top info -------
-;---	xor edx,edx
-;---	mov ecx,UZ_INFO_TOP
-;---	call [lang.get_uz]
-;---	mov rsi,rax
-;---	rep movsb
-;---	@do_eol
-
-;---	mov al,09
-;---	stosb
-;---	;--- insert copyright -------
-;---	xor edx,edx
-;---	mov ecx,UZ_INFO_COPYR
-;---	call [lang.get_uz]
-;---	mov rsi,rax
-;---	rep movsb
-;---	@do_eol
-;---	@do_eol
 
 	;--- in RSP found kdirs
 	test r12,r12
