@@ -1,8 +1,17 @@
 
+- version 1.0.33 (17.03.2013 ) "" 
+  +FIL rewrite [tool\*] to update language online
+   library files to work with cscript
+  +DES [ide\cmds.asm] emty file at the moment
+  +DES simplified language compiling/downloading
+  +FIL [ext\uart.utf8] lexer class for uart macro language
+  +FIL [ext\uart.uart] extension for .uart files
+  +FIL [ext\wsf.vbscript] lexing .wsf script files as vbscript
+
 - version 1.0.32 (15.03.2013 ) "" 
   +HLP Customizing a lexer file videoclip+musik at
    http://youtu.be/EjKOBqoyktM
-  +GUI improving bookmark [saving file -> save curr linepos
+  +GUI improving bookmark, saving file -> save curr linepos
 
 - version 1.0.31 (16.02.2013 ) reloc 
   +OPS readable in the .reloc section for Win8

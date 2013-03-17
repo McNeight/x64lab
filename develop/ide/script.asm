@@ -180,7 +180,7 @@ script:
 
 .envL2:
 	;--- set env name in pConf
-;---	mov r15,rax
+	;--- mov r15,rax
 	mov rcx,rsi
 	@nearest 16,ecx
 	add rcx,rdi
@@ -283,7 +283,7 @@ script:
 	push rax ;--- STARTUPINFO
 	push r8  ;--- lpCurrentDirectory
 	push rcx ;--- lpEnvironment
-	push rcx ;--- dwCreationFlags
+	push CREATE_UNICODE_ENVIRONMENT ;--- dwCreationFlags
 	push rcx ;--- bInheritHandles
 
 	xor r9,r9

@@ -3,10 +3,10 @@
   My name is Marc Rainer Kranz, i am a German 
   assembly programmer.
 
-  You find me as "hopcode" on
+  You find me as mrk "hopcode" on
 
- - http://sites.google.com/site/x64lab
- - http://groups.google.com/group/x64lab
+ - http://x64lab.net
+ - http://board.x64lab.net
 
  - board http://board.flatassembler.net/index.php
  - and on comp.lang.asm.x86 newsgroup
@@ -60,7 +60,7 @@ Summary:
 
    because assembly is the most successful method
    to gain control of the machine. once having 
-   understood the basic concepts, assembly coding speed up 
+   understood the basic concepts, assembly coding speeds up 
    your coding of hundreds times. i speak for my personal
    experience; what we need now is organization of our tools,
    an easy and safe way when editing files or using a toolchain.
@@ -74,7 +74,7 @@ Summary:
 
 -4 Is it only Windows ?
 
-   yes, at the moment. i have no idea how *NXes work.
+   yes, at the moment. i have no idea how other OSes work.
    if you develop on other OS, make a designed proposal.
    nothing is impossible.
 
@@ -140,9 +140,6 @@ Summary:
 
      - [lang\makone.bat]
         to rebuild and set one of the lang files
-
-     - [lang\makelist.vbs]
-        output a lang.txt list of updated languages
 
      - [version.vbs]
         to increment the version number. it creates 

@@ -163,16 +163,19 @@
 	;---	%p path
 	;---	%r random
 	;---	%t timestamp
+
 	;---	# ;--- command exec and redirect output here
 	;---	> ;--- set x64lab
 	;---	< ;--- get x64lab
 	;---	? ;--- help x64lab
 	;---	- ;--- execute command and close shell
 	;---	+ ;--- execute command and stay open
+
 	;---  command item example
 	;---	polib:(
 	;---		enb:(
-	;---     .:"path","%path%;K:\masm32\bin"
+	;---     path:"%path%;K:\masm32\bin"
+	;---     
 	;---    )
 	;---		;--- first commandline option for "polib"
 	;---		#:"polib.exe //OUT:%n.lib //MAKEDEF:%n.def %n.%e"
@@ -409,7 +412,6 @@ ends
 		vlen dw ?
 		;--- aligned 16 utf16 name: value obtained at runtime
 	ends
-
 
 
 	struct LABPATH

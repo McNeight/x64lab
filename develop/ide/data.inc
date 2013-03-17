@@ -114,6 +114,8 @@ section '.data' data readable writeable
 		uzDefLang		du "en-US",0
 		uzHexDll		du "hexview.dll",0
 		uzHexClass	du "HexView32",0
+		uzUpdate		du "update",0
+		uzJob				du "job",0
 
 		uzDefault  du "default"		;<--- follows
 		uzLabExt   du "."
@@ -126,13 +128,14 @@ section '.data' data readable writeable
 		uzSciExt   du ".sci",0
 		uzBmpExt	 du ".bmp",0
 		uzVbsExt	 du ".vbs",0
+		uzWsfExt	 du ".wsf",0
 		uzCmd 		 du "cmd " ;--- 16 bytes
 		uzCscript	 du "cscript",0
 		uzNoLogo	 du "//nologo",0
 		uzR				 du "r /e" 
 		;--- "explore" "r /e"  ',"path"'
 		;--- uzStart du "cmd /C  ",0
-		
+
 		uzTreeClass	du "SysTreeView32",0
 		uzLvwClass	du "SysListView32",0
 		uzStcClass	du "STATIC",0

@@ -1,6 +1,4 @@
 @echo off
-@cscript %x64devdir%\lang\makelist.vbs //nologo
-copy %x64devdir%\lang\lang.txt %x64devdir%\..\lang /Y
 
 set LANG=en-US
   call %x64devdir%\lang\makeone.bat

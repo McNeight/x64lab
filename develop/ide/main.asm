@@ -168,6 +168,7 @@ start:
 	call ext.setup
 	call ext.setup_bin
 
+
 .winmain:
 	mov ecx,\
 		sizea16.WNDCLASSEXW\
@@ -622,18 +623,8 @@ winproc:
 	;#------------------------------------------ä
 .mi_upd_lang:
 	sub rsp,\
-		FILE_BUFLEN
-	mov r8,rsp
-	mov edx,UZ_RESTART
-	mov rcx,[pLangRes]
-	call lang.get_uz
-
-	mov rdx,rsp
-	mov r8,uzTitle
-	mov rcx,[hMain]
-	call apiw.msg_yn
-	cmp eax,IDNO
-	jz	.ret0
+		FILE_BUFLEN*2
+	mov rdi,rsp
 
 	mov rdi,rsp
 	mov rax,[toolDir]
@@ -643,8 +634,16 @@ winproc:
 	push rcx
 	push uzNoLogo
 	push uzSpace
-	push uzVbsExt
+	push uzDQuote
 	push uzLangName
+	push uzDQuote
+	push uzColon
+	push uzJob
+	push uzIslash
+	push uzIslash
+	push uzSpace
+	push uzWsfExt
+	push uzUpdate
 	push uzSlash
 	push rsi
 	push uzSpace
@@ -652,16 +651,54 @@ winproc:
 	push rdi
 	push rcx
 	call art.catstrw
-	
+
 	;--- process must be executed in the main app directory
 	mov rax,[appDir]
 	lea r8,[rax+DIR.dir]
-	mov rdx,rsp
+	mov rdx,rdi
 	xor rcx,rcx
 	call script.spawn
-	test eax,eax
-	jz	.ret0
-	jmp	.mi_ws_exit
+
+	jmp	.ret1
+
+	;---	mov edx,UZ_RESTART
+	;---	mov rcx,[pLangRes]
+	;---	call lang.get_uz
+
+	;---	mov rdx,rsp
+	;---	mov r8,uzTitle
+	;---	mov rcx,[hMain]
+	;---	call apiw.msg_yn
+	;---	cmp eax,IDNO
+	;---	jz	.ret0
+
+;---	mov rdi,rsp
+;---	mov rax,[toolDir]
+;---	xor ecx,ecx
+;---	lea rsi,[rax+DIR.dir]
+
+;---	push rcx
+;---	push uzNoLogo
+;---	push uzSpace
+;---	push uzVbsExt
+;---	push uzLangName
+;---	push uzSlash
+;---	push rsi
+;---	push uzSpace
+;---	push uzCscript
+;---	push rdi
+;---	push rcx
+;---	call art.catstrw
+
+	;--- process must be executed in the main app directory
+	;---	mov rax,[appDir]
+	;---	lea r8,[rax+DIR.dir]
+	;---	mov rdx,rsp
+	;---	xor rcx,rcx
+	;---	call script.spawn
+	;---	test eax,eax
+	;---	jz	.ret0
+	;---	jmp	.mi_ws_exit
 
 	;ü------------------------------------------ö
 	;|     MI_SCI_UNCOMMLine                    |

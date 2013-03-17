@@ -13,7 +13,13 @@ config\x64lab.bmp
 ext\*
 template\*
 
-tool\lang.vbs
+tool\const.vbs
+tool\file.vbs
+tool\io.vbs
+tool\net.vbs
+tool\regex.vbs
+tool\update.wsf
+
 lang\en-US.bin
 plugin\bk64.dll
 plugin\dock64.dll

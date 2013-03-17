@@ -1,0 +1,68 @@
+<package>
+<job id="lang">
+	<script language="VBScript" src="const.vbs"/>
+	<script language="VBScript" src="file.vbs"/>
+	<script language="VBScript" src="regex.vbs"/>
+	<script language="VBScript" src="net.vbs"/>
+	<script language="VBScript" src="io.vbs"/>
+	<script language="VBScript">
+	io_set()
+	srv_path = "http://x64lab.googlecode.com/hg/lang/"
+	loc_path = "lang/"
+	WScript.Echo " Conecting [" & srv_path & "]"
+	s = net_get_page (srv_path)
+	if s = "" then
+		cout.writeline " Cannot update from server. Exiting..."
+		WScript.Quit (1)
+	end if
+
+	file_array = Array(0,0)
+	n = regex_all (s,"<a href=""(\S+\.bin)"">(.*)</a>",file_array)  ' retrieve all .bin files
+
+	if n = 0 then
+		cout.writeline " Cannot read from server. Exiting..."
+		set file_array=nothing
+		io_unset()
+		WScript.Quit (1)
+	end if
+
+	WScript.Echo " Found " & n & " language files"
+	WScript.Echo " Select index to choose your language. Accept it pressing <enter>."
+	WScript.Echo " Simply pressing <enter> will quit"
+	WScript.Echo ""
+	for index = 0 to n-1
+		s = " - " & index & " " & file_array(index,0)
+		wscript.echo s
+	next
+
+	index = cin.ReadLine
+	if (IsNumeric(index)) then
+		index = index and 255
+		if index =< n - 1 then
+			sFile = file_array(index,0)
+			wscript.echo " choosing -> " & index & " [" & sFile & "]"
+		else
+			set file_array=nothing
+			io_unset()
+			WScript.Quit (1)
+		end if
+	else
+		set file_array=nothing
+		io_unset()
+		WScript.Quit (1)
+	end if
+
+	WScript.Echo " Downloading language plugin..."
+	s = net_dload (srv_path & sFile, _
+		loc_path & sFile)
+	if s = 0 then
+		cout.writeline " Error downloading plugin. Exiting..."
+		else
+		cout.writeline " OK. Exiting..."
+	end if
+
+	set file_array=nothing
+	io_unset()
+	</script>
+</job>
+</package>

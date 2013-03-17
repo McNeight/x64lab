@@ -12,6 +12,8 @@ copy config\x64lab.bmp ..\config /Y
 copy config\docking.bin ..\config /Y
 
 xcopy ext ..\ext\ /E /Y
+copy tool\*.* ..\tool /Y
+
 copy lang\en-US.bin ..\lang\en-US.bin /Y
 
 copy plugin\dock64.dll ..\plugin /Y
