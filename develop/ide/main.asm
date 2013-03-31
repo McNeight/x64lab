@@ -208,7 +208,7 @@ start:
 	mov	[.wcx.hIcon],rax
 	mov	[.wcx.hIconSm],rax
 
-	call mnu.setup
+;---	call mnu.setup
 
 	mov edx,IDC_ARROW
 	xor ecx,ecx
@@ -239,7 +239,8 @@ start:
 	mov rax,[hInst]
 	mov [rbx+50h],rax
 
-	mov rax,[hMnuMain]
+	;mov rax,[hMnuMain]
+	xor eax,eax
 	mov [rbx+48h],rax
 	mov [rbx+40h],rcx
 
@@ -441,12 +442,12 @@ winproc:
 ;---	cmp edx,\
 ;---		WM_ENTERSIZEMOVE
 ;---	jz	.wm_poschged
-	cmp edx,WM_DRAWITEM
-	jz	.wm_drawitem
 	cmp edx,WM_NOTIFY
 	jz	.wm_notify
 	cmp edx,WM_COMMAND
 	jz	.wm_command
+	cmp edx,WM_DRAWITEM
+	jz	.wm_drawitem
 	cmp	edx,WM_DESTROY
 	jz	.wm_destroy
 	cmp edx,WM_CREATE
@@ -465,7 +466,7 @@ winproc:
 	jmp	.defwndproc
 
 .wm_init_mnp:
-	cmp r8,[tMP_LANG]
+	cmp r8,[hMP_LANG]
 	jz	.mp_lang
 
 	;---	;---ModifyMenu(hSubMenu, nID, MF_BYCOMMAND | MF_OWNERDRAW, nID, szText);
@@ -572,7 +573,7 @@ winproc:
 	jz	.mi_devt_addg
 	cmp ax,MI_PA_BROWSE
 	jz	.mi_pa_browse
-	cmp ax,MI_ED_RELSCICLS
+	cmp ax,MI_SCI_RELSCICLS
 	jz	.mi_ed_relscicls
 	cmp ax,MI_CONF_KEY
 	jz	.mi_conf_key
@@ -592,27 +593,18 @@ winproc:
 	ja	.defwndproc
 
 .mi_lang:
-	sub rsp,\
-		sizea16.MENUITEMINFOW
-
-	mov r9,rsp
-	mov [r9+\
-		MENUITEMINFOW.fMask],\
-		MIIM_DATA
 	mov edx,eax
-	mov rcx,[tMP_LANG]
-	call apiw.mni_get_byid
-
-	mov rcx,[rsp+\
-		MENUITEMINFOW.dwItemData]
-	test rcx,rcx
+	mov rcx,[hMP_LANG]
+	call mnu.get_data
+	test eax,eax
 	jz	.ret0
 
 	mov rdx,[pConf]
-	cmp cx,[rdx+\
+	cmp ax,[rdx+\
 		CONFIG.lcid]
 	jz	.ret0
 
+	mov ecx,eax
 	call lang.reload
 	cmp eax,IDNO
 	jnz	.mi_ws_exit
@@ -941,7 +933,6 @@ winproc:
 	mov rcx,[pLangRes]
 	call lang.get_uz
 
-
 	mov r8,uzTitle
 	mov rdx,rsp
 	mov rcx,[hMain]
@@ -979,7 +970,12 @@ winproc:
 	xor r15,r15
 
 	mov rax,[.labf.dir]
+	mov r8,[rax+DIR.rdir]
 	lea r9,[rax+DIR.dir]
+	test [rax+DIR.type],\
+		DIR_HASREF
+	jz	.mi_fi_openA
+	lea r9,[r8+DIR.dir]
 	jmp	.mi_fi_openA
 
 .mi_fi_openO:
@@ -1451,6 +1447,8 @@ winproc:
 	mov rcx,[hMain]
 	call win.controls
 
+	call mnu.setup
+
 	;call devtool.load
 
 	mov rax,[pConf]
@@ -1569,13 +1567,12 @@ winproc:
 	;ü------------------------------------------ö
 	;|     WM_DRAWITEM                          |
 	;#------------------------------------------ä
-
 .wm_drawitem:
 	virtual at rbx
 		.dis	DRAWITEMSTRUCT
 	end virtual
-	mov rbx,r9
 
+	mov rbx,r9
 	cmp [.dis.CtlType],\
 		ODT_MENU
 	jnz	.ret0
@@ -1593,7 +1590,7 @@ winproc:
 	lea rdx,[.dis.rcItem]
 	mov rcx,[.dis.hDC]
 	call apiw.fillrect
-	jmp	.ret1
+	jmp .ret1
 
 .wm_dis_mnuA:
 	push r12
@@ -1619,9 +1616,8 @@ winproc:
 
 	mov rdi,[.dis.itemData]
 	test rdi,rdi
-	jz .wm_dis_mnuB1	
+	jz .wm_dis_mnuB1
 
-	movzx eax,[rdi+OMNI.iIcon]
 	mov r11,\
 		ILD_TRANSPARENT
 	mov r10d,\
@@ -1631,27 +1627,27 @@ winproc:
 		[.dis.rcItem.left]
 	add r9d,1
 	mov r8,[.dis.hDC]
-	mov rdx,rax
+	movzx edx,dil
 	mov rcx,[hBmpIml]
 	call iml.draw
 
 .wm_dis_mnuB1:	
-;---	mov rdx,[hMnuFont]
-;---	mov rcx,[.dis.hDC]
-;---	call apiw.selobj
-;---	mov r12,rax
-
+;---	;---	mov rdx,[hMnuFont]
+;---	;---	mov rcx,[.dis.hDC]
+;---	;---	call apiw.selobj
+;---	;---	mov r12,rax
 	mov rdx,TRANSPARENT
 	mov rcx,[.dis.hDC]
 	call apiw.set_bkmode
 
+;@break
 	mov eax,[.dis.itemID]
 	cmp eax,MI_OTHER
 	jae	.wm_dis_mnuB2
 
-;@break
 	sub eax,MNU_X64LAB
 	jl	.wm_dis_mnuB2
+
 	shl eax,5		;--- x 32 size of KEYA
 	add rax,[pKeya]
 	lea rdx,[rax+KEYA.name]
@@ -1682,7 +1678,7 @@ winproc:
 
 	test rdi,rdi
 	jz	.wm_dis_mnuE
-	add rdi,sizeof.OMNI
+	shr rdi,16
 
 	mov r10,DT_NOCLIP\
 		or DT_VCENTER	\
@@ -1695,20 +1691,152 @@ winproc:
 	mov rcx,[.dis.hDC]
 	call apiw.drawtext
 
-;---	mov rdx,r12
-;---	mov rcx,[.dis.hDC]
-;---	call apiw.selobj
-
 .wm_dis_mnuE:
 	pop r13
 	pop r12
 	jmp	.ret1
 
 
+
+
+;---.wm_drawitem:
+;---	virtual at rbx
+;---		.dis	DRAWITEMSTRUCT
+;---	end virtual
+;---	mov rbx,r9
+
+;---	cmp [.dis.CtlType],\
+;---		ODT_MENU
+;---	jnz	.ret0
+
+;---.wm_dis_mnu:
+;---	mov eax,[.dis.itemID]
+;---	test eax,eax
+;---	jnz	.wm_dis_mnuA
+
+;---	;--- draw space for separator 
+;---	mov rcx,NULL_BRUSH
+;---	call apiw.get_stockobj
+
+;---	mov r8,COLOR_MENU+1
+;---	lea rdx,[.dis.rcItem]
+;---	mov rcx,[.dis.hDC]
+;---	call apiw.fillrect
+;---	jmp	.ret1
+
+;---.wm_dis_mnuA:
+;---	push r12
+;---	push r13
+
+;---.wm_dis_mnuD:
+;---	mov r8,COLOR_MENU+1
+;---	test [.dis.itemState],\
+;---		ODS_GRAYED
+;---	jnz	.wm_dis_mnuB
+
+;---	mov r8,COLOR_MENU+1
+;---	test [.dis.itemState],\
+;---		ODS_SELECTED
+;---	jz	.wm_dis_mnuB
+;---	mov r8,\
+;---		COLOR_INACTIVECAPTION+1
+	
+;---.wm_dis_mnuB:
+;---	lea rdx,[.dis.rcItem]
+;---	mov rcx,[.dis.hDC]
+;---	call apiw.fillrect
+
+;---	mov rdi,[.dis.itemData]
+;---	test rdi,rdi
+;---	jz .wm_dis_mnuB1
+
+
+;---	movzx eax,[rdi+OMNI.iIcon]
+;---	mov r11,\
+;---		ILD_TRANSPARENT
+;---	mov r10d,\
+;---		[.dis.rcItem.top]
+;---	add r10d,4
+;---	mov r9d,\
+;---		[.dis.rcItem.left]
+;---	add r9d,1
+;---	mov r8,[.dis.hDC]
+;---	mov rdx,rax
+;---	mov rcx,[hBmpIml]
+;---	call iml.draw
+
+;---.wm_dis_mnuB1:	
+;---;---	mov rdx,[hMnuFont]
+;---;---	mov rcx,[.dis.hDC]
+;---;---	call apiw.selobj
+;---;---	mov r12,rax
+
+;---	mov rdx,TRANSPARENT
+;---	mov rcx,[.dis.hDC]
+;---	call apiw.set_bkmode
+
+;---	mov eax,[.dis.itemID]
+;---	cmp eax,MI_OTHER
+;---	jae	.wm_dis_mnuB2
+
+;---;@break
+;---	sub eax,MNU_X64LAB
+;---	jl	.wm_dis_mnuB2
+;---	shl eax,5		;--- x 32 size of KEYA
+;---	add rax,[pKeya]
+;---	lea rdx,[rax+KEYA.name]
+
+;---	sub [.dis.rcItem.right],20
+;---	mov r10,DT_NOCLIP\
+;---		or DT_RIGHT	\
+;---		or DT_VCENTER	\
+;---		or DT_SINGLELINE	
+;---	lea r9,[.dis.rcItem]
+;---	mov r8,-1
+;---	mov rcx,[.dis.hDC]
+;---	call apiw.drawtext
+;---	add [.dis.rcItem.right],20
+
+;---.wm_dis_mnuB2:
+;---	mov ecx,COLOR_GRAYTEXT
+;---	test [.dis.itemState],\
+;---		ODS_GRAYED
+;---	jnz	.wm_dis_mnuC
+;---	mov ecx,COLOR_MENUTEXT
+
+;---.wm_dis_mnuC:
+;---	call apiw.get_syscol
+;---	mov rdx,rax
+;---	mov rcx,[.dis.hDC]
+;---	call apiw.set_txtcol
+
+;---	test rdi,rdi
+;---	jz	.wm_dis_mnuE
+;---	add rdi,sizeof.OMNI
+
+;---	mov r10,DT_NOCLIP\
+;---		or DT_VCENTER	\
+;---		or DT_SINGLELINE	
+
+;---	lea r9,[.dis.rcItem]
+;---	add [.dis.rcItem.left],16+8
+;---	mov r8,-1
+;---	mov rdx,rdi
+;---	mov rcx,[.dis.hDC]
+;---	call apiw.drawtext
+
+;---;---	mov rdx,r12
+;---;---	mov rcx,[.dis.hDC]
+;---;---	call apiw.selobj
+
+;---.wm_dis_mnuE:
+;---	pop r13
+;---	pop r12
+;---	jmp	.ret1
+
+
 .wm_measitem:
-
 	;---	call art.cout2XX
-
 	mov r9,[.lparam]
 	virtual at rbx
 		.mis MEASUREITEMSTRUCT
@@ -1723,10 +1851,9 @@ winproc:
 	test rdi,rdi
 	jz .ret1
 
-	movzx eax,[rdi+OMNI.len]
-	shr eax,1
-	inc eax
-
+	mov eax,edi
+	shr eax,8
+	and eax,0FFh	;--- max 255 codepoints
 	add eax,10	;--- eventual chars for accel
 	mov ecx,[tmMnuSize.cx]
 	mul ecx

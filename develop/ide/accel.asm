@@ -173,38 +173,6 @@ accel:
 
 	call wspace.frm_head
 
-;---	mov al,09
-;---	stosb
-;---	;--- insert utf8 warning -------
-;---	xor edx,edx
-;---	mov ecx,UZ_INFO_UTF8
-;---	call [lang.get_uz]
-;---	mov rsi,rax
-;---	rep movsb
-;---	@do_eol
-
-;---	mov al,09
-;---	stosb
-;---	;--- insert top info -------
-;---	xor edx,edx
-;---	mov ecx,UZ_INFO_TOP
-;---	call [lang.get_uz]
-;---	mov rsi,rax
-;---	rep movsb
-;---	@do_eol
-
-;---	mov al,09
-;---	stosb
-;---	;--- insert copyright -------
-;---	xor edx,edx
-;---	mov ecx,UZ_INFO_COPYR
-;---	call [lang.get_uz]
-;---	mov rsi,rax
-;---	rep movsb
-;---	@do_eol
-;---	@do_eol
-
-
 	mov al,09
 	stosb
 	mov eax,".:"
@@ -299,8 +267,6 @@ accel:
 	pop rbp
 	ret 0
 
-
-
 	;ü-----------------------------------------ö
 	;|     .proc                               |
 	;#-----------------------------------------ä
@@ -345,13 +311,13 @@ accel:
 		NM_LISTVIEW.uNewState],\
 		LVIS_FOCUSED \
 		or LVIS_SELECTED ;or LVIS_FOCUSED
-	jz	.lvw_schgedE;.ret0
+	jz	.lvw_schgedE
 
-	;--- in RCX OMNI struct
+	;--- in RCX modified menuitemdata
 	mov rsi,rcx
-	movzx eax,[rcx+OMNI.id]
+	movzx eax,ch
 	mov rdi,[pKeya]
-	sub ax,MNU_X64LAB
+	test eax,eax
 	jl	.ret0
 	shl eax,5			;--- x 32 sizeof.KEYA
 	xor r9,r9
@@ -370,7 +336,9 @@ accel:
 	call .set_chks
 
 	mov [.kdlg.last],rsi		;--- set OMNI
-	movzx eax,[rsi+OMNI.id]
+	mov ecx,esi
+	movzx eax,ch
+	add eax,MNU_X64LAB
 
 .lvw_schgedE:
 	call art.w2u
@@ -427,10 +395,10 @@ accel:
 	call .set_chks
 
 .btn_setB:
-	movzx eax,[rsi+\
-		OMNI.id]
+	mov ecx,esi
+	movzx eax,ch
 	mov rcx,[pKeya]
-	sub ax,MNU_X64LAB
+	test eax,eax
 	jl	.ret0
 	shl eax,5			;--- x 32 sizeof.KEYA
 	add rax,rcx
@@ -711,6 +679,7 @@ accel:
 	;push MI_SCI_COMMB
 	push MI_SCI_UNCOMML
 	push MI_SCI_COMML
+	push MI_SCI_RELSCICLS
 	push [hMP_SCI]
 
 	push 0
@@ -727,7 +696,6 @@ accel:
 	push 0
 	push MI_ED_LNK
 	push MI_ED_REMITEM
-	push MI_ED_RELSCICLS
 	push [hMP_EDIT]
 
 	push 0
@@ -745,7 +713,7 @@ accel:
 	push MI_WS_SAVE
 	push MI_WS_EXIT
 	mov r12,[hMP_WSPACE]
-	
+
 .wm_initdC2:
 	pop rdx
 	test rdx,rdx
@@ -759,17 +727,28 @@ accel:
 
 .wm_initdC4:
 	mov rcx,r12
-	call .get_info
+	call mnu.get_data
 
-	xor edx,edx
+	;--- TEXT 6 
+	;--- LEN  1
+	;--- ICON 1
+	sub edx,MNU_X64LAB
+	mov ah,dl
+
+	;--- TEXT 6 
+	;--- ID  1
+	;--- ICON 1
+	xor ecx,ecx
 	mov [rsi+\
-		LVITEMW.iItem],edx
+		LVITEMW.iItem],ecx
 	mov [rsi+\
-		LVITEMW.iSubItem],edx
-	movzx ecx,\
-		[rax+OMNI.iIcon]		;--- icon id
+		LVITEMW.iSubItem],ecx
+
+
+	mov cl,al		;--- icon id
 	mov [rsi+\
 		LVITEMW.iImage],ecx
+	
 	mov [rsi+\
 		LVITEMW.pszText],rdi
 	mov [rsi+\
@@ -810,8 +789,8 @@ accel:
 	;|     .FRM_RECORD :[1024]:(....):"text"   |
 	;#-----------------------------------------ä
 
-.frm_rectxt:
-	;--- in RCX pOmni
+.frm_rectxt: ;REVIEW
+	;--- in RCX menudataitem
 	;--- in RDX buffer
 	push rbx
 	push rdi
@@ -829,8 +808,8 @@ accel:
 	mov al,"["
 	stosw
 
-	movzx eax,[rbx+\
-		OMNI.id]
+	movzx eax,bh
+	add eax,MNU_X64LAB
 	call art.w2u
 	stosq
 	
@@ -852,11 +831,9 @@ accel:
 	stosw
 
 	;--- (....) : --------
-	movzx eax,[rbx+\
-		OMNI.id]
+	movzx eax,bh
 	mov rdx,[pKeya]
 	xor ecx,ecx
-	sub ax,MNU_X64LAB
 	shl eax,5			;--- x 32 sizeof.KEYA
 	add rax,rdx
 	cmp ecx,[rax]
@@ -880,7 +857,8 @@ accel:
 	mov al,'"'
 	stosw
 	
-	lea rcx,[rbx+sizeof.OMNI];4] ;--- menu text
+	mov rcx,rbx
+	shr rcx,16	; ;--- menu text
 	mov rdx,rdi
 	call utf16.copyz
 	add rdi,rax
@@ -889,7 +867,7 @@ accel:
 	stosw
 	xor eax,eax
 	stosd
-	
+
 	pop rdi
 	pop rbx
 	ret 0
@@ -1037,26 +1015,31 @@ accel:
 	;|     .GET_INFO (from menuitem)           |
 	;#-----------------------------------------ä
 
-.get_info:
-	;--- in RCX hMenu
-	;--- in RDX id menuitem
-	;--- (uses RBX pKdlg)
-	sub rsp,\
-		sizeof.MENUITEMINFOW
-	mov r9,rsp
-	xor eax,eax
-	mov [r9+\
-		MENUITEMINFOW.fMask],\
-		MIIM_DATA
-	mov [r9+\
-		MENUITEMINFOW.dwItemData],rax
+;---.get_info:
+;---	;--- in RCX hMenu
+;---	;--- in RDX id menuitem
+;---	;--- (uses RBX pKdlg)
+;---	;--- MOdify the meniutemdata 6:text,1:id,1:icon
+;---	push rdx
+;---	sub rsp,\
+;---		sizeof.MENUITEMINFOW
+;---	mov r9,rsp
+;---	xor eax,eax
+;---	mov [r9+\
+;---		MENUITEMINFOW.fMask],\
+;---		MIIM_DATA
+;---	mov [r9+\
+;---		MENUITEMINFOW.dwItemData],rax
 
-	call apiw.mni_get_byid
-	mov rax,[rsp+\
-		MENUITEMINFOW.dwItemData]
-	add rsp,\
-		sizeof.MENUITEMINFOW
-	ret 0
+;---	call apiw.mni_get_byid
+;---	mov rax,[rsp+\
+;---		MENUITEMINFOW.dwItemData]
+;---	add rsp,\
+;---		sizeof.MENUITEMINFOW
+;---	pop rdx
+;---	sub edx,MNU_X64LAB
+;---	mov ah,dl
+;---	ret 0
 
 .store_pos:
 	;--- (uses RBX pKdlg)

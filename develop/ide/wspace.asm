@@ -2656,6 +2656,9 @@ wspace:
 .tree_notify:
 	mov edx,[r9+NMHDR.code]
 
+	cmp edx,NM_RCLICK
+	jz	.tree_rclick
+
 	cmp edx,\
 		TVN_ITEMEXPANDEDW
 	jz	.tree_exped
@@ -2677,8 +2680,53 @@ wspace:
 
 	;	cmp edx,TVN_ENDLABELEDITW
 	;	jz	.tree_gdinfo
-	; cmp edx,NM_RCLICK
-	;	jz	.tree_rclick
+
+	;#---------------------------------------------------ö
+	;|      WSPACE.TREE_RCLICK                           |
+	;ö---------------------------------------------------ü
+
+.tree_rclick:
+	mov rcx,[hTree]
+	call tree.gethit
+	test eax,eax
+	jz	winproc.ret0
+	test edx,edx
+	jz	winproc.ret0
+
+	mov rbx,rdx
+	mov rdi,r8
+
+	mov r9,[.labf.hItem]
+	mov rcx,[hTree]
+	call tree.sel_item
+	
+	mov rcx,[hMT_WSP]
+	test [.labf.type],LF_WSP
+	jnz	.tree_rclickA
+
+	mov rcx,[hMT_FILE]
+	test [.labf.type],LF_FILE
+	jnz	.tree_rclickA
+
+	mov rcx,[hMT_SECT]
+
+	;--- in RCX hMenu
+	;--- in RDX uFlags
+	;--- in R8 x
+	;--- in R9 y 
+	;--- in R10 hwnd
+	;--- in R11 rect
+
+.tree_rclickA:
+	mov r8,rdi
+	mov r9,r8
+	shr r9,32
+	xor r11,r11
+	mov r10,[hMain]
+	and r8d,r8d
+	mov edx,TPM_RIGHTALIGN	;or TPM_RETURNCMD	
+	call apiw.mnp_track
+	jmp	winproc.ret0
 
 	;#---------------------------------------------------ö
 	;|      WSPACE.TREE_EXPED                            |

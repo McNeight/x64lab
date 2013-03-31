@@ -113,15 +113,6 @@
 	IO_SAVEWSP equ sizeof.IODLG * 2
 	IO_NEWLNK  equ sizeof.IODLG * 3
 
-	;--- Ownerdraw menuitem
-	struct OMNI	
-		id			dw 0
-		iIcon		dw 0
-						dw 0
-		len			dw 0
-		;--- follow menu text --
-	ends
-	
 	;--- Accelerators wrapping struct
 	struct KEYA
 		fVirt	db 0

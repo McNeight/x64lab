@@ -1,4 +1,18 @@
+	'---  #-------------------------------------------------ß
+	'---  |          x64lab  MPL 2.0 License                |
+	'---  |   Copyright (c) 2009-2012, Marc Rainer Kranz.   |
+	'---  |            All rights reserved.                 |
+	'---  ö-------------------------------------------------ä
+
+	'---  #-------------------------------------------------ß
+	'---  | uft-8 encoded üäöß
+	'---  | update:
+	'---  | filename:
+	'---  ö-------------------------------------------------ä
+
 <package>
+'--- update the language files on x64lab ----
+'--- script run from x64lab ide direectory
 <job id="lang">
 	<script language="VBScript" src="const.vbs"/>
 	<script language="VBScript" src="file.vbs"/>
@@ -17,7 +31,7 @@
 	end if
 
 	file_array = Array(0,0)
-	n = regex_all (s,"<a href=""(\S+\.bin)"">(.*)</a>",file_array)  ' retrieve all .bin files
+	n = regex_all (s,"<a href=""(\S+\.bin)"">(.*)</a>",file_array)  '--- retrieve all .bin files
 
 	if n = 0 then
 		cout.writeline " Cannot read from server. Exiting..."

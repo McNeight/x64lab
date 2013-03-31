@@ -174,7 +174,7 @@ iodlg:
 	push [.hu.hOk]
 	push UZ_OK
 	push [.hu.hCanc]
-	mov ecx,UZ_CANCEL
+	mov edx,UZ_CANCEL
 	jmp .wm_initdB
 	
 .wm_initdWSPS:
@@ -195,7 +195,7 @@ iodlg:
 	push [.hu.hOk]
 	push UZ_OK
 	push [.hu.hCanc]
-	mov ecx,UZ_CANCEL
+	mov edx,UZ_CANCEL
 	jmp .wm_initdB
 	
 .wm_initdIONN:
@@ -216,7 +216,7 @@ iodlg:
 	push [.hu.hOk]
 	push UZ_OK
 	push [.hu.hCanc]
-	mov ecx,UZ_CANCEL
+	mov edx,UZ_CANCEL
 	jmp .wm_initdB
 
 .wm_initdIOSC:

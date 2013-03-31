@@ -38,13 +38,13 @@
 	@sizea16 TCITEMW
 
 	struct TVITEMW
-	 mask			dd ?
-						dd ?
-	 hItem		dq ?
+	 mask		dd ?
+					dd ?
+	 hItem	dq ?
 
-	 state 			dd ?
-	 stateMask	dd ?
-	 pszText		dq ?
+	 state 		 dd ?
+	 stateMask dd ?
+	 pszText	 dq ?
 
 	 cchTextMax 		dd ?
 	 iImage					dd ?
@@ -54,6 +54,32 @@
 	 lParam 				dq ?
 	ends
 	@sizea16 TVITEMW
+
+
+;---	struct TVITEMW
+;---	 mask			dd ?
+;---						dd ?
+;---	 hItem		dq ?
+
+;---	 state 			dd ?
+;---	 stateMask	dd ?
+;---	 pszText		dq ?
+
+;---	 cchTextMax 		dd ?
+;---	 iImage					dd ?
+;---	 iSelectedImage dd ?
+;---	 cChildren 			dd ?
+;---	 lParam 				dq ?
+;---   iIntegral dd ?
+;---;---#if (_WIN32_IE >= 0x0600)
+;---   uStateEx  dd ?
+;---   hwnd      dq ?
+;---   iExpandedImage dd ?
+;---;---#if (NTDDI_VERSION >= NTDDI_WIN7)
+;---   ;iReserved dd ?
+;---	ends
+;---	@sizea16 TVITEMW
+
 
 
 	struct COMBOBOXEXITEMW

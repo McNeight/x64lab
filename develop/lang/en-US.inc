@@ -17,7 +17,7 @@
 	include "lang.inc"
 
 	@make_lang "en-US",0409h,\
-		db "*(no translation)",\
+		db ";*(no transl)",\
 		UZ_ERR_NOFILE,db "Cannot find specified file",\
 		UZ_HOME,db "http://sites.google.com/site/x64lab/",\
 		UZ_CONS_WIN,db "Console",\
@@ -83,7 +83,6 @@
 		MP_EDIT,db "Edit",\
 			MI_ED_LNK,db "Insert new smartlink",\
 			MI_ED_REMITEM,db "Remove item from workspace",\
-			MI_ED_RELSCICLS,db "Reload Scintilla classes",\
 		MP_CONF,db "C&onfigure",\
 			MI_CONF_KEY,db "Key bindings",\
 		MP_LANG,db "Language",\
@@ -97,6 +96,7 @@
 			MI_SCI_COMMB,db "Comment block/s",\
 			MI_SCI_UNCOMML,db "Uncomment by line/s",\
 			MI_SCI_UNCOMMB,db "Uncomment block/s",\
+			MI_SCI_RELSCICLS,db "Reload Scintilla classes",\
 		MP_UPD,db "Update",\
 			MI_UPD_LANG,db "Language update (script)",\
 		MP_PATH,db "[?]",\

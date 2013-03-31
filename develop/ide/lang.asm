@@ -83,7 +83,7 @@ lang:
 	push rdi
 	mov rbp,rsp
 
-	mov rcx,[tMP_LANG]
+	mov rcx,[hMP_LANG]
 	call mnu.reset
 
 	sub rsp,\
@@ -289,7 +289,7 @@ lang:
 	
 	mov r9,rbx
 	mov rdx,r12
-	mov rcx,[tMP_LANG]
+	mov rcx,[hMP_LANG]
 	call apiw.mni_ins_bypos
 
 ;---	lea r8,[rsp+\
@@ -472,8 +472,6 @@ lang:
 	ret 0
 
 .unset:
-	mov rcx,[pOmni]
-	call art.a16free
 	mov rcx,[pLangRes]
 	call art.a16free
 	ret 0

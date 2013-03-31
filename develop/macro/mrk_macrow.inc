@@ -534,12 +534,12 @@ macro @xsdbm argname,argresult,argprime {
 		repeat $
 			load char byte from % - 1
 			result = (char and 0x000000FF) + \
-				(result shl 6) + \
-				(result shl 17) - \
+				((result shl 6) and 0xffffffff) + \
+				((result shl 17) and 0xffffffff) - \
 				result
 		end repeat
 	end virtual
-argresult equ (result and 0xffffffff)
+ argresult equ (result and 0xffffffff)
 }
 
 
@@ -567,12 +567,12 @@ macro @xsdbmu argstr,argresult,argprime {
 		lo = (cpts and 0x000000FF)
 		hi = (cpts and 0x0000FF00) shr 8
 		result = ((lo xor hi) and 0x000000FF )+\
-			(result shl 6) + \
-			(result shl 17) - \
+			((result shl 6) and 0FFFFFFFFh) + \
+			((result shl 17) and 0FFFFFFFFh) - \
 			result
 	end repeat
 	end virtual
-	argresult equ (result and 0xffffffff)
+	argresult equ (result and 0FFFFFFFFh)
 	;--------------------------------------------
 
 	;---	;--- full 64 bit result on string -----
@@ -594,10 +594,10 @@ macro @xsdbmu argstr,argresult,argprime {
 macro @szhash [argstr]{
 	result equ 0
 	@xsdbm argstr,result
+	;---	display_hex 32,result
+	;---	display `argstr,13,10
 	HASH_#argstr equ result
 	sz_#argstr db \`argstr,0
-	common
-	@align 2,0
 }
 
 

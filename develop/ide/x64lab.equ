@@ -93,6 +93,7 @@
 			MNU_COUNT equ MNU_COUNT + 1
 		}
 
+	MI_SEP		 equ 0
 	MI_USER    equ 1100h
 	MI_OTHER	 equ 1200h
 	MI_LANG		 equ 1300h
@@ -124,7 +125,7 @@
 		MP_EDIT   				equ 1040h,\
 			MI_ED_LNK  			equ 1041h,\
 			MI_ED_REMITEM		equ 1042h,\
-			MI_ED_RELSCICLS	equ 1043h,\
+			MI_SCI_RELSCICLS	equ 1043h,\
 		MP_CONF   				equ 1060h,\
 			MI_CONF_KEY			equ 1061h,\
 		MP_LANG 					equ 1062h,\
@@ -146,6 +147,16 @@
 			MI_PA_FIND    	equ 10A3h,\
 			MI_PA_COPY    	equ 10A4h,\
 			MI_PA_SETPROP 	equ 10A5h
+		
+
+			;--- Track popup on Workspace tree
+			MT_WSP 	equ MI_USER+1
+			MT_FILE equ MI_USER+2
+			MT_DOC	equ MI_USER+3
+			MT_SECT	equ MI_USER+4
+
+		
+
 
 	;----------------------------------------------------
 	;--- strings id usable in lang.dll ------------------

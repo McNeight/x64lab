@@ -83,8 +83,22 @@ Summary:
    online cloning the Mercurial from
      https://code.google.com/p/x64lab/
 
+   if you prefer avoiding installing Mercurial, you can
+   download wget from 
+   http://users.ugent.be/~bpuype/wget/
+
+   and at the command line, type
+
+   wget-1.10.2.exe -r -m http://x64lab.googlecode.com/hg
+
+   it will create a directory-tree 
+   [x64lab.googlecode.com/hg] mirroring all files found on
+   the google repository. this is a working copy of the lab
+   ready to be compiled again too.
+
    or donwnload the latest (.7z) zipped version from
-   http://code.google.com/p/x64lab/downloads/list
+   the announced thread on board
+   http://board.x64lab.net/viewforum.php?f=4
 
    -----------------------------------------------------------------
 
@@ -102,7 +116,7 @@ Summary:
    -----------------------------------------------------------------
 
 -7 Compile notes:
-   - i am compiling it using fasm 1.69.34. for eventual
+   - i am compiling it using fasm 1.71.09. for eventual
      problems using newer versions of fasm, please let me know.
      i will try to adapt it.
 

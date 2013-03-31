@@ -31,8 +31,8 @@ macro @xsdbmu argstr,argresult,argprime {
 		lo = (cpts and 0x000000FF)
 		hi = (cpts and 0x0000FF00) shr 8
 		result = ((lo xor hi) and 0x000000FF )+\
-			(result shl 6) + \
-			(result shl 17) - \
+			((result shl 6) and 0xffffffff)+ \
+			((result shl 17)  and 0xffffffff) - \
 			result
 	end repeat
 	end virtual

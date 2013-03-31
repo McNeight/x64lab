@@ -134,13 +134,13 @@ devtool:
 
 	mov edx,[rsp+\
 		TBBUTTON.idCommand]
-	mov rcx,[tMP_DEVT]
+	mov rcx,[hMP_DEVT]
 	call mnu.get_data
 	test eax,eax
 	jz	.ret0
 
-	lea rdx,[rax+\
-		sizeof.OMNI]
+	mov rdx,rax
+	shr rdx,16
 	mov [rdi+\
 		NMTTDISPINFO.lpszText],rdx
 	jmp	.ret1

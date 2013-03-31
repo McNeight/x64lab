@@ -20,7 +20,7 @@
 	include "lang.inc"
 
 	@make_lang "pl-PL",0415h,\
-		db "*(no translation)",\
+		db ";*(no transl)",\
 		UZ_ERR_NOFILE,db "Nie można odnaleźć wybranego pliku",\
 		UZ_HOME,db "http://sites.google.com/site/x64lab/",\
 		UZ_CONS_WIN,db "Konsola",\
@@ -86,7 +86,6 @@
 		MP_EDIT,db "Edytuj",\
 			MI_ED_LNK,db "Wstaw nowe inteligente łącze",\
 			MI_ED_REMITEM,db "Usuń obiekt z Przestrzeni Roboczej",\
-			MI_ED_RELSCICLS,db "Reload Scintilla classes",\
 		MP_CONF,db "C&onfigure",\
 		MI_CONF_KEY,db "Przypisanie klawiszy",\
 			MP_LANG,db "Language",\
@@ -100,6 +99,7 @@
 			MI_SCI_COMMB,db "Zakomentuj bloki",\
 			MI_SCI_UNCOMML,db "Usuń komentarze w liniach",\
 			MI_SCI_UNCOMMB,db "Usuń komentarze w blokach",\
+			MI_SCI_RELSCICLS,db "Reload Scintilla classes",\
 		MP_UPD,db "(*) Update",\
 			MI_UPD_LANG,db "(*) Language update (script)",\
 		MP_PATH,db "[?]",\

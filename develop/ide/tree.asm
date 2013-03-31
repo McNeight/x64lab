@@ -273,6 +273,91 @@ tree:
 	mov r8,TVGN_CARET
 	jmp	.get_next
 
+.hittest:
+	;--- in R8 x
+	;--- in R9 y
+	sub rsp,\
+		sizeof.TVHITTESTINFO
+	mov edx,TVM_HITTEST
+	mov [rsp+\
+		TVHITTESTINFO.pt.x],r8d
+	mov [rsp+\
+		TVHITTESTINFO.pt.y],r9d
+	xor r8,r8
+	mov r9,rsp
+	call apiw.sms
+	mov rax,[rsp+\
+		TVHITTESTINFO.hItem]
+	mov ecx,[rsp+\
+		TVHITTESTINFO.flags]
+	add rsp,\
+		sizeof.TVHITTESTINFO
+	ret 0
+
+	;#-----------------------------------------ö
+	;|             .GETHIT                     |
+	;ä-----------------------------------------ü
+
+.gethit:
+	;--- in RCX hTree
+	;--- ret RAX hItem
+	;--- ret RCX flags
+	;--- ret RDX param
+	;--- ret R8 screen POINT
+	;--- ret R9 client POINT
+	push rbx
+	xor eax,eax
+	mov rbx,rcx
+	sub rsp,\
+		sizeof.POINT+16+\
+		sizeof.TVITEMW
+	
+	mov [rsp],rax
+	mov [rsp+8],rax
+	mov [rsp+16],rax
+
+	call apiw.get_msgpos
+	mov edx,eax
+	movzx ecx,ax
+	shr edx,16
+	mov [rsp+POINT.x],ecx
+	mov [rsp+POINT.y],edx
+
+	mov [rsp+8+POINT.x],ecx
+	mov [rsp+8+POINT.y],edx
+
+	mov rdx,rsp
+	mov rcx,rbx
+	call apiw.scr2cli
+
+	mov r9d,[rsp+POINT.y]
+	mov r8d,[rsp+POINT.x]
+	mov rcx,rbx
+	call .hittest
+	test eax,eax
+	jz .gethitE
+
+	mov [rsp+16],rcx
+	mov rdx,rax
+	mov rcx,rbx
+	lea r9,[rsp+24]
+	call .get_param
+
+	mov rax,[rsp+24+\
+		TVITEMW.hItem]
+	mov rcx,[rsp+16]
+	mov rdx,[rsp+24+\
+		TVITEMW.lParam]
+
+.gethitE:	
+	mov r8,[rsp+8]
+	mov r9,[rsp]
+	add rsp,\
+		sizeof.POINT+16+\
+		sizeof.TVITEMW
+	pop rbx
+	ret 0
+
 	
 	;#-----------------------------------------ö
 	;|             LIST (item-params)          |

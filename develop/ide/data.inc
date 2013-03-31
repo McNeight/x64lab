@@ -31,7 +31,6 @@ section '.data' data readable writeable
 	pKeya		dq (MI_OTHER-MNU_X64LAB) * sizeof.KEYA
 	NUM_ITEMS = ($-curDir)/8
 
-	pOmni		dq 0
 	hSciDll	dq 0
 	hDocker	dq 0
 	hHexDll	dq 0
@@ -88,6 +87,32 @@ section '.data' data readable writeable
 		rexpSOL2b	db "\)\(.*\)"
 		rexpTAG2	db "\2",0
 		szDefLang	db "en-US",0
+		szCourierN	db "Courier New",0
+
+	@szhash	back,bold,\
+		clearall,commline,commstart,commend,\
+		font,fontsize,fore,\
+		italic,\
+		keyword,\
+		lexer,\
+		multisel,\
+		stylebits,selback,style,\
+		tabwidth,\
+		\	;------- config
+		atime,\
+		cons,cdate,ctime,curs,\
+		docs,\
+		env,\
+		fshow,\
+		language,\
+		owner,\
+		pos,\
+		tree,\
+		session,\
+		version,\
+		wspace
+
+
 
 		align 2
 		tmMnuSize	SIZE 6,28
@@ -145,24 +170,29 @@ section '.data' data readable writeable
 		uzTipClass	du "tooltips_class32",0
 		uzSciDll		du "Scilexer64.dll",0
 		uzSciClass	du "Scintilla",0
-		uzCourierN	db "Courier New",0
 		
 		;--- menu -----------------------------------------
-		macro @mnp argname,argicon,argtysta,argflags,[args]{
+		macro @mni argname,argicon,argtysta,argflags{
+			t#argname equ \
+				((argflags and 0FFFFh) shl 48) or \
+				((argtysta and 0FFFFh) shl 32) or \
+				((argicon shl 16) and 0FFFF0000h) or \
+				(argname and 0FFFFh)
+		}
+
+		macro @mnp argname,\
+			argicon,\
+			argtysta,\
+			argflags {
 			common
-			align 8
-				label t#argname
-				label h#argname qword
-				dw argname
-				dw argicon
-				dw argtysta
-				dw argflags
-			forward
-			if ~args eq
-				dw args
-			end if
-			common	
-				dw 0
+				h#argname dq 0
+			@mni \
+				argname,\
+				argicon,\	
+				argtysta,\
+				argflags
+			;---		display_hex 64,t#argname
+			;---		display 13,10
 			}
 
 		OWN equ MFT_OWNERDRAW
@@ -170,89 +200,55 @@ section '.data' data readable writeable
 		ISS equ MIIM_ID or MIIM_SUBMENU or MIIM_STRING
 		RJU equ MFT_RIGHTJUSTIFY
 
-		@mnp MP_WSPACE,	0,0,ISS,\
-			MI_WS_LOAD,		9,OWN,DIF,\
-			-1,\
-			MI_WS_NEW,		0,OWN,DIF,\
-			-1,\
-			MI_WS_SAVE,		3,OWN,DIF,\
-			-1,\
-			MI_WS_EXIT,		7,OWN,DIF
+		align 8
+		@mni MI_SEP,0,MFT_SEPARATOR,0
 
-		@mnp MP_FILE,		0,0,ISS,\
-			MI_FI_OPEN,		4,OWN,DIF,\
-			MI_FI_IMP,		6,OWN,DIF,\
-			-1,\
-			MI_FI_NEWB,		0,OWN,DIF,\
-			MI_FI_NEWF,		1,OWN,DIF,\
-			-1,\
-			MI_FI_SAVE,		2,OWN,DIF,\
-			-1,\
-			MI_FI_CLOSE,	5,OWN,DIF
+		@mnp MP_WSPACE,  -1,0,ISS
+			@mni MI_WS_LOAD,9,OWN,DIF
 
-		@mnp MP_EDIT,		0,0,ISS,\
-			MP_WSPACE,		1,MFS_DISABLED,MIIM_STATE or MIIM_STRING,\
-			MI_ED_LNK,		8,OWN,DIF,\
-			MI_ED_REMITEM,0,OWN,DIF,\
-			-1,\
-			UZ_EDIT_PANE,1,MFS_DISABLED,MIIM_STATE or MIIM_STRING,\
-			MI_ED_RELSCICLS,	0,OWN,DIF
-			;--- MI_ED_REM,7,OWN,DIF
+			@mni MI_WS_NEW,	0,OWN,DIF
+			@mni MI_FI_IMP, 6,OWN,DIF
+			@mni MI_FI_NEWF,1,OWN,DIF
+			@mni MI_ED_LNK,		8,OWN,DIF
+			@mni MI_ED_REMITEM,0,OWN,DIF
 
-			@mnp MP_SCI,		0,OWN,DIF or MIIM_SUBMENU,\
-				MI_SCI_COMML,	0,OWN,DIF,\
-				MI_SCI_UNCOMML,	0,OWN,DIF
-				;	MI_SCI_COMMB,	0,OWN,DIF,\
-				;	MI_SCI_UNCOMMB,	0,OWN,DIF
-			
-		@mnp MP_CONF,		0,0,ISS,\
-			MI_CONF_KEY,	14,OWN,DIF,\
-				UZ_MPWIN,		1,MFS_DISABLED,MIIM_STATE or MIIM_STRING
-	
-		@mnp MP_LANG,	13,OWN,DIF or MIIM_SUBMENU
+			@mni MI_WS_SAVE,3,OWN,DIF
+			@mni MI_WS_EXIT,7,OWN,DIF
 
-			@mnp MP_DEVT,		11,OWN,DIF or MIIM_SUBMENU,\
-				MI_DEVT_ADD,	10,OWN,DIF,\
-				MI_DEVT_REM,	12,OWN,DIF,\
-				MI_DEVT_ADDG, 0,OWN,DIF,\
-				MI_DEVT_REMG,	0,OWN,DIF
+		@mnp MP_FILE,  -1,0,ISS
+			@mni MI_FI_OPEN,4,OWN,DIF
+			@mni MI_FI_NEWB,0,OWN,DIF
+			@mni MI_FI_SAVE,2,OWN,DIF
+			@mni MI_FI_CLOSE,5,OWN,DIF
 
-		@mnp MP_UPD,		0,0,ISS,\
-			MI_UPD_LANG,	15,OWN,DIF
+		@mnp MP_EDIT,  -1,0,ISS
+			@mnp MP_SCI, -1,OWN,DIF or MIIM_SUBMENU
+				@mni MI_SCI_RELSCICLS,	0,OWN,DIF
+				@mni MI_SCI_COMML,	0,OWN,DIF
+				@mni MI_SCI_UNCOMML,	0,OWN,DIF
 
-		@mnp MP_PATH,		0,RJU,ISS or MIIM_FTYPE,\
-			MI_PA_BROWSE,	0,OWN,DIF,\
-			MI_PA_CONS,		0,OWN,DIF
+		@mnp MP_CONF,  -1,0,ISS
+			@mni MI_CONF_KEY,	14,OWN,DIF
+			@mnp MP_LANG,13,OWN,DIF or MIIM_SUBMENU
+			@mnp MP_DEVT,11,OWN,DIF or MIIM_SUBMENU
+				@mni MI_DEVT_ADD,	10,OWN,DIF
+				@mni MI_DEVT_REM,	12,OWN,DIF
+				@mni MI_DEVT_ADDG, 0,OWN,DIF
+				@mni MI_DEVT_REMG, 0,OWN,DIF
 
-		;	MI_PA_FIND,		18,OWN,DIF,\
-		;	MI_PA_COPY,		18,OWN,DIF,\
-		;	MI_PA_SETPROP,18,OWN,DIF
-		
-	@szhash\
-		\	;-------- scintilla
-		back,bold,\
-		clearall,commline,commstart,commend,\
-		font,fontsize,fore,\
-		italic,\
-		keyword,\
-		lexer,\
-		multisel,\
-		stylebits,selback,style,\
-		tabwidth,\
-		\	;------- config
-		atime,\
-		cons,cdate,ctime,curs,\
-		docs,\
-		env,\
-		fshow,\
-		language,\
-		owner,\
-		pos,\
-		tree,\
-		session,\
-		version,\
-		wspace
+		@mnp MP_UPD,   0,OWN,DIF or MIIM_SUBMENU
+				@mni MI_UPD_LANG,	15,OWN,DIF
 
+		@mnp MP_PATH,  -1,RJU,ISS or MIIM_FTYPE
+			@mni MI_PA_BROWSE,	0,OWN,DIF
+			@mni MI_PA_CONS,		0,OWN,DIF
+
+			;---	MP_WSPACE,		1,MFS_DISABLED,MIIM_STATE or MIIM_STRING
+			;---	UZ_EDIT_PANE,1,MFS_DISABLED,MIIM_STATE or MIIM_STRING
+
+			@mnp	MT_WSP,  -1,0,ISS
+			@mnp	MT_FILE, -1,0,ISS
+			@mnp	MT_SECT, -1,0,ISS
 
 		display "--- Size of data "
 		display_decimal $-$$

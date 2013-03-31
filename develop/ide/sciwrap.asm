@@ -123,7 +123,7 @@ sci:
 ;---	;---mov rcx,rbx
 ;---	;---call .set_forecolor
 
-	mov r9,uzCourierN
+	mov r9,szCourierN
 	mov r8,STYLE_LINENUMBER
 	mov rcx,rbx
 	call .set_font
@@ -191,7 +191,7 @@ sci:
 	mov rcx,rbx
 	call .set_cp
 
-	mov r9,uzCourierN
+	mov r9,szCourierN
 	mov r8,STYLE_DEFAULT
 	mov rcx,rbx
 	call .set_font

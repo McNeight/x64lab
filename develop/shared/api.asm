@@ -202,6 +202,12 @@ apiw:
 	jmp	.prologP
 @endusing
 
+@using .mnu_append
+.mnu_append:
+	mov rax,[AppendMenuW]
+	jmp	.prologP
+@endusing
+
 
 @using .get_mnuicount
 .get_mnuicount:
@@ -209,8 +215,8 @@ apiw:
 	jmp	.prolog0
 @endusing
 
-@using .track_pmnu
-.track_pmnu:
+@using .mnp_track
+.mnp_track:
 	push rbp
 	mov rbp,rsp
 	xor eax,eax
@@ -264,7 +270,7 @@ apiw:
 @endusing
 
 	;#---------------------------------------------------ö
-	;|           ENV and VARIALBLES                      |
+	;| ENV and VARIALBLES                                |
 	;ö---------------------------------------------------ü
 
 @using .set_env
@@ -363,7 +369,7 @@ apiw:
 @endusing
 
 	;#---------------------------------------------------ö
-	;|                LOADLIB /FREELIB                   |
+	;| LOADLIB /FREELIB                                  |
 	;ö---------------------------------------------------ü
 
 @using .get_modfname
@@ -538,6 +544,12 @@ apiw:
 @using .rel_dc
 .rel_dc:
 	mov rax,[ReleaseDC]
+	jmp	.prolog0
+@endusing
+
+@using .del_dc
+.del_dc:
+	mov rax,[DeleteDC]
 	jmp	.prolog0
 @endusing
 
@@ -957,6 +969,13 @@ apiw:
 .drawtext:
 	xor r11,r11
 	mov rax,[DrawTextW]
+	jmp	.prologP
+@endusing
+
+@using .textout
+.textout:
+	xor r11,r11
+	mov rax,[TextOutW]
 	jmp	.prologP
 @endusing
 

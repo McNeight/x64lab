@@ -269,6 +269,7 @@ config:
 
 	xor edx,edx
 	mov rax,rsp
+
 	;--- check for config\menu.utf8 file 
 	push rdx
 	push uzBmpExt
@@ -687,6 +688,10 @@ config:
 	mov r13,rax
 	lea rdx,[.conf.lang8]
 	call utf8.copyz
+
+	mov rcx,r13
+	call lang.info_uz
+	mov [.conf.lcid],r10w
 	jmp	.openB
 
 .open_wsp:
@@ -729,7 +734,7 @@ config:
 
 	;--- check en-US
 	test r13,r13
-	jnz	.openF1
+	jnz	.openE
 ;@break
 
 	mov eax,\
@@ -761,30 +766,6 @@ config:
 	rep movsb
 	xchg rdx,rdi
 
-.openF1:
-	mov rcx,r13
-	call lang.info_uz
-	mov [.conf.lcid],r10w
-
-	@nearest 16,eax			;<--- ave size 16 aligned
-	shl eax,2
-	mov ecx,MNU_COUNT
-	@nearest 16,ecx
-	add eax,\
-		sizeof.OMNI
-	@nearest 16,eax			
-	mul ecx
-
-	xchg rcx,rax
-	call art.a16malloc
-	mov [pOmni],rax
-	test rax,rax
-	jnz .openE
-
-	mov rcx,r13
-	call art.a16free
-	xor r13,r13
-	
 .openE:
 	mov rax,r13
 	mov rsp,rbp

@@ -1,4 +1,10 @@
 
+- version 1.0.35 (31.03.2013 ) make-up 
+- version 1.0.34 (29.03.2013 ) "" 
+  +NOT Maintenance "tracking"
+  +DES rewriting menu behaviour
+  +GUI added menupopup on workspace
+
 - version 1.0.33 (17.03.2013 ) "" 
   +FIL rewrite [tool\*] to update language online
    library files to work with cscript

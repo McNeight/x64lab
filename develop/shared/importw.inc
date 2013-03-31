@@ -60,6 +60,7 @@
 		CreateRectRgn,"CreateRectRgn",\
 		CreateSolidBrush,"CreateSolidBrush",\
 		CreateRoundRectRgn,"CreateRoundRectRgn",\
+		DeleteDC,"DeleteDC",\
 		DeleteEnhMetaFile,"DeleteEnhMetaFile",\
 		DeleteObject,"DeleteObject",\
 		ExcludeClipRect,"ExcludeClipRect",\
@@ -83,7 +84,8 @@
 		SelectClipRgn,"SelectClipRgn",\
 		SetBkColor,"SetBkColor",\
 		SetBkMode,"SetBkMode",\
-		SetTextColor,"SetTextColor"
+		SetTextColor,"SetTextColor",\
+		TextOutW,"TextOutW"
 	
 	import	COMCTL32,\
 		DrawStatusTextW,"DrawStatusTextW",\
