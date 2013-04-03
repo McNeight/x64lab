@@ -444,13 +444,10 @@ edit:
 	lea r9,[rbx+\
 		sizeof.LABFILE]
 	mov rax,[.pEdit.pPanel]
-	xor r8,r8
-	mov rdx,WM_SETTEXT
 	mov rcx,[rax+PNL.hwnd]
-	call apiw.sms
+	call win.set_text
 
 	mov [.pEdit.curlabf],rbx
-
 	xor r9,r9
 	xor r8,r8
 	mov rdx,WM_SIZE
@@ -465,7 +462,7 @@ edit:
 	xor r8,r8
 	lea r9,[rax+DIR.dir]
 	mov rcx,[.pEdit.hStb]
-	call statb.set_text	
+	call statb.set_text
 
 	mov r9,RDW_INVALIDATE	\
 		or RDW_NOINTERNALPAINT
@@ -479,33 +476,6 @@ edit:
 	pop rsi
 	pop rbx
 	ret 0
-
-
-;.set_dir:
-;	;--- in R9 text
-;;	xor eax,eax
-;;	test r9,r9
-;;	jnz .set_dirA
-;;	ret 0
-
-;;.set_dirA:
-;;	push rbx
-;;	mov rcx,r9
-;;	mov rbx,r9
-;;	call art.is_file
-;;	jnz	.set_dirB
-;;;	mov rcx,rbx
-;;;	call win.get_res
-;;;	mov rbx,rdx
-
-;;.set_dirB:
-;;	xor r8,r8
-;;	mov r9,rbx
-;;	mov rcx,[pCons.hStb]
-;;	call statb.set_text
-;;	pop rbx
-;	ret 0
-
 
 	;#---------------------------------------------------ö
 	;|             EDIT.proc                             |

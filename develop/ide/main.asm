@@ -104,7 +104,7 @@ start:
 
 	call config.setup_libs
 	test rax,rax
-	jz	.err_start
+	jz	.err_libs
 
 	mov eax,\
 		sizeof.DIR+\
@@ -162,7 +162,7 @@ start:
 
 	call config.open
 	test eax,eax
-	jz	.err_start
+	jz	.err_lang
 
 	call config.setup_gui
 	call ext.setup
@@ -208,8 +208,6 @@ start:
 	mov	[.wcx.hIcon],rax
 	mov	[.wcx.hIconSm],rax
 
-;---	call mnu.setup
-
 	mov edx,IDC_ARROW
 	xor ecx,ecx
 	call apiw.loadcurs
@@ -225,7 +223,7 @@ start:
 	mov rcx,rbx
 	call apiw.regcls
 	test rax,rax
-	jz .err_startC
+	jz .err_regcls
 
 	xor ecx,ecx
 
@@ -266,7 +264,7 @@ start:
 	mov rcx,WS_EX_WINDOWEDGE ;or WS_EX_COMPOSITED
 	call [CreateWindowExW]
 	test rax,rax
-	jz .err_startD
+	jz .err_wnd
 	mov rdi,rax
 
 	movzx rdx,\
@@ -292,7 +290,6 @@ start:
 	call [GetMessageW]
 	test eax,eax
 	jz	.end_msg_loop
-
 
 	mov rax,[pDevT]
 	mov rcx,[rax+DEVT.hwnd]
@@ -373,7 +370,7 @@ start:
 .end_msg_loop:
 	mov rsp,rsi
 
-.err_startD:
+.err_wnd:
 	mov rcx,[hAccel]
 	test rcx,rcx
 	jz	.err_startD1
@@ -381,25 +378,24 @@ start:
 
 .err_startD1:
 	;--- error windowing
-	mov rcx,[hMnuMain]
-	call apiw.mnu_destroy
+	;call mnu.discard
 
 	mov rcx,[hBmpIml]
 	call iml.destroy
 
-.err_startC:
+.err_regcls:
 	;--- error registering
-
-.err_startB:
-	;--- error loading sci
 
 .err_start:
 	call ext.discard
 	call ext.discard_bin
+
+.err_lang:
 	call lang.unset
+
+.err_libs:
 	call config.unset_libs
 
-.err_startA:
 	mov rsp,rbp
 	pop r15
 	pop rsi
@@ -523,6 +519,8 @@ winproc:
 	mov rcx,[hDocker]
 	call [dock64.save]
 
+	call mnu.discard
+
 	xor eax,eax
 	inc eax
 	jmp	.defwndproc
@@ -599,6 +597,16 @@ winproc:
 	test eax,eax
 	jz	.ret0
 
+	;---	push rax
+	;---	push rdx
+
+	;---	mov r8,rax
+	;---	mov edx,eax
+	;---	call art.cout2XX
+
+	;---	pop rdx
+	;---	pop rax
+
 	mov rdx,[pConf]
 	cmp ax,[rdx+\
 		CONFIG.lcid]
@@ -606,8 +614,10 @@ winproc:
 
 	mov ecx,eax
 	call lang.reload
-	cmp eax,IDNO
-	jnz	.mi_ws_exit
+
+	
+	call win.recapt
+
 	jmp	.ret0
 
 	;ü------------------------------------------ö
@@ -650,47 +660,7 @@ winproc:
 	mov rdx,rdi
 	xor rcx,rcx
 	call script.spawn
-
 	jmp	.ret1
-
-	;---	mov edx,UZ_RESTART
-	;---	mov rcx,[pLangRes]
-	;---	call lang.get_uz
-
-	;---	mov rdx,rsp
-	;---	mov r8,uzTitle
-	;---	mov rcx,[hMain]
-	;---	call apiw.msg_yn
-	;---	cmp eax,IDNO
-	;---	jz	.ret0
-
-;---	mov rdi,rsp
-;---	mov rax,[toolDir]
-;---	xor ecx,ecx
-;---	lea rsi,[rax+DIR.dir]
-
-;---	push rcx
-;---	push uzNoLogo
-;---	push uzSpace
-;---	push uzVbsExt
-;---	push uzLangName
-;---	push uzSlash
-;---	push rsi
-;---	push uzSpace
-;---	push uzCscript
-;---	push rdi
-;---	push rcx
-;---	call art.catstrw
-
-	;--- process must be executed in the main app directory
-	;---	mov rax,[appDir]
-	;---	lea r8,[rax+DIR.dir]
-	;---	mov rdx,rsp
-	;---	xor rcx,rcx
-	;---	call script.spawn
-	;---	test eax,eax
-	;---	jz	.ret0
-	;---	jmp	.mi_ws_exit
 
 	;ü------------------------------------------ö
 	;|     MI_SCI_UNCOMMLine                    |
@@ -1449,10 +1419,7 @@ winproc:
 
 	call mnu.setup
 
-	;call devtool.load
-
 	mov rax,[pConf]
-
 	sub rsp,\
 		FILE_BUFLEN*2
 	lea rcx,[rax+\
@@ -1460,8 +1427,6 @@ winproc:
 	mov rdx,rsp
 	call apiw.exp_env
 	mov rcx,rdx
-
-;	xor rcx,rcx
 
 .wm_createA:
 	call wspace.load_wsp
@@ -1695,145 +1660,6 @@ winproc:
 	pop r13
 	pop r12
 	jmp	.ret1
-
-
-
-
-;---.wm_drawitem:
-;---	virtual at rbx
-;---		.dis	DRAWITEMSTRUCT
-;---	end virtual
-;---	mov rbx,r9
-
-;---	cmp [.dis.CtlType],\
-;---		ODT_MENU
-;---	jnz	.ret0
-
-;---.wm_dis_mnu:
-;---	mov eax,[.dis.itemID]
-;---	test eax,eax
-;---	jnz	.wm_dis_mnuA
-
-;---	;--- draw space for separator 
-;---	mov rcx,NULL_BRUSH
-;---	call apiw.get_stockobj
-
-;---	mov r8,COLOR_MENU+1
-;---	lea rdx,[.dis.rcItem]
-;---	mov rcx,[.dis.hDC]
-;---	call apiw.fillrect
-;---	jmp	.ret1
-
-;---.wm_dis_mnuA:
-;---	push r12
-;---	push r13
-
-;---.wm_dis_mnuD:
-;---	mov r8,COLOR_MENU+1
-;---	test [.dis.itemState],\
-;---		ODS_GRAYED
-;---	jnz	.wm_dis_mnuB
-
-;---	mov r8,COLOR_MENU+1
-;---	test [.dis.itemState],\
-;---		ODS_SELECTED
-;---	jz	.wm_dis_mnuB
-;---	mov r8,\
-;---		COLOR_INACTIVECAPTION+1
-	
-;---.wm_dis_mnuB:
-;---	lea rdx,[.dis.rcItem]
-;---	mov rcx,[.dis.hDC]
-;---	call apiw.fillrect
-
-;---	mov rdi,[.dis.itemData]
-;---	test rdi,rdi
-;---	jz .wm_dis_mnuB1
-
-
-;---	movzx eax,[rdi+OMNI.iIcon]
-;---	mov r11,\
-;---		ILD_TRANSPARENT
-;---	mov r10d,\
-;---		[.dis.rcItem.top]
-;---	add r10d,4
-;---	mov r9d,\
-;---		[.dis.rcItem.left]
-;---	add r9d,1
-;---	mov r8,[.dis.hDC]
-;---	mov rdx,rax
-;---	mov rcx,[hBmpIml]
-;---	call iml.draw
-
-;---.wm_dis_mnuB1:	
-;---;---	mov rdx,[hMnuFont]
-;---;---	mov rcx,[.dis.hDC]
-;---;---	call apiw.selobj
-;---;---	mov r12,rax
-
-;---	mov rdx,TRANSPARENT
-;---	mov rcx,[.dis.hDC]
-;---	call apiw.set_bkmode
-
-;---	mov eax,[.dis.itemID]
-;---	cmp eax,MI_OTHER
-;---	jae	.wm_dis_mnuB2
-
-;---;@break
-;---	sub eax,MNU_X64LAB
-;---	jl	.wm_dis_mnuB2
-;---	shl eax,5		;--- x 32 size of KEYA
-;---	add rax,[pKeya]
-;---	lea rdx,[rax+KEYA.name]
-
-;---	sub [.dis.rcItem.right],20
-;---	mov r10,DT_NOCLIP\
-;---		or DT_RIGHT	\
-;---		or DT_VCENTER	\
-;---		or DT_SINGLELINE	
-;---	lea r9,[.dis.rcItem]
-;---	mov r8,-1
-;---	mov rcx,[.dis.hDC]
-;---	call apiw.drawtext
-;---	add [.dis.rcItem.right],20
-
-;---.wm_dis_mnuB2:
-;---	mov ecx,COLOR_GRAYTEXT
-;---	test [.dis.itemState],\
-;---		ODS_GRAYED
-;---	jnz	.wm_dis_mnuC
-;---	mov ecx,COLOR_MENUTEXT
-
-;---.wm_dis_mnuC:
-;---	call apiw.get_syscol
-;---	mov rdx,rax
-;---	mov rcx,[.dis.hDC]
-;---	call apiw.set_txtcol
-
-;---	test rdi,rdi
-;---	jz	.wm_dis_mnuE
-;---	add rdi,sizeof.OMNI
-
-;---	mov r10,DT_NOCLIP\
-;---		or DT_VCENTER	\
-;---		or DT_SINGLELINE	
-
-;---	lea r9,[.dis.rcItem]
-;---	add [.dis.rcItem.left],16+8
-;---	mov r8,-1
-;---	mov rdx,rdi
-;---	mov rcx,[.dis.hDC]
-;---	call apiw.drawtext
-
-;---;---	mov rdx,r12
-;---;---	mov rcx,[.dis.hDC]
-;---;---	call apiw.selobj
-
-;---.wm_dis_mnuE:
-;---	pop r13
-;---	pop r12
-;---	jmp	.ret1
-
 
 .wm_measitem:
 	;---	call art.cout2XX

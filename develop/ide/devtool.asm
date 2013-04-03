@@ -488,7 +488,6 @@ devtool:
 	mov rcx,[pLangRes]
 	call lang.get_uz
 
-
 	mov rcx,[.devt.hCbx]
 	call cbex.get_edit
 

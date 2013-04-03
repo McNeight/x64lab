@@ -1,4 +1,10 @@
 
+- version 1.0.36 (03.04.2013 ) "" 
+  +NOT Maintenance "tracking"
+  +NOT "cleanup"
+  +DES Switch/Download language on-the-fly
+  +HLP new "Switching Language" tutorial clip
+
 - version 1.0.35 (31.03.2013 ) make-up 
 - version 1.0.34 (29.03.2013 ) "" 
   +NOT Maintenance "tracking"

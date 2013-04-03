@@ -1,0 +1,32 @@
+ x64lab
+ Language
+
+ - Activating a Language pack.
+
+    In the menu [Configure|Language] developers can select one of the available
+    languages for x64lab. the checkmarked one is the current language.
+    once clicking on a different language application will reload all informations
+    from one of the local files in [lang\*.bin] without needing a restart.
+    by default x64lab starts with the [lang\en-US.bin] pack.
+
+ 
+ - Downloading new languages.
+
+    x64lab can check online if new or updates language are available. it is done
+    through clicking on the menuitem [Configure|Update|Language update (script)].
+    a script will be launched and user will be prompted to download one of the
+    available binary packs.
+    the language script is a vbscript file [tool\update.wsf]
+    once the language pack has been downloaded (overwriting the existing one eventually),
+    activate it choosing the menuitem from [Configure|Language].
+
+    A videoclip+music tutorial on language is online at 
+    http://youtu.be/8fC973nnsCw
+
+    
+
+ 
+
+
+ 
+ 

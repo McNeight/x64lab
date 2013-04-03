@@ -23,16 +23,16 @@ lang:
 .reload:
 	;--- in RCX lcid
 	;--- RET IDYES IDNO
-	push rbp
 	push rbx
+	push rdi
 	push rsi
-	mov rbp,rsp
 
 	sub rsp,\
 		FILE_BUFLEN
 
 	mov rbx,rcx		;--- lcid
 	mov rsi,rsp
+	mov rdi,[pConf]
 
 	xor r9,r9
 	mov r8,\
@@ -41,40 +41,47 @@ lang:
 	mov rcx,rbx
 	call apiw.lcid2name
 
-	mov ecx,eax
-	test ecx,ecx
-	mov eax,IDNO
-	jz	.reloadE
+	;---	push rax
+	;---	push rcx
+	;---	push rdx
 
-	mov rbx,[pConf]
-	mov [rbx+\
-		CONFIG.lcid],cx
+	;---;@break
+	;---	mov r8,rsi
+	;---	mov rdx,rax
+	;---	call art.cout2XU
+
+	;---	pop rdx
+	;---	pop rcx
+	;---	pop rax
+
+	test eax,eax
+	jz	.reloadE
+	mov [.conf.lcid],bx
 
 	mov rcx,rsi
-	lea rdx,[rbx+\
-		CONFIG.lang16]
+	lea rdx,[.conf.lang16]
 	call utf16.copyz
 
 	mov rcx,rsi
-	lea rdx,[rbx+\
-			CONFIG.lang8]
+	lea rdx,[.conf.lang8]
 	call utf16.to8
 
-	mov r8,rsi
-	mov edx,UZ_RESTART
-	mov rcx,[pLangRes]
-	call lang.get_uz
-
-	mov rdx,rsi
-	mov r8,uzTitle
-	mov rcx,[hMain]
-	call apiw.msg_yn
-
+	call mnu.get_dir
+	mov rsi,rax
+	call .unset
+	call mnu.discard
+	lea rcx,[.conf.lang16]
+	call .def
+	call mnu.setup
+	mov rcx,rsi
+	call mnu.set_dir
+	
 .reloadE:
-	mov rsp,rbp
+	add rsp,\
+		FILE_BUFLEN
 	pop rsi
+	pop rdi
 	pop rbx
-	pop rbp
 	ret 0
 
 
@@ -269,6 +276,21 @@ lang:
 	mov rdx,[pConf]
 	mov [.mii.fState],eax
 	mov ecx,MFS_CHECKED
+
+	;---	push rax
+	;---	push rcx
+	;---	push rdx
+
+	;---	;@break
+	;---	movzx r8d,[rdx+\
+	;---		CONFIG.lcid]
+	;---	mov rdx,r13
+	;---	call art.cout2XX
+
+	;---	pop rdx
+	;---	pop rcx
+	;---	pop rax
+
 	cmp r13w,[rdx+\
 		CONFIG.lcid]
 	cmovz eax,ecx
@@ -292,10 +314,10 @@ lang:
 	mov rcx,[hMP_LANG]
 	call apiw.mni_ins_bypos
 
-;---	lea r8,[rsp+\
-;---		sizeof.MENUITEMINFOW]
-;---	mov rdx,r13
-;---	call art.cout2XU
+	;---	lea r8,[rsp+\
+	;---		sizeof.MENUITEMINFOW]
+	;---	mov rdx,r13
+	;---	call art.cout2XU
 
 .set_itemE:
 	mov rsp,rbp
@@ -472,6 +494,8 @@ lang:
 	ret 0
 
 .unset:
+	xor eax,eax
 	mov rcx,[pLangRes]
+	mov [pLangRes],rax
 	call art.a16free
 	ret 0

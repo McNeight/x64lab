@@ -78,6 +78,7 @@ mpurp:
 		FILE_BUFLEN
 	mov rdi,rsp
 	mov rsi,[.mp.hCbx]
+
 	push 0
 
 	; push BB_SYS
@@ -102,6 +103,7 @@ mpurp:
 	;push 0
 	;push MP_SCI_CLS
 
+	;--- same order as in win.recapt
 	push 0
 	push UZ_TEMPLATE
 	push 11

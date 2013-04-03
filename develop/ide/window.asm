@@ -317,6 +317,88 @@ win:
 	mov edx,WM_GETTEXT
 	jmp	apiw.sms
 
+.recapt:
+	push rbx
+	push rdi
+	push rsi
+	sub rsp,\
+		FILE_BUFLEN
+	mov rsi,rsp
+
+	mov rax,[pEdit]
+	mov rdi,[rax+\
+		EDIT.curlabf]
+
+	push 0
+	push UZ_CONS_WIN
+	push CFG_CONS_DOCK_ID
+	push MI_FI_OPEN
+	push CFG_DOCS_DOCK_ID
+	push UZ_WSPACE
+	push CFG_WSPACE_DOCK_ID
+	push UZ_MPWIN
+	mov edx,CFG_MPURP_DOCK_ID
+
+.recaptA:
+	mov rcx,[hDocker]
+	call [dock64.info]
+	pop rdx
+	test eax,eax
+	jz	.recaptC
+
+.recaptB:
+	mov rbx,[rax+\
+		PNL.hwnd]
+	mov r8,rsi
+	mov rcx,[pLangRes]
+	call lang.get_uz
+	
+	mov r9,rsi
+	mov rcx,rbx
+	call .set_text
+
+.recaptC:
+	pop rdx
+	test edx,edx
+	jnz .recaptA
+
+	mov rcx,rdi
+	call edit.view
+
+	;--- set items in MPURP ---
+	mov rax,[pMp]
+	xor edi,edi
+	mov rbx,[rax+\
+		MPURP.hCbx]
+
+	;--- same order as in MPURP
+	push 0
+	push UZ_TEMPLATE
+	mov edx,MP_DEVT
+
+.recaptD:
+	mov r8,rsi
+	mov rcx,[pLangRes]
+	call lang.get_uz
+
+	mov r8,rdi
+	mov rdx,rsi
+	mov rcx,rbx
+	call cbex.set_text
+	pop rdx
+	inc edi
+	test edx,edx
+	jnz .recaptD
+
+.recaptE:
+	add rsp,\
+		FILE_BUFLEN
+	pop rsi
+	pop rdi
+	pop rbx
+	ret 0
+
+
    ;ü------------------------------------------ö
    ;|   IMAGELIST                              |
    ;#------------------------------------------ä
@@ -1035,6 +1117,26 @@ cbex:
 	jmp	apiw.sms
 
 
+.set_text:
+	;--- in RCX hCb
+	;--- in RDX string
+	;--- in R8 index item
+	sub rsp,\
+		sizeof.COMBOBOXEXITEMW
+	mov [rsp+\
+		COMBOBOXEXITEMW.pszText],rdx
+	mov [rsp+\
+		COMBOBOXEXITEMW.mask],\
+		CBEIF_TEXT	
+	mov [rsp+\
+		COMBOBOXEXITEMW.iItem],r8
+	mov edx,\
+		CBEM_SETITEMW
+	xor r8,r8
+	mov r9,rsp
+	jmp	.ins_itemF
+
+
 .ins_item:
 	;--- in RCX hCb
 	;--- in RDX string
@@ -1089,8 +1191,10 @@ cbex:
 
 	xor r8,r8
 	mov r9,rsp
-	mov rdx,\
+	mov edx,\
 		CBEM_INSERTITEMW
+
+.ins_itemF:
 	call apiw.sms
 	add rsp,\
 		sizeof.COMBOBOXEXITEMW

@@ -666,53 +666,56 @@ accel:
 .wm_initdC1:
 	push 0
 
+	;--- WSPACE ---
 	push 0
-	push MI_UPD_LANG
-	push [hMP_UPD]
-	
+	push MI_WS_NEW
+	push MI_FI_NEWF
+	push MI_FI_IMP
+	push MI_ED_LNK
+	push MI_ED_REMITEM
+	push MI_WS_SAVE
+	push MI_WS_EXIT
+	push MI_WS_LOAD
+	push [hMP_WSPACE]
+
+	;--- EDIT --------
+	push 0
+	push MI_FI_OPEN
+	push MI_FI_NEWB
+	push MI_FI_SAVE
+	push MI_FI_CLOSE
+	push [hMP_EDIT]
+
+		;--- SCINTILLA ---
+		push 0
+		push MI_SCI_RELSCICLS
+		push MI_SCI_COMML
+		push MI_SCI_UNCOMML
+		push [hMP_SCI]
+
+	;--- CONFIGURE
 	push 0
 	push MI_CONF_KEY
 	push [hMP_CONF]
 
-	push 0
-	;push MI_SCI_UNCOMMB
-	;push MI_SCI_COMMB
-	push MI_SCI_UNCOMML
-	push MI_SCI_COMML
-	push MI_SCI_RELSCICLS
-	push [hMP_SCI]
+		;--- UPDATE ---
+		push 0
+		push MI_UPD_LANG
+		push [hMP_UPD]
 
-	push 0
-	push MI_DEVT_ADD
-	push MI_DEVT_REM
-	push MI_DEVT_REMG
-	push MI_DEVT_ADDG
-	push [hMP_DEVT]
+		;--- PATH ---
+		push 0
+		push MI_PA_BROWSE
+		push MI_PA_CONS
+		push [hMP_PATH]
 
-	push 0
-	push MI_PA_BROWSE
-	push [hMP_PATH]
-
-	push 0
-	push MI_ED_LNK
-	push MI_ED_REMITEM
-	push [hMP_EDIT]
-
-	push 0
-	push MI_FI_OPEN
-	push MI_FI_IMP
-	push MI_FI_NEWB
-	push MI_FI_NEWF
-	push MI_FI_SAVE
-	push MI_FI_CLOSE
-	push [hMP_FILE]
-
-	push 0
-	push MI_WS_LOAD
-	push MI_WS_NEW
-	push MI_WS_SAVE
-	push MI_WS_EXIT
-	mov r12,[hMP_WSPACE]
+		;--- DEVTOOL ---
+		push 0
+		push MI_DEVT_ADD
+		push MI_DEVT_REM
+		push MI_DEVT_ADDG
+		push MI_DEVT_REMG
+		mov r12,[hMP_DEVT]
 
 .wm_initdC2:
 	pop rdx

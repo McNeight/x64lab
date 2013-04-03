@@ -210,7 +210,6 @@ mnu:
 	mov r9,MI_FI_CLOSE
 	call rdi
 
-
 	;--- Trackpopups ---- MT_SECT
 	xor r8,r8
 	mov rdx,tMT_SECT
@@ -231,7 +230,6 @@ mnu:
 	mov r9,MI_ED_REMITEM
 	call rdi
 
-
 	;---------------------
 	mov rdx,[hMnuMain]
 	mov rcx,[hMain]
@@ -240,13 +238,14 @@ mnu:
 	mov rcx,[hMain]
 	call apiw.mnu_draw
 
-
-
 	pop rsi
 	pop rdi
 	pop rbx
 	ret 0
 
+	;#---------------------------------------------------ö
+	;|                .MP_TRACK                          |
+	;ö---------------------------------------------------ü
 
 .mp_track:
 	;--- in RCX dest hMenu
@@ -306,9 +305,9 @@ mnu:
 	pop r12
 	ret 0
 	
-
-
-
+	;#---------------------------------------------------ö
+	;|                .MP_ADD                            |
+	;ö---------------------------------------------------ü
 
 .mp_add:
 	;--- in RCX hMenuParent/0
@@ -323,7 +322,8 @@ mnu:
 	push r13
 
 	sub rsp,\
-		sizea16.MENUITEMINFOW
+		sizea16.MENUITEMINFOW+\
+		FILE_BUFLEN
 	mov r12,rcx
 	mov r13,r8
 	mov rbx,rsp
@@ -399,8 +399,16 @@ mnu:
 	add ecx,ecx
 	or ecx,1
 	@nearest 16,ecx
-	
+
+	;--- no string memory for not MFT_OWNERDRAW
+	lea rax,[rsp+\
+		sizea16.MENUITEMINFOW]
+	test [.mii.fType],\
+		MFT_OWNERDRAW
+	jz .mp_addC
 	call art.a16malloc
+
+.mp_addC:
 	mov [.mii.dwTypeData],rax
 
 	mov edx,[.mii.wID]
@@ -440,7 +448,8 @@ mnu:
 	
 .mp_addE:	
 	add rsp,\
-		sizea16.MENUITEMINFOW
+		sizea16.MENUITEMINFOW+\
+		FILE_BUFLEN
 	pop r13
 	pop r12
 	pop rbx
@@ -480,6 +489,155 @@ mnu:
 	ret 0
 
 	;#---------------------------------------------------ö
+	;|                DISCARD                            |
+	;ö---------------------------------------------------ü
+
+.discard:
+	push rbx
+	push rdi
+	push rsi
+
+	mov rsi,apiw.mnu_destroy
+	mov rdi,.reset
+
+	;1) --- first delete/destroy MT trackpopup as they are
+	push 0
+	push hMT_WSP
+	push hMT_FILE
+	;---	push [hMT_DOC]
+	mov rax,hMT_SECT
+
+.discardA:
+	mov rbx,rax
+	mov rcx,[rax]
+	call rdi
+	mov rcx,[rbx]
+	xor edx,edx
+	mov [rbx],rdx
+	call rsi
+	pop rax
+	test rax,rax
+	jnz	.discardA
+
+
+	;2) --- reset eventual languages 
+	mov rcx,[hMP_LANG]
+	call rdi
+
+	;3) --- release strings mem/destroy items hauptmenu
+	mov rdi,.get_data
+	mov rbx,art.a16free
+
+	push 0
+
+	;--- WSPACE ---
+	push 0
+	push MI_WS_NEW
+	push MI_FI_NEWF
+	push MI_FI_IMP
+	push MI_ED_LNK
+	push MI_ED_REMITEM
+	push MI_WS_SAVE
+	push MI_WS_EXIT
+	push MI_WS_LOAD
+	push [hMP_WSPACE]
+
+	;--- EDIT --------
+	push 0
+	push MI_FI_OPEN
+	push MI_FI_NEWB
+	push MI_FI_SAVE
+	push MI_FI_CLOSE
+	push MP_SCI
+	push [hMP_EDIT]
+
+		;--- SCINTILLA ---
+		push 0
+		push MI_SCI_RELSCICLS
+		push MI_SCI_COMML
+		push MI_SCI_UNCOMML
+		push [hMP_SCI]
+
+	;--- CONFIGURE
+	push 0
+	push MI_CONF_KEY
+	push MP_LANG
+	push MP_UPD
+	push MP_DEVT
+	push [hMP_CONF]
+
+		;--- UPDATE ---
+		push 0
+		push MI_UPD_LANG
+		push [hMP_UPD]
+
+		;--- PATH ---
+		push 0
+		push MI_PA_BROWSE
+		push MI_PA_CONS
+		push [hMP_PATH]
+
+		;--- DEVTOOL ---
+		push 0
+		push MI_DEVT_ADD
+		push MI_DEVT_REM
+		push MI_DEVT_ADDG
+
+		mov edx,MI_DEVT_REMG
+		mov rcx,[hMP_DEVT]
+		mov rsi,rcx
+
+.discardB:
+	mov rcx,rsi
+	call rdi
+
+	;---	push rax
+	;---	mov rdx,rax
+	;---	call art.cout2XX
+	;---	pop rax
+
+	shr rax,16
+	test rax,rax
+	jz	.discardC
+
+	;---	mov rcx,rax
+	;---	call rbx
+
+.discardC:
+	pop rdx
+	test rdx,rdx
+	jnz .discardB
+
+;@break
+	pop rsi
+	test rsi,rsi
+	jnz .discardC
+	
+	mov rcx,[hMnuMain]
+	call apiw.mnu_destroy
+
+	xor edx,edx
+	mov [hMnuMain],rdx
+	mov [hMP_LANG],rdx
+	mov [hMP_DEVT],rdx
+	mov [hMP_PATH],rdx
+	mov [hMP_CONF],rdx
+	mov [hMP_SCI],rdx
+	mov [hMP_WSPACE],rdx
+	mov [hMP_EDIT],rdx
+	mov [hMP_UPD],rdx
+
+	mov rcx,[hMain]
+	call apiw.mnu_set
+
+	pop rsi
+	pop rdi
+	pop rbx
+	ret 0
+
+
+
+	;#---------------------------------------------------ö
 	;|                GET_DATA                           |
 	;ö---------------------------------------------------ü
 
@@ -487,7 +645,9 @@ mnu:
 	;--- in RCX hMenu
 	;--- in RDX menuid
 	;--- ret RAX data
+	;--- ret RCX hMenu
 	;--- ret RDX menuid
+	push rcx
 	push rdx
 	sub rsp,\
 		sizea16.MENUITEMINFOW
@@ -506,12 +666,15 @@ mnu:
 		MENUITEMINFOW.dwItemData]
 	xor eax,eax
 	test rdx,rdx
+;---	mov r8,[rsp+\
+;---		MENUITEMINFOW.dwTypeData]
 	cmovnz rax,rdx
 
 .get_dataE:
 	add rsp,\
 		sizea16.MENUITEMINFOW
 	pop rdx
+	pop rcx
 	ret 0
 
 	;#---------------------------------------------------ö

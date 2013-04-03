@@ -12,7 +12,7 @@
 
 <package>
 '--- update the language files on x64lab ----
-'--- script run from x64lab ide direectory
+'--- script run from x64lab ide directory
 <job id="lang">
 	<script language="VBScript" src="const.vbs"/>
 	<script language="VBScript" src="file.vbs"/>
