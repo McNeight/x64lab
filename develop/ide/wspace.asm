@@ -611,7 +611,7 @@ wspace:
 	;|               list for actions to be executed     |
 	;ö---------------------------------------------------ü
 .list:
-	;--- in RCX howlabel
+	;--- in RCX proclabel
 	;--- in RDX starting hItem
 	push rbp
 	push rbx
@@ -646,6 +646,7 @@ wspace:
 
 	mov rbx,rsi	;--- save datasize
 	mov rsi,rsp	;--- RSI point to labf,last is 0
+xor eax,eax
 	jmp	r12
 
 	;--- list to close items in treeview
@@ -705,6 +706,18 @@ wspace:
 	jnz .askscD
 	jmp	.list1
 
+
+.clean_omniA:
+	mov [rcx+\
+		LABFILE.pOmni],rax
+
+.clean_omni:
+	;--- clean the OMNI pointer in LABFILE
+	pop rcx
+	test rcx,rcx
+	jnz .clean_omniA
+	jmp	.list1
+	
 
 	;--- list to discard items in treeview
 .discard:
@@ -2447,7 +2460,6 @@ wspace:
 	jmp	.get_iconA
 
 .get_iconW:
-;@break
 	mov rcx,[appDir]
 	lea rcx,[rcx+\
 		DIR.dir]
@@ -2676,6 +2688,28 @@ wspace:
 	cmp edx,\
 		TVN_SELCHANGEDW
 	jz	.tree_schged
+
+	cmp edx,\
+		TVN_GETINFOTIPW
+	jz	.tree_infotip
+	jmp	winproc.ret0
+
+.tree_infotip:
+	xor eax,eax
+	mov [r9+\
+		NMTVGETINFOTIPW.pszText],rax;uzDefault
+	;---	mov rax,[r9+\
+	;---		NMTVGETINFOTIPW.hItem]
+	;---	mov r8,rax
+	;---	mov rdx,rax
+	;---	call art.cout2XX
+
+	;---	test eax,eax
+	;---	jz	winproc.ret0
+	xor r8,r8
+	xor r9,r9
+	mov rcx,[hTip]
+	call tip.popup
 	jmp	winproc.ret0
 
 	;	cmp edx,TVN_ENDLABELEDITW
@@ -2700,15 +2734,24 @@ wspace:
 	mov rcx,[hTree]
 	call tree.sel_item
 	
-	mov rcx,[hMT_WSP]
+	mov rsi,[hMT_WSP]
 	test [.labf.type],LF_WSP
 	jnz	.tree_rclickA
 
-	mov rcx,[hMT_FILE]
+	mov rsi,[hMT_FILE]
 	test [.labf.type],LF_FILE
-	jnz	.tree_rclickA
+	jz	.tree_rclickB
 
-	mov rcx,[hMT_SECT]
+;---	mov rdx,rsi
+;---	mov rcx,rbx
+;---	call mnu.mt_cust
+
+;---	mov rbx,rax		;--- original items
+	jmp	.tree_rclickA
+
+
+.tree_rclickB:
+	mov rsi,[hMT_SECT]
 
 	;--- in RCX hMenu
 	;--- in RDX uFlags
@@ -2724,8 +2767,23 @@ wspace:
 	xor r11,r11
 	mov r10,[hMain]
 	and r8d,r8d
+	mov rcx,rsi
 	mov edx,TPM_RIGHTALIGN	;or TPM_RETURNCMD	
 	call apiw.mnp_track
+
+;---	mov r9,[hTree]
+;---	mov r8,rax
+;---	mov edx,WM_COMMAND
+;---	mov rcx,[hMain]
+;---	call apiw.sms
+
+	;--- delete not default items on MT_FILE
+	cmp rsi,[hMT_FILE]
+	jnz	winproc.ret0
+
+;---	mov rdx,rbx
+;---	mov rcx,rsi
+;---	call mnu.reset
 	jmp	winproc.ret0
 
 	;#---------------------------------------------------ö
@@ -2906,7 +2964,7 @@ wspace:
 	mov rbx,rdx
 	test [.labf.type],\
 		LF_OPENED
-	jz	.tree_schgedB
+	jz	.tree_schgedC
 
 	mov rcx,rdx
 	call edit.view
@@ -2916,6 +2974,12 @@ wspace:
 
 	mov rcx,rbx
 	call doc.list_bm
+	jmp	.tree_schgedB
+
+.tree_schgedC:
+;---	xor edx,edx
+;---	mov rcx,rbx
+;---	call cmds.set
 	
 .tree_schgedB:
 	mov rcx,[.labf.dir]

@@ -1,0 +1,89 @@
+
+ x64lab
+ Commands and commandlines
+
+ from the 1.0.47 version of x64lab it is possible to execute commands
+ and redirect the output of them to the Console window.
+ this is a real boost to your time/development. that mad clicking, you always
+ forcedly liked, has been practically eliminated. i applied this successful idea
+ already in my old 32bit ide. then i revised and improved it over the two
+ üast years.
+
+ to configure your own commands open the file [config\command.utf8]
+ you will find there some items of preconfigured commands. 
+ this is an example, you can set there all types of command/commandlines 
+ you need.
+
+ <:"fasm <f>"
+ <:"<f>"
+ =:"notepad.exe <f>"
+ >:"/K fasm <f>"
+ ?:"dir *.asm"
+
+ there are 4 modes to execute commandlines and some symbols
+ matching the item in the workspace. if you right click in your workspace
+ on an item "main.asm" residing in the directory [C:\mydir]
+ the following symbols apply to that item:
+
+  SYMBOLS   MEANING     EXPANSION
+  ---------------------------------
+   <d>       drive         C:
+ 	 <e>     extension      asm
+ 	 <f>    filename.ext  main.asm
+ 	 <n>      filename      main
+ 	 <p>       path       C:\mydir
+  ---------------------------------
+
+ 1) MODE REDIRECT to console for items beginning with "<"
+    example: right clicking on "main.asm" and executing
+    <:"fasm <f>"
+    all standard outputs will be redirected to the console
+    of x64lab. the redirection always prepends "cmd /C" to the 
+    command. the command results to be executed as 
+    "cmd /C "fasm main.asm"
+
+ 2) MODE AS IS for items beginning with "="  example: 
+    right clicking on "main.asm" and executing the command
+    =:"notepad.exe <f>"
+    it will be executed as it is without prepending anything.
+    the command results to be launched as 
+    "notepad.exe main.asm"
+    this is a simple spawning of the command in the directory where
+    the item choosen from the workspaces resides [C:\mydir]
+
+ 3) MODE SHELL for items beginning with ">" example
+    >:"/K fasm <f>"
+    right clicking on "main.asm" and executing the command
+    a console shell opens, execute the command as
+    "cmd /K fasm main.asm", and stay open (thanks to the /K arg 
+    passed to cmd interpreter)
+
+ 4) MODE UNICODE REDIRECT for items begginning with "?" example
+    ?:"dir *.asm". essentially as the 1) REDIRECT but only unicode.
+    the command results to be executed as "cmd /U /C dir *.asm"
+
+    the last executed command on an item in the workspace will be kept
+    in memory. it may be executed again, if you have assigned a keyaccel
+    shortcut to the "Execute command" menu item. (see keybinding hel file)
+    by default it is assigned to F3.
+
+
+    if you modify the file [config\command.utf8] to apply your own
+    command items be sure to reload the command choosing
+    "Reload commands" from the "Configure" main menu of x64lab.
+
+ note: 
+  - after reloading all last saved command will be discarded.
+  - to escape the "<" and ">" symbols simply double it. example
+
+    <:"dir <d> >> tempfile.txt"
+    wiil start a command in which outputs will be redirected to 
+    tempfile.txt (overriding the "<" of the mode 1)
+
+
+
+
+ 
+
+
+ 

@@ -1,7 +1,7 @@
   
   ;#-------------------------------------------------ß
   ;|          x64lab  MPL 2.0 License                |
-  ;|   Copyright (c) 2009-2012, Marc Rainer Kranz.   |
+  ;|   Copyright (c) 2009-2013, Marc Rainer Kranz.   |
   ;|            All rights reserved.                 |
   ;ö-------------------------------------------------ä
 
@@ -274,7 +274,6 @@ accel:
 .proc:
 @wpro rbp,\
 		rbx rsi rdi
-
 	cmp edx,WM_INITDIALOG
 	jz	.wm_initd
 	cmp edx,WM_COMMAND
@@ -313,12 +312,15 @@ accel:
 		or LVIS_SELECTED ;or LVIS_FOCUSED
 	jz	.lvw_schgedE
 
-	;--- in RCX modified menuitemdata
+	;--- in RCX menuitemdata
 	mov rsi,rcx
-	movzx eax,ch
+	movzx eax,[rsi+\
+		OMNI.id]
+	sub eax,MNU_X64LAB
 	mov rdi,[pKeya]
 	test eax,eax
 	jl	.ret0
+
 	shl eax,5			;--- x 32 sizeof.KEYA
 	xor r9,r9
 	xor r8,r8
@@ -336,9 +338,8 @@ accel:
 	call .set_chks
 
 	mov [.kdlg.last],rsi		;--- set OMNI
-	mov ecx,esi
-	movzx eax,ch
-	add eax,MNU_X64LAB
+	movzx eax,\
+		[rsi+OMNI.id]
 
 .lvw_schgedE:
 	call art.w2u
@@ -395,10 +396,10 @@ accel:
 	call .set_chks
 
 .btn_setB:
-	mov ecx,esi
-	movzx eax,ch
+	movzx eax,[rsi+\
+		OMNI.id]
+	sub eax,MNU_X64LAB
 	mov rcx,[pKeya]
-	test eax,eax
 	jl	.ret0
 	shl eax,5			;--- x 32 sizeof.KEYA
 	add rax,rcx
@@ -666,6 +667,10 @@ accel:
 .wm_initdC1:
 	push 0
 
+	push 0
+	push MP_FI_CMD
+	push [hMT_FILE]
+
 	;--- WSPACE ---
 	push 0
 	push MI_WS_NEW
@@ -695,6 +700,7 @@ accel:
 
 	;--- CONFIGURE
 	push 0
+	push MI_CONF_RELCMDS
 	push MI_CONF_KEY
 	push [hMP_CONF]
 
@@ -731,34 +737,27 @@ accel:
 .wm_initdC4:
 	mov rcx,r12
 	call mnu.get_data
+	mov r13,rax
 
-	;--- TEXT 6 
-	;--- LEN  1
-	;--- ICON 1
-	sub edx,MNU_X64LAB
-	mov ah,dl
-
-	;--- TEXT 6 
-	;--- ID  1
-	;--- ICON 1
-	xor ecx,ecx
-	mov [rsi+\
-		LVITEMW.iItem],ecx
-	mov [rsi+\
-		LVITEMW.iSubItem],ecx
-
-
-	mov cl,al		;--- icon id
-	mov [rsi+\
-		LVITEMW.iImage],ecx
-	
-	mov [rsi+\
-		LVITEMW.pszText],rdi
 	mov [rsi+\
 		LVITEMW.lParam],rax
 
+	xor eax,eax
+	mov [rsi+\
+		LVITEMW.iItem],eax
+	mov [rsi+\
+		LVITEMW.iSubItem],eax
+
+	movzx eax,[r13+\
+		OMNI.iIcon]
+	mov [rsi+\
+		LVITEMW.iImage],eax
+	
+	mov [rsi+\
+		LVITEMW.pszText],rdi
+
 	mov rdx,rdi
-	mov rcx,rax
+	mov rcx,r13
 	call .frm_rectxt
 
 	mov [rsi+\
@@ -793,7 +792,7 @@ accel:
 	;#-----------------------------------------ä
 
 .frm_rectxt: ;REVIEW
-	;--- in RCX menudataitem
+	;--- in RCX menu dwItemData
 	;--- in RDX buffer
 	push rbx
 	push rdi
@@ -811,8 +810,8 @@ accel:
 	mov al,"["
 	stosw
 
-	movzx eax,bh
-	add eax,MNU_X64LAB
+	movzx eax,[rbx+\
+		OMNI.id]
 	call art.w2u
 	stosq
 	
@@ -834,7 +833,9 @@ accel:
 	stosw
 
 	;--- (....) : --------
-	movzx eax,bh
+	movzx eax,[rbx+\
+		OMNI.id]
+	sub eax,MNU_X64LAB
 	mov rdx,[pKeya]
 	xor ecx,ecx
 	shl eax,5			;--- x 32 sizeof.KEYA
@@ -860,8 +861,8 @@ accel:
 	mov al,'"'
 	stosw
 	
-	mov rcx,rbx
-	shr rcx,16	; ;--- menu text
+	lea rcx,[rbx+\  ;--- menu text
+		sizeof.OMNI]
 	mov rdx,rdi
 	call utf16.copyz
 	add rdi,rax

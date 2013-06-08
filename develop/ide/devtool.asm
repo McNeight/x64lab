@@ -62,12 +62,16 @@ devtool:
 	mov rbx,[pDevT]
 	mov rdx,[r9+\
 		NMHDR.hwndFrom]
+
 	cmp rdx,[.devt.hLvw]
 	jz	.lvw_notify
+
 	cmp rdx,[.devt.hCbx]
 	jz	.cbx_notify
+
 	cmp rdx,[hTip]
 	jz	.tip_notify
+
 	cmp rdx,[.devt.hTlb]
 	jz	.tlb_notify_real
 	jmp	.ret0
@@ -87,7 +91,30 @@ devtool:
 	mov rax,[r9+\
 		NMHDR.idFrom]
 	cmp rax,[.devt.hTlb]
+	;jnz	.ret0
+	jz	.tlb_notify
+	cmp rax,[.devt.hCbxE]
 	jnz	.ret0
+
+	mov edx,[r9+\
+		NMHDR.code]
+	cmp edx,\
+		TTN_GETDISPINFOW
+	jz	.tip_cbexe_getdispinfo
+	jmp	.ret0
+
+.tip_cbexe_getdispinfo:
+;@break
+	mov rdi,r9
+
+	;--- TODO: change other buffers too
+	lea r8,[.devt.uzTip]	
+	mov [rdi+\
+		NMTTDISPINFO.lpszText],r8
+	mov edx,UZ_MSG_TADDG
+	mov rcx,[pLangRes]
+	call lang.get_uz
+	jmp	.ret1
 
 .tlb_notify:
 	mov edx,[r9+NMHDR.code]
@@ -97,13 +124,16 @@ devtool:
 
 .tip_getdispinfo:
 	mov rdi,r9
-	mov rax,[r9+NMTTDISPINFO.lpszText]
+	mov rax,[r9+\
+		NMTTDISPINFO.lpszText]
 	mov rax,uzDefault
-	mov [r9+NMTTDISPINFO.lpszText],rax
+	mov [r9+\
+		NMTTDISPINFO.lpszText],rax
 
 	sub rsp,8+\
 		sizeof.TBBUTTON
 	call apiw.get_msgpos
+
 	mov ecx,eax
 	and eax,0FFFFh
 	and ecx,0FFFF0000h
@@ -139,8 +169,8 @@ devtool:
 	test eax,eax
 	jz	.ret0
 
-	mov rdx,rax
-	shr rdx,16
+	lea rdx,[rax+\
+		sizeof.OMNI]
 	mov [rdi+\
 		NMTTDISPINFO.lpszText],rdx
 	jmp	.ret1
@@ -223,6 +253,7 @@ devtool:
 	mov rdx,[.devtitem.dir]
 	test edx,edx
 	jz .ret0
+
 	mov r8,[rdx+DIR.rdir]
 	test [rdx+DIR.type],\
 		DIR_HASREF
@@ -480,18 +511,19 @@ devtool:
 	mov rcx,[hTip]
 	call tip.add
 
-	sub rsp,\
-		FILE_BUFLEN
+	;---	sub rsp,\
+	;---		FILE_BUFLEN
 
-	mov r8,rsp
-	mov edx,UZ_MSG_TADDG
-	mov rcx,[pLangRes]
-	call lang.get_uz
+	;---	mov r8,rsp
+	;---	mov edx,UZ_MSG_TADDG
+	;---	mov rcx,[pLangRes]
+	;---	call lang.get_uz
 
 	mov rcx,[.devt.hCbx]
 	call cbex.get_edit
+	mov [.devt.hCbxE],rax
 
-	mov r9,rsp
+	mov r9,LPSTR_TEXTCALLBACK
 	mov r8,rax
 	mov rdx,[.hwnd]
 	mov rcx,[hTip]

@@ -50,8 +50,8 @@ win:
 	mov rdx,HWND_TOPMOST
 	mov rcx,[hTip]
 	call apiw.set_wpos
-	;--------------------------
 
+	;---- create float window
 	mov rcx,rbx
 	call float.create
 	mov [hFloat],rax
@@ -71,8 +71,8 @@ win:
 		or TVS_HASLINES\
 		or TVS_LINESATROOT\
 		or TVS_EDITLABELS\
+		or TVS_INFOTIP\		;--- force tooltip default processing
 		or TVS_HASBUTTONS	;or TVS_SHOWSELALWAYS
-;---		or WS_BORDER\
 	xor r8,r8
 	mov rdx,uzTreeClass
 	mov rcx,WS_EX_WINDOWEDGE \
@@ -81,6 +81,15 @@ win:
 	test rax,rax
 	jz .controlsE
 	mov [hTree],rax
+
+	;--- enable tool balloon for tree
+	mov r9,\
+		LPSTR_TEXTCALLBACK
+	mov r8,rax
+	mov rdx,rbx
+	mov rcx,[hTip]
+	call tip.add
+
 
 	;--- load [config\docking.bin]
 	push 0
@@ -299,6 +308,10 @@ win:
 	call wspace.setup
 	call doc.setup
 	
+	mov rdx,CRLF_UTF16
+	mov rcx,uzTitle
+	call console.out
+	
 .controlsE:
 	mov rsp,rbp
 	pop r13
@@ -474,7 +487,7 @@ tip:
 	mov rdx,uzTipClass
 	mov r9,WS_POPUP or \
 		TTS_ALWAYSTIP or\
-		TTS_BALLOON
+		TTS_BALLOON ;or TTS_USEVISUALSTYLE
 	xor r8,r8
 	xor ecx,ecx
 	call [CreateWindowExW]
@@ -522,7 +535,7 @@ tip:
 	mov [rsp+\
 		TOOLINFO.uFlags],\
 			TTF_IDISHWND or \
-			TTF_SUBCLASS
+			TTF_SUBCLASS ;or TTF_PARSELINKS
 	mov [rsp+\
 		TOOLINFO.uId],r8 	;--- tool
 	mov [rsp+\

@@ -200,7 +200,7 @@ ext:
 	;ö---------------------------------------------------ü
 
 .fn2hash:
-	;--- in RCX class name [assembly.utf8]
+	;--- in RCX utf16 class name [assembly.utf8]
 	;--- or filename of an ext slot [inc.assembly]
 	;--- or filename [myfile.asm]
 	;--- ret RAX 0,hash

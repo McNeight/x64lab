@@ -48,7 +48,6 @@
 	include "plugin\top64\equates.inc"
 	include "plugin\bk64\equates.inc"
 
-
 	include "x64lab.equ"
 	include "structs.inc"
 	include "shared\art.equ"
@@ -62,7 +61,7 @@
 	include "shared\unicode.inc"
 	include "shared\scintilla.inc"
 	include "shared\hexview.inc"
-	
+
 section '.code' code readable executable
 	include "shared\api.asm"
 	include "shared\art.asm"
@@ -91,6 +90,7 @@ section '.code' code readable executable
 	include "script.asm"
 	include "template.asm"
 
+	
 start:
 	;	call get_version
 	;	call win.ask_tar
@@ -155,7 +155,7 @@ start:
 	xor rcx,rcx
 	call apiw.get_modh
 	mov	[hInst],rax
-	
+
 	;	call art.cmdline
 	;	mov [pCmdline],rax
 	;	call ext.setup
@@ -206,6 +206,7 @@ start:
 	call apiw.loadicon
 
 	mov	[.wcx.hIcon],rax
+	mov [hIcon],rax
 	mov	[.wcx.hIconSm],rax
 
 	mov edx,IDC_ARROW
@@ -394,6 +395,7 @@ start:
 	call lang.unset
 
 .err_libs:
+;---	call cmds.discard
 	call config.unset_libs
 
 	mov rsp,rbp
@@ -402,6 +404,8 @@ start:
 	pop rdi
 	pop rbx
 	pop rbp
+	;---xor eax,eax
+	;---ret 0
 
 	xor ecx,ecx
 	call apiw.exitp
@@ -464,17 +468,6 @@ winproc:
 .wm_init_mnp:
 	cmp r8,[hMP_LANG]
 	jz	.mp_lang
-
-	;---	;---ModifyMenu(hSubMenu, nID, MF_BYCOMMAND | MF_OWNERDRAW, nID, szText);
-	;---	cmp r8,[tMP_WSPACE]
-	;---	jnz	.ret0
-	;---;---@break
-	;---	mov r9,MI_WS_LOAD
-	;---	mov r10,uzDefault
-	;---	mov r8,MF_BYCOMMAND or MF_OWNERDRAW ;or MF_STRING ;or MF_POPUP 
-	;---	mov edx,MI_WS_LOAD
-	;---	mov rcx,[hMnuMain]
-	;---	call apiw.mnu_mod
 	jmp	.ret0
 
 	;ü------------------------------------------ö
@@ -581,6 +574,10 @@ winproc:
 	jz	.mi_sci_uncomml
 	cmp ax,MI_PA_CONS
 	jz	.mi_pa_cons
+	cmp ax,MP_FI_CMD
+	jz	.mp_fi_cmd
+	cmp ax,MI_CONF_RELCMDS
+	jz	.mi_conf_relcmds
 	cmp ax,MI_UPD_LANG
 	jz	.mi_upd_lang
 
@@ -588,7 +585,197 @@ winproc:
 	cmp ax,MI_LANG
 	jb	.defwndproc
 	cmp ax,MI_LANG+255
-	ja	.defwndproc
+	jbe	.mi_lang
+	cmp ax,MI_CMD+255
+	jbe .mi_cmd
+	jmp	.defwndproc
+
+.mp_fi_cmd:
+	;--- TODO: extend! only for WSP tree ATM
+	;--- first get selected item and LABFILE
+	mov rcx,[hTree]
+	call tree.get_sel
+	test eax,eax
+	jz .ret0
+
+	;--- get LABFILE ---
+	sub rsp,\
+		sizeof.TVITEMW+\
+		MAX_CMDCPTS
+	mov r9,rsp
+	mov edx,eax
+	mov rcx,[hTree]
+	call tree.get_param
+	mov rbx,[rsp+\
+		TVITEMW.lParam]
+	test eax,eax
+	jz .ret0
+	test ebx,ebx
+	jz	.ret0
+	mov rsi,[.labf.pOmni]
+	test esi,esi
+	jz	.ret0
+	jmp	.mi_cmdA
+
+.mi_cmd:
+	;--- get OMNI ----
+	mov edx,eax
+	mov rcx,[hMP_FI_CMD]
+	call mnu.get_data
+	test eax,eax
+	jz	.ret0
+	mov rsi,rax
+
+	;--- TODO: extend! only for WSP tree ATM
+	;--- first get selected item and LABFILE
+	mov rcx,[hTree]
+	call tree.get_sel
+	test eax,eax
+	jz .ret0
+
+	;--- get LABFILE ---
+	sub rsp,\
+		sizeof.TVITEMW+\
+		MAX_CMDCPTS
+	mov r9,rsp
+	mov edx,eax
+	mov rcx,[hTree]
+	call tree.get_param
+	mov rbx,[rsp+\
+		TVITEMW.lParam]
+	test eax,eax
+	jz .ret0
+	test ebx,ebx
+	jz	.ret0
+
+.mi_cmdA:
+	;--- format implicit command
+	mov rdi,rsp
+	xor ecx,ecx
+	mov rax,qword[usCmd]	;--- "cmd "
+	stosq
+	mov eax,20h
+	stosw
+	stosw
+	stosw
+	stosw
+	mov [rdi],rcx
+
+	mov rax,[.labf.dir]
+	lea r8,[rax+\
+		DIR.dir]
+
+	lea r9,[rbx+\
+		sizeof.LABFILE]
+
+	mov rdx,rdi
+	lea rcx,[rsi+\
+		sizeof.OMNI]
+	call cmds.expand
+
+	;---	mov edx,\
+	;---		CONS_OUTCRLF
+	;---	mov rcx,rsp
+	;---	call console.out
+
+
+	xor r9,r9			;--- set write handle
+	mov rax,[.labf.dir]	
+	mov rdx,[rax+\
+		DIR.rdir]
+	test [rax+\
+		DIR.type],DIR_HASREF
+	cmovz rdx,rax
+	lea r8,[rdx+\ ;--- set path
+		DIR.dir]
+
+	movzx eax,[rsi+\
+		OMNI.iType]
+	sub eax,\
+		CMDS_BASEICON
+	jz .mi_cmd_REDIR_A
+	dec eax
+	jz	.mi_cmd_ASIS
+	dec eax
+	jz	.mi_cmd_CONS
+
+.mi_cmd_REDIR_U:
+;@break
+	mov eax,dword[usOptU]	;--- "/U"
+	mov [rdi-8],eax
+	jmp	.mi_cmd_REDIR_A2
+
+.mi_cmd_CONS:
+;@break
+	mov rdi,rsp
+	jmp	.mi_cmd_ASIS
+
+.mi_cmd_REDIR_A:
+	mov eax,dword[usOptA]	;--- "/A"
+	mov [rdi-8],eax
+
+.mi_cmd_REDIR_A2:
+	mov eax,dword[usOptC]	;--- "/C"
+	mov [rdi-4],eax
+
+	mov rdx,rsp
+	xor eax,eax
+	sub rsp,\
+		sizeof.CMDT
+	mov rcx,rsp
+	mov [rsp+\
+		CMDT.cmdl],rdx
+	movzx eax,[rsi+\
+		OMNI.iType]
+	mov [rsp+\
+		CMDT.path],r8
+	mov [rsp+\
+		CMDT.iType],ax
+
+	lock or[rsp+\
+		CMDT.flags],1
+
+	mov r8,rsp
+	xor edx,edx
+	mov rcx,script.exec
+	call apiw.tproc
+
+.mi_cmd_REDIR_A1:
+	lock and[rsp+\
+		CMDT.flags],1
+	jz .mi_cmdB
+	mov rcx,100
+	call apiw.sleep
+	jmp	.mi_cmd_REDIR_A1
+
+.mi_cmd_ASIS:
+	mov r10d,SW_SHOWNORMAL	
+	xor ecx,ecx
+	mov rdx,rdi
+	call script.spawn
+	test eax,eax
+	jz	.ret0
+
+.mi_cmdB:
+	mov edx,\
+		CRLF_UTF8
+	mov rcx,rdi
+	call console.out
+
+	;--- save last OMNI
+	mov [.labf.pOmni],rsi
+	jmp	.ret0
+
+.mi_conf_relcmds:
+	call cmds.discard
+	call cmds.setup
+
+	mov rdx,[hRootWsp]
+	mov rcx,\
+		wspace.clean_omni
+	call wspace.list
+	jmp	.ret0
+
 
 .mi_lang:
 	mov edx,eax
@@ -615,9 +802,7 @@ winproc:
 	mov ecx,eax
 	call lang.reload
 
-	
 	call win.recapt
-
 	jmp	.ret0
 
 	;ü------------------------------------------ö
@@ -656,6 +841,8 @@ winproc:
 
 	;--- process must be executed in the main app directory
 	mov rax,[appDir]
+	mov r10d,SW_SHOWNORMAL	
+	xor r9,r9
 	lea r8,[rax+DIR.dir]
 	mov rdx,rdi
 	xor rcx,rcx
@@ -756,7 +943,7 @@ winproc:
 	jz	.mi_pa_browseC
 
 	;--- console using cmd on "path"
-	mov rax,qword[uzCmd]
+	mov rax,qword[usCmd]
 	stosq
 	mov eax," "
 	stosw
@@ -801,6 +988,8 @@ winproc:
 	xor eax,eax
 	stosd
 
+	mov r10d,SW_SHOWNORMAL	
+	xor r9,r9
 	mov rdx,rsp
 	call script.spawn
 
@@ -828,19 +1017,14 @@ winproc:
 	test eax,eax
 	jz	.ret0
 
-
-	sub rsp,\
-		FILE_BUFLEN
 	mov edx,UZ_MSG_SCIREL
-	mov r8,rsp
+	xor r8,r8
 	mov rcx,[pLangRes]
 	call lang.get_uz
 
-
-	mov r8,uzTitle
-	mov rdx,rsp
-	mov rcx,[hMain]
-	call apiw.msg_ok
+	mov rcx,rax
+	mov edx,CRLF_UTF8
+	call console.out8
 	jmp	.ret0
 
 	;ü------------------------------------------ö
@@ -1177,7 +1361,6 @@ winproc:
 	mov rcx,[pLangRes]
 	call lang.get_uz
 
-
 	mov r8,uzTitle
 	mov rdx,rsp
 	mov rcx,[hMain]
@@ -1414,10 +1597,10 @@ winproc:
 
 .wm_create:
 	mov [hMain],rcx
+	call mnu.setup
+
 	mov rcx,[hMain]
 	call win.controls
-
-	call mnu.setup
 
 	mov rax,[pConf]
 	sub rsp,\
@@ -1525,9 +1708,51 @@ winproc:
 	mov rdx,[r9+NMHDR.hwndFrom]
 	cmp rdx,[hTree]
 	jz	wspace.tree_notify
+	cmp rdx,[hTip]
+	jz	.tip_notify
 
 .wm_notifyE:
 	jmp	.ret0
+
+.tip_notify:
+	mov rax,[r9+\
+		NMHDR.idFrom]
+	cmp rax,[hTree]
+	jnz	.ret0
+	mov edx,[r9+\
+		NMHDR.code]
+	cmp edx,\
+		TTN_GETDISPINFOW
+	jnz	.ret0
+
+	mov rax,uzDefault
+	mov rbx,r9
+	mov [r9+\
+		NMTTDISPINFO.lpszText],0;rax
+	
+	mov rcx,[hTree]
+	call tree.gethit
+	test eax,eax
+	jz	.ret0
+
+	test edx,edx
+	jz	.ret0
+	mov rax,[rdx+\
+		LABFILE.pOmni]
+	test eax,eax
+	jz	.ret0
+
+	lea rdx,[rax+\
+		sizeof.OMNI]
+	mov [rbx+\
+		NMTTDISPINFO.lpszText],rdx;uzLink
+
+	;---	mov r8,rax
+	;---	mov rdx,rax
+	;---	call art.cout2XX
+	jmp	.ret0
+
+	
 
 	;ü------------------------------------------ö
 	;|     WM_DRAWITEM                          |
@@ -1592,20 +1817,19 @@ winproc:
 		[.dis.rcItem.left]
 	add r9d,1
 	mov r8,[.dis.hDC]
-	movzx edx,dil
+	movzx edx,[rdi+OMNI.iIcon];dil
 	mov rcx,[hBmpIml]
 	call iml.draw
 
 .wm_dis_mnuB1:	
-;---	;---	mov rdx,[hMnuFont]
-;---	;---	mov rcx,[.dis.hDC]
-;---	;---	call apiw.selobj
-;---	;---	mov r12,rax
+	;---	mov rdx,[hMnuFont]
+	;---	mov rcx,[.dis.hDC]
+	;---	call apiw.selobj
+	;---	mov r12,rax
 	mov rdx,TRANSPARENT
 	mov rcx,[.dis.hDC]
 	call apiw.set_bkmode
 
-;@break
 	mov eax,[.dis.itemID]
 	cmp eax,MI_OTHER
 	jae	.wm_dis_mnuB2
@@ -1643,7 +1867,14 @@ winproc:
 
 	test rdi,rdi
 	jz	.wm_dis_mnuE
-	shr rdi,16
+	;shr rdi,16
+
+	;--- in RCX hMenu
+	;--- in RDX menuid
+	;---	mov edx,[.dis.itemID]
+	;---	mov rcx,[.dis.hwndItem]
+	;---	call mnu.get_data
+	;---mov rdi,r8
 
 	mov r10,DT_NOCLIP\
 		or DT_VCENTER	\
@@ -1652,7 +1883,8 @@ winproc:
 	lea r9,[.dis.rcItem]
 	add [.dis.rcItem.left],16+8
 	mov r8,-1
-	mov rdx,rdi
+	lea rdx,[rdi+\
+		sizeof.OMNI]
 	mov rcx,[.dis.hDC]
 	call apiw.drawtext
 
@@ -1677,9 +1909,7 @@ winproc:
 	test rdi,rdi
 	jz .ret1
 
-	mov eax,edi
-	shr eax,8
-	and eax,0FFh	;--- max 255 codepoints
+	movzx eax,[rdi+OMNI.cpts]
 	add eax,10	;--- eventual chars for accel
 	mov ecx,[tmMnuSize.cx]
 	mul ecx
@@ -1701,7 +1931,6 @@ winproc:
 
 .wm_destroy:
 	call config.write
-;---	call devtool.discard
 
 	xor rcx,rcx
 	call [PostQuitMessage]

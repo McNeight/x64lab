@@ -209,8 +209,8 @@ apiw:
 @endusing
 
 
-@using .get_mnuicount
-.get_mnuicount:
+@using .get_mnicount
+.get_mnicount:
 	mov rax,[GetMenuItemCount]
 	jmp	.prolog0
 @endusing
@@ -464,6 +464,29 @@ apiw:
 	jmp	.prolog0
 @endusing
 
+
+@using .tresume
+.tresume:
+	mov rax,[ResumeThread]
+	jmp	.prolog0
+@endusing
+
+
+@using .cpipe
+.cpipe:
+	mov rax,[CreatePipe]
+	jmp	.prolog0
+@endusing
+
+@using .set_stdh
+.set_stdh:
+	mov rax,[SetStdHandle]
+	jmp	.prolog0
+@endusing
+
+
+
+
    ;ü------------------------------------------ö
    ;|   GDI etc                                 |
    ;#------------------------------------------ä
@@ -581,6 +604,14 @@ apiw:
 	mov rax,[GetTextExtentPoint32W]
 	jmp	.prolog0
 @endusing
+
+
+@using .oem2char
+.oem2char:
+	mov rax,[OemToCharA]
+	jmp	.prologP
+@endusing
+
 
 @using .selobj
 .selobj:
@@ -743,7 +774,7 @@ apiw:
 @endusing
 
    ;ü------------------------------------------ö
-   ;|   window managing                        |
+   ;|   WINDOW MANAGING                        |
    ;#------------------------------------------ä
 
 @using .beg_defwpos
@@ -908,6 +939,13 @@ apiw:
 	mov rax,[ShowWindow]
 	jmp	.prolog0
 @endusing
+
+@using .is_visible
+.is_visible:
+	mov rax,[IsWindowVisible]
+	jmp	.prolog0
+@endusing
+
 
 @using .update
 .update:

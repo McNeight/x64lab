@@ -30,6 +30,7 @@ mnu:
 	mov [hMnuMain],rax
 
 	;--- main menu ------------
+	xor r9,r9
 	xor r8,r8
 	mov rcx,rax
 	mov rsi,.mp_add
@@ -112,18 +113,25 @@ mnu:
 		
 		;--- CONFIGURE --------
 		xor r8,r8
-		mov rdx,tMI_CONF_KEY
 		mov rcx,[hMP_CONF]
-		call rsi
-		mov rdx,tMP_LANG
-		call rsi
-		mov [hMP_LANG],rax
-		mov rdx,tMP_UPD
-		call rsi
-		mov [hMP_UPD],rax
 		mov rdx,tMP_DEVT
 		call rsi
 		mov [hMP_DEVT],rax
+
+		mov rdx,tMI_CONF_KEY
+		call rsi
+
+		mov rdx,tMP_LANG
+		call rsi
+		mov [hMP_LANG],rax
+
+		mov rdx,tMI_CONF_RELCMDS
+		call rsi
+
+		mov rdx,tMP_UPD
+		call rsi
+		mov [hMP_UPD],rax
+
 
 			;--- UPDATE ---------
 			xor r8,r8
@@ -151,7 +159,8 @@ mnu:
 		mov rdx,tMI_PA_CONS
 		call rsi
 	
-	;--- Trackpopups ---- MT_WSP
+	;--- Trackpopups ---- MT_WSP -------
+	xor r9,r9
 	xor r8,r8
 	mov rdx,tMT_WSP
 	xor ecx,ecx
@@ -161,6 +170,7 @@ mnu:
 		mov rdi,.mp_track
 		mov r9,MI_WS_LOAD
 		xor r8,r8
+
 		mov rdx,[hMP_WSPACE]
 		mov rcx,[hMT_WSP]
 		call rdi
@@ -183,41 +193,57 @@ mnu:
 		mov r9,MI_WS_EXIT
 		call rdi
 
-	;--- Trackpopups ---- MT_FILE
+	;--- Trackpopups ---- MT_FILE 9 items
+	xor r9,r9
 	xor r8,r8
 	mov rdx,tMT_FILE
 	xor ecx,ecx
 	call rsi
 	mov [hMT_FILE],rax
 
-	xor r8,r8
-	mov rcx,[hMT_FILE]
+	mov rcx,rax
 	mov rdx,[hMP_WSPACE]
 
-	mov r9,MI_FI_NEWF
+	;---	xor r9,r9
+	;---	mov rdx,tMP_FI_CMD
+	;---	mov rcx,[hMT_FILE]
+	;---	call rsi
+	;---	mov [hMP_FI_CMD],rax
+	;---	mov rdx,[hMP_WSPACE]
+	;---	mov r9d,MI_SEP
+	;---	call rdi
+
+	mov r9d,MI_FI_NEWF
 	call rdi
-	mov r9,MI_FI_IMP
+	mov r9d,MI_FI_IMP
 	call rdi
-	mov r9,MI_ED_LNK
+	mov r9d,MI_ED_LNK
 	call rdi
-	mov r9,MI_ED_REMITEM
+	mov r9d,MI_ED_REMITEM
 	call rdi
-	mov r9,MI_SEP
+	mov r9d,MI_SEP
 	call rdi
 	mov rdx,[hMP_EDIT]
-	mov r9,MI_FI_SAVE
+	mov r9d,MI_FI_SAVE
 	call rdi
-	mov r9,MI_FI_CLOSE
+	mov r9d,MI_FI_CLOSE
 	call rdi
 
 	;--- Trackpopups ---- MT_SECT
+	xor r9,r9
 	xor r8,r8
 	mov rdx,tMT_SECT
 	xor ecx,ecx
 	call rsi
 	mov [hMT_SECT],rax
 
-	xor r8,r8
+	;---	mov r9,MP_FI_CMD
+	;---	mov rdx,[hMT_FILE]
+	;---	mov rcx,[hMT_SECT]
+	;---	call rdi
+	;---	mov r9d,MI_SEP
+	;---	call rdi
+
 	mov rcx,[hMT_SECT]
 	mov rdx,[hMP_WSPACE]
 
@@ -237,6 +263,12 @@ mnu:
 	
 	mov rcx,[hMain]
 	call apiw.mnu_draw
+
+	;--- run cmds setup on thread
+	xor r8,r8
+	xor edx,edx
+	mov rcx,cmds.setup
+	call apiw.tproc
 
 	pop rsi
 	pop rdi
@@ -290,7 +322,6 @@ mnu:
 
 	inc r14
 
-
 .mp_trackE:
 	mov rcx,r12
 	mov rdx,r13
@@ -313,17 +344,22 @@ mnu:
 	;--- in RCX hMenuParent/0
 	;--- in RDX type/flags/0
 	;--- in R8 position
+	;--- in R9 0/eventual utf8 string
 
 	;--- RET RAX hMenu
 	;--- RET RCX hParent
 	;--- RET R8 position+1
+	;--- RET r9 eventual utf8 string 
+	;--- RET r10 eventual OMNI
 	push rbx
 	push r12
 	push r13
+	push r14
 
 	sub rsp,\
 		sizea16.MENUITEMINFOW+\
-		FILE_BUFLEN
+		FILE_BUFLEN*2
+	mov r14,r9
 	mov r12,rcx
 	mov r13,r8
 	mov rbx,rsp
@@ -336,7 +372,8 @@ mnu:
 	;--- ICON ----
 	shr rdx,16
 	mov eax,edx
-	and eax,0FFh	;---> max 255 icons
+	and eax,0FFFFh	;---> max icons
+
 	;--- field -> MEASUERITEMSTRUCT.itemData
 	mov [.mii.dwItemData],rax
 
@@ -379,57 +416,96 @@ mnu:
 	xor eax,eax
 	mov [.mii.fMask],edx
 	mov [.mii.dwTypeData],rax
-
 	test edx,MIIM_SUBMENU
 	jz .mp_addA
+
 	call apiw.mnp_create
 
 .mp_addA:
 	mov edx,[.mii.wID]
 	mov [.mii.hSubMenu],rax
+
 	test edx,edx
 	jz	.mp_addB
+	test r14,r14
+	jz	.mp_addA1
 
+;@break
+	;--- ret RAX cpts
+	;--- ret RCX actual utf8 stream len
+	mov rcx,r14
+	call utf8.cpts
+	jmp	.mp_addA2
+
+
+.mp_addA1:
 	xor r8,r8
 	mov rcx,[pLangRes]
 	call lang.get_uz
 
-;@break
+.mp_addA2:
 	add ecx,ecx
 	add ecx,ecx
+	add ecx,\
+		sizeof.OMNI
 	or ecx,1
 	@nearest 16,ecx
 
 	;--- no string memory for not MFT_OWNERDRAW
-	lea rax,[rsp+\
+	lea r8,[rsp+\
 		sizea16.MENUITEMINFOW]
+	mov rax,r8
 	test [.mii.fType],\
 		MFT_OWNERDRAW
 	jz .mp_addC
+
 	call art.a16malloc
+	lea r8,[rax+\
+		sizeof.OMNI]
 
 .mp_addC:
 	mov [.mii.dwTypeData],rax
+	test r14,r14
+	jz	.mp_addC1
 
+;@break
+	;--- RET CF error
+	;--- RET RAX len dest
+	;--- RET RDX len source
+	mov rdx,r8
+	mov rcx,r14
+	call utf8.to16
+	jmp	.mp_addC2
+	
+
+.mp_addC1:
 	mov edx,[.mii.wID]
-	mov r8,rax
 	mov rcx,[pLangRes]
 	call lang.get_uz
+	;--- RET RAX len
+	;--- RET RCX dest string
+	;--- RET RDX id/-1 no translation
 
-	;--- ITEMDATA
-	;---  ID 1 
-	;---  LEN 1
-	;---  pointer to string 6 bytes
-	;--- 0008'01 -------
-	;--- xLEN'ID -------
-;@break
-	shr eax,1
+.mp_addC2:
 	mov rcx,[.mii.dwItemData]
-	mov rdx,[.mii.dwTypeData]
-	shl rdx,16
-	mov ch,al
-	or rcx,rdx
+	shr eax,1
+	and eax,0FFFFh
+	shl eax,16
+	or rcx,rax
 	mov [.mii.dwItemData],rcx
+
+	test [.mii.fType],\
+		MFT_OWNERDRAW
+	jz .mp_addB
+
+	mov rdx,[.mii.dwTypeData]
+	mov eax,[.mii.wID]
+	mov [rdx+OMNI.iIcon],cx		;--- iIcon
+	shr ecx,16
+	mov [rdx+OMNI.cpts],cx		;--- cpts
+	mov [rdx+OMNI.id],ax
+	mov [.mii.dwItemData],rdx
+
 
 .mp_addB:
 	mov r9,rbx
@@ -447,14 +523,16 @@ mnu:
 	cmovnz rax,r9
 	
 .mp_addE:	
+	mov r10,[.mii.dwTypeData]
+	mov r9,r14
 	add rsp,\
 		sizea16.MENUITEMINFOW+\
-		FILE_BUFLEN
+		FILE_BUFLEN*2
+	pop r14
 	pop r13
 	pop r12
 	pop rbx
 	ret 0
-
 
 
 	;#---------------------------------------------------ö
@@ -467,7 +545,7 @@ mnu:
 	push rdi
 
 	mov rbx,rcx
-	call apiw.get_mnuicount
+	call apiw.get_mnicount
 	test eax,eax
 	jz	.resetE
 	mov rdi,rax
@@ -478,12 +556,12 @@ mnu:
 	mov rdx,rdi
 	mov rcx,rbx
 	call apiw.mnu_del
-
+	
 .resetB:
 	dec rdi
 	jns .resetA
 	
-.resetE:	
+.resetE:
 	pop rdi
 	pop rbx
 	ret 0
@@ -496,6 +574,9 @@ mnu:
 	push rbx
 	push rdi
 	push rsi
+
+	;--- exeute special discard on CMDS
+	call cmds.discard
 
 	mov rsi,apiw.mnu_destroy
 	mov rdi,.reset
@@ -518,7 +599,6 @@ mnu:
 	pop rax
 	test rax,rax
 	jnz	.discardA
-
 
 	;2) --- reset eventual languages 
 	mov rcx,[hMP_LANG]
@@ -560,6 +640,7 @@ mnu:
 
 	;--- CONFIGURE
 	push 0
+	push MI_CONF_RELCMDS
 	push MI_CONF_KEY
 	push MP_LANG
 	push MP_UPD
@@ -596,12 +677,12 @@ mnu:
 	;---	call art.cout2XX
 	;---	pop rax
 
-	shr rax,16
+;	shr rax,16
 	test rax,rax
 	jz	.discardC
 
-	;---	mov rcx,rax
-	;---	call rbx
+	mov rcx,rax
+	call rbx
 
 .discardC:
 	pop rdx
@@ -644,6 +725,7 @@ mnu:
 .get_data:
 	;--- in RCX hMenu
 	;--- in RDX menuid
+
 	;--- ret RAX data
 	;--- ret RCX hMenu
 	;--- ret RDX menuid
@@ -666,8 +748,10 @@ mnu:
 		MENUITEMINFOW.dwItemData]
 	xor eax,eax
 	test rdx,rdx
-;---	mov r8,[rsp+\
-;---		MENUITEMINFOW.dwTypeData]
+
+	;---mov r8,[rsp+\
+	;---	MENUITEMINFOW.dwTypeData]
+
 	cmovnz rax,rdx
 
 .get_dataE:
@@ -734,7 +818,7 @@ mnu:
 	push rax
 
 	push 0
-	push uzBlackLxPTri
+	push uzBlkLxPTri
 	push uzSpace
 	push uzCPar
 	push rcx

@@ -472,6 +472,10 @@ edit:
 	mov rcx,[rax+PNL.hwnd]
 	call apiw.redraw_win
 
+;---	xor edx,edx
+;---	mov rcx,rbx
+;---	call cmds.set
+
 	mov rax,rbx
 	pop rsi
 	pop rbx

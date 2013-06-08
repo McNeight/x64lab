@@ -54,13 +54,14 @@
 
 ; KERNEL32.DLL structures and constants
 
-struct SECURITY_ATTRIBUTES
- nLength dd ?
- pad1 dd ?
- lpSecurityDescriptor dq ?
- bInheritHandle dd ?
- pad2 dd ?
-ends
+	struct SECURITY_ATTRIBUTES
+	 nLength 	dd ?
+	 pad1 		dd ?
+	 lpSecurityDescriptor dq ?
+	 bInheritHandle dd ?
+	 pad2 					dd ?
+	ends
+	@sizea16 SECURITY_ATTRIBUTES 
 
 
 struct SYSTEM_INFO

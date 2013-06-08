@@ -1,9 +1,7 @@
 ﻿
  Hi, Welcome to x64lab group.
   My name is Marc Rainer Kranz, i am a German 
-  assembly programmer.
-
-  You find me as mrk "hopcode" on
+  assembly programmer. You find me as mrk "hopcode" on
 
  - http://x64lab.net
  - http://board.x64lab.net
@@ -16,6 +14,7 @@
  - [config\accel.utf8]   keyboard accelerators
  - [config\config.utf8]  general config file
  - [config\devtool.utf8] config file for tools
+ - [config\command.utf8] file of commandlines
  - [config\docking.bin]  repositional infos
  - [config\ext\*.*]      classes and file-extensions
  
@@ -161,7 +160,7 @@ Summary:
 
      - [makeall.bat]
         build all targets. called from lab_update.
-        (exiting current x64lab, if running)
+        (exit current x64lab,please,if it is running)
 
      - [repack.bat]
         to pack src/bin zipped file
@@ -173,7 +172,7 @@ Summary:
     with this file, You can obtain one at http://mozilla.org/MPL/2.0/ or read
     it from the file LICENSE.TXT
 
-   - x64lab is Copyright © 2009-2012, Marc Rainer Kranz
+   - x64lab is Copyright © 2009-2013, Marc Rainer Kranz
 
    - dock64,top64,lang plugins are under the MPL 2.0 license as above
      but as separated modules
@@ -187,7 +186,7 @@ Summary:
    - files in the [equates\] folder are my own modifications from
      excellent public domain provided by madmatt.
 
-   - file macro\unsupported.inc is public domain
+   - file [macro\unsupported.inc] is public domain
 
    - icons in the [config\x64lab.bmp] are from the Open Icon Library
      under the CC License at http://openiconlibrary.sourceforge.net/
@@ -202,7 +201,7 @@ Summary:
    - because x64lab is a self-building framework, the [develop]
      folder contains all what i need to recompile it and set it
      as the working version. all files should be utf-8 no-BOM encoded.
-     the release version set an %X64LAB% env variable pointing
+     the release version sets an %X64LAB% env variable pointing
      to the application executable. the debug version an %X64LABD% one
 
    - x64lab can load/unload DLL files at run-time, plugins
@@ -228,13 +227,13 @@ Summary:
      and use it in x64lab whatever its internal code may be: 
      open source or not, freeware, shareware etc.
 
-   - x64lab uses config files in a open source new format called
+   - x64lab uses config files in an open source new format called
      TOP (Text Object Parser). i invented that format and
-     that tecnology myself because i was bored of standard .ini files 
+     that technology myself because i was bored of standard .ini files 
      and the redundancy of .xml & C. formats. i needed something
      powerful like CSV files, but capable to store nesting objects too.
 
-     a TOP format file is always an utf-8 encoded file. also
+     a TOP format file is always an utf-8 NO-BOM encoded file. also
      forget ANSI on editing it ! x64lab doesnt read/write into 
      Windows registry.
 

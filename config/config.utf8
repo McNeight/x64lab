@@ -1,9 +1,9 @@
 	;--- Warning!! utf8 no-BOM äöüß
 	;--- TOP format file for x64lab
-	;--- Copyright Marc Rainer Kranz 2009-2012
+	;--- Copyright Marc Rainer Kranz 2009-2013
 
-	version:"1.0.24"
-	session:0DFh
+	version:"1.0.48"
+	session:0E0h
 	wspace:"%X64LAB%\project\welcome.x64lab"
 	language:"en-US"
 	owner:"Mr.Biberkopf"
@@ -11,7 +11,6 @@
 	pos:04300599002100F5h
 	cons:(
 		back:0FFFFFFh
-		env:"include","E:\fasm\include"
-		env:"x64devdir","E:\x64lab\develop"
 		env:"path","%path%;E:\fasm"
+		env:"x64devdir","E:\x64lab\develop"
 	)

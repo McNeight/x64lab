@@ -23,71 +23,73 @@ console:
 .proc:
 @wpro rbp,\
 		rbx rsi rdi
-;---	cmp edx,WM_COMMAND
-;---	jz	.wm_command
 ;---	cmp edx,WM_NOTIFY
 ;---	jz	.wm_notify
+;---	cmp edx,WM_COMMAND
+;---	jz	.wm_command
 	cmp edx,\
 		WM_INITDIALOG
 	jz	.wm_initdialog
 	cmp edx,\
 		WM_WINDOWPOSCHANGED
 	jz	.wm_poschged
+;---	cmp edx,WM_DESTROY
+;---	jz	.wm_destroy
 	jmp	.ret0
 
-;---.wm_command:
-;---	mov rbx,[pCons]
-;---	cmp r9,[.cons.hCbxEdit]
-;---	jnz	.ret0
-;---	shr r8,16
-;---	cmp r8,CBN_SETFOCUS
-;---	jnz	.ret0
-;---@break
-
-;---	jmp	.ret0
-
-
-;---.wm_notify:
-;---	mov rbx,[pCons]
-;---	mov rax,[r9+\
-;---		NMHDR.hwndFrom]
-;---	cmp rax,[.cons.hCbx]
-;---	jnz	.ret0
-
-;---	mov edx,[r9+\
-;---		NMHDR.code]
-;---	cmp edx,\
-;---		NM_KILLFOCUS
-;---	jz	.cbex_killfoc
-;---	cmp edx,\
-;---		NM_SETFOCUS
-;---	jz	.cbex_setfoc
+;---.wm_destroy:
+;---;---	call cmds.discard
 ;---	jmp	.ret0
 
 .wm_poschged:
 	mov rbx,[pCons]
 	sub rsp,sizeof.RECT*3
+
 	lea rdi,[rsp+\
 		sizeof.RECT*2]
 	mov rdx,rdi
 	mov rcx,[.hwnd]
 	call apiw.get_clirect
 
+	mov esi,[rdi+RECT.right]
+	sub esi,[rdi+RECT.left]
+	shr esi,4
+
 	mov rdx,rsp
 	mov rcx,[.cons.hCbx]
 	call apiw.get_winrect
 
+	;--- cbx ---
 	mov rax,SWP_NOZORDER
 	mov r11d,[rsp+RECT.bottom]
 	sub r11d,[rsp+RECT.top]
+
 	mov r10d,[rdi+RECT.right]
 	sub r10d,[rdi+RECT.left]
+
+;---	imul r10,rsi,10
+;---	sub r10,CX_GAP
+
 	mov r9d,[rdi+RECT.top]
 	mov r8d,[rdi+RECT.left]
 	mov rdx,HWND_TOP
 	mov rcx,[.cons.hCbx]
 	call apiw.set_wpos
 
+;---	;--- btn ---
+;---	mov rax,SWP_NOZORDER
+;---	mov r11d,[rsp+RECT.bottom]
+;---	sub r11d,[rsp+RECT.top]
+;---	mov r10d,[rdi+RECT.right]
+;---	sub r10d,[rdi+RECT.left]
+;---	imul r8,rsi,10
+;---	sub r10,r8
+;---	mov r9d,[rdi+RECT.top]
+;---	mov rdx,HWND_TOP
+;---	mov rcx,[.cons.hBtn]
+;---	call apiw.set_wpos
+
+	;--- sci ----
 	mov eax,SWP_NOZORDER or \
 		SWP_NOSENDCHANGING or \
 		SWP_NOCOPYBITS
@@ -102,6 +104,12 @@ console:
 	mov r10d,[rdi+RECT.right]
 	sub r10d,[rdi+RECT.left]
 
+;---	imul r10,rsi,10
+;---	sub r10,CX_GAP
+
+	;---	mov r10d,[rdi+RECT.right]
+	;---	sub r10d,[rdi+RECT.left]
+
 	mov r9d,[rdi+RECT.top]
 	add r9d,[rsp+RECT.bottom]
 	sub r9d,[rsp+RECT.top]
@@ -111,6 +119,7 @@ console:
 	mov rdx,HWND_TOP
 	mov rcx,[.cons.hSci]
 	call apiw.set_wpos
+
 	jmp	.ret1
 
 
@@ -122,7 +131,7 @@ console:
 	call apiw.set_wldata
 	mov [.cons.id],CONS_DLG
 
-	mov rdx,CONS_CBX
+	mov edx,CONS_CBX
 	mov rcx,[.hwnd]
 	call rdi
 	mov [.cons.hCbx],rax
@@ -143,6 +152,15 @@ console:
 	mov rcx,[.cons.hSci]
 	call sci.def_flags
 
+;---	mov r8,SC_CP_UTF8;0
+;---	mov rcx,[.cons.hSci]
+;---	call sci.set_cp
+
+;---	mov r9,SC_CHARSET_OEM
+;---	mov r8d,STYLE_DEFAULT
+;---	mov rcx,[.cons.hSci]
+;---	call sci.set_charset
+
 	mov rdi,[pConf]
 	mov r9d,[.conf.cons.back]
 	mov r8,\
@@ -150,13 +168,6 @@ console:
 	mov rcx,[.cons.hSci]
 	call sci.set_backcolor
 
-	mov r8,cbxedit.proc
-	mov rcx,[.cons.hCbxEdit]
-	call apiw.set_wlproc
-	mov [.cons.pCbexEOld],rax
-
-;---	call _edit.get_caretsize
-	
 
 .ret1:				;message processed
 	xor rax,rax
@@ -170,127 +181,81 @@ console:
 .exit:
 	@wepi
 
+.out:
+	;--- in RCX utf16 text
+	;--- in RDX flags line
+	push rbp
+	push rbx
+	push rdi
+	push rsi
+	mov rbp,rsp
+	and rsp,-16
 
-
-	;#---------------------------------------------------ö
-	;|      subclassed EDIT window of the ComboBoxEx     |
-	;ö---------------------------------------------------ü
-
-cbxedit:
-	virtual at rbx
-		.cons CONS
-	end virtual
-
-	virtual at rdi
-		.conf CONFIG
-	end virtual
-	
-.proc:
-@wpro rbp,\
-		rbx rsi rdi
-
-	mov rdx,[.msg]
-	cmp edx,WM_DESTROY
-	jz	.wm_destroy
-;---	cmp edx,WM_SETFOCUS
-;---	jz	.wm_setfoc
-;---	cmp edx,WM_KILLFOCUS
-;---	jz	.wm_killfoc
-	jmp	.cwproc
-
-;---.wm_killfoc:
-;---;@break
-;---	mov rcx,[.hwnd]
-;---  call apiw.hide_caret
-
-;---	mov rcx,[.hwnd]
-;---	call apiw.destr_caret
-;---	jmp	.ret0
-
-;---.wm_setfoc:
-;---;@break
-;---	mov rbx,[pCons]
-;---	movzx r9,\
-;---		[.cons.cyCaret]
-;---	movzx r8,\
-;---		[.cons.cxCaret]
-;---	xor edx,edx
-;---	mov rcx,[.hwnd]
-;---	call apiw.create_caret
-
-;---	mov rcx,[.hwnd]
-;---  call apiw.show_caret
-;---	jmp	.ret0
-
-
-
-.wm_destroy:
+	mov rsi,rdx
 	mov rbx,[pCons]
-	mov r8,[.cons.pCbexEOld]
-	mov rcx,[.hwnd]
-	call apiw.set_wlproc
-	jmp	.ret0
+	mov rdi,rcx
 
-.ret1:				;message processed
-	xor rax,rax
-	inc rax
-	jmp	.exit
+	call utf16.cpts
+	add eax,eax
+	add eax,eax
+	add eax,6
+	@nearest 16,eax
+	@frame rax
 
-.ret0:
-	xor rax,rax
-	jmp	.exit
+	mov rcx,rdi
+	mov rdx,rsp
+	call utf16.to8
+	jc .outE
+	mov qword[rsp+rax],rsi
 
-.cwproc:
-	sub rsp,30h
-	mov rax,[.lparam]
+	or eax,-1
+	mov r9,rax
+	mov r8,rax
+	mov rcx,[.cons.hSci]
+	call sci.set_sel
+
+	mov r9,rsp
+	xor r8,r8 
+	mov rcx,[.cons.hSci]
+	call sci.repl_sel
+
+.outE:
+	mov rsp,rbp
+	pop rsi
+	pop rdi
+	pop rbx
+	pop rbp
+	ret 0
+
+.out8:
+	;--- in RCX utf8 text
+	;--- in RDX flags line
+	push rbx
+	push rdx
+	push rcx
+
+	or eax,-1
 	mov rbx,[pCons]
-	mov [rsp+20h],rax
-	mov r9,[.wparam]
-	mov r8,[.msg]
-	mov rdx,[.hwnd]
-	mov rcx,[.cons.pCbexEOld]
-	call [CallWindowProcW]
-	
-.exit:
-	@wepi
+	mov r9,rax
+	mov r8,rax
+	mov rcx,[.cons.hSci]
+	call sci.set_sel
+
+	pop r9
+	xor r8,r8 
+	mov rcx,[.cons.hSci]
+	call sci.repl_sel
+
+	mov r9,rsp
+	xor r8,r8 
+	mov rcx,[.cons.hSci]
+	cmp r8,[rsp]
+	jz .out8E
+	call sci.repl_sel
+
+.out8E:
+	pop rdx
+	pop rbx
+	ret 0
 
 
-
-;---.get_caretsize:
-;---	push rbx
-;---	push rdi
-;---	push r12
-;---	push r13
-
-;---	mov rbx,[pCons]
-;---	sub rsp,\
-;---		sizea16.TEXTMETRIC
-;---	mov r12,rsp
-
-;---	mov rcx,[.cons.hCbxEdit]
-;---	call apiw.get_dc
-;---	mov r13,rax
-
-;---	mov rdx,r12
-;---	mov rcx,rax
-;---	call apiw.get_txtmetr
-
-;---	mov eax,[r12+\
-;---		TEXTMETRIC.tmAveCharWidth]
-;---	mov [.cons.cxCaret],al
-;---	mov eax,[r12+\
-;---		TEXTMETRIC.tmHeight]
-;---	mov [.cons.cyCaret],al
-
-;---	mov rdx,r13
-;---	mov rcx,[.cons.hCbxEdit]
-;---	call apiw.rel_dc
-
-;---	add rsp,\
-;---		sizea16.TEXTMETRIC
-
-;---	pop r13
-;---	pop r12
-;---	pop rdi
-;---	pop rbx
-;---	ret 0

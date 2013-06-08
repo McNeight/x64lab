@@ -9,6 +9,7 @@ config\devtool.utf8
 config\docking.bin
 config\config.utf8
 config\accel.utf8
+config\command.utf8
 config\x64lab.bmp
 ext\*
 template\*
@@ -19,6 +20,7 @@ tool\io.vbs
 tool\net.vbs
 tool\regex.vbs
 tool\update.wsf
+tool\sdk7.1.bat
 
 lang\en-US.bin
 plugin\bk64.dll

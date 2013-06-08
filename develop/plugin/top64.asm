@@ -27,7 +27,7 @@ INC_CODE	equ WORKDIR#'\'#MODULE#'\code.asm'
 INC_RES		equ 
 APIIMPORT			equ 
 
-INC_IMP		equ SHAREDDIR#'\importw.inc'
+INC_IMP	equ SHAREDDIR#'\importw.inc'
 INC_FIX	equ TRUE
 
 INC_EQU equ  \

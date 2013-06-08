@@ -1,0 +1,42 @@
+  
+  ;#-------------------------------------------------ß
+  ;|          x64lab  MPL 2.0 License                |
+  ;|   Copyright (c) 2009-2013, Marc Rainer Kranz.   |
+  ;|            All rights reserved.                 |
+  ;ö-------------------------------------------------ä
+
+  ;#-------------------------------------------------ß
+  ;| uft-8 NO-BOM encoded üäöß
+  ;| update:
+  ;| filename:
+  ;ö-------------------------------------------------ä
+
+	;--- SYMBOLS
+	;---	<d> drive
+	;---	<f> filename.ext
+	;---	<n> filename in filename.ext
+	;---	<e> ext in filename.ext
+	;---	<p> path
+
+	;---	not implemented SYMBOLS
+	;---	<h> hash
+	;---	<r> random
+	;---	<t> timestamp
+	;---  <s> string
+	;---	? ask
+	;---	! message
+
+		;--- command's definitions group NOT YET IMPLEMENTED ---
+	env:"path","%path%;K:\masm32\bin"
+	env:"myvar","0"										
+	
+  <:"dir <d> >> tempfile.txt"
+	<:"fasm <f>"
+	>:"/K %X64LAB%\tool\sdk7.1.bat /Release /x64 <f>"
+	<:"%X64LAB%\tool\sdk7.1.bat /Release /x64 <f> clean"
+	<:"%X64LAB%\tool\sdk7.1.bat /Release /x64 <f>"
+	=:"notepad.exe <f>"
+	>:"/K fasm <f>"
+	?:"dir *.asm"
+	<:"<f>"
+

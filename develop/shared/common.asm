@@ -36,11 +36,10 @@
 	stack 100'000h
 
 	include "%x64devdir%\macro\mrk_macrow.inc"
-
-	include '..\macro/struct.inc'
-	include '..\macro/import64.inc'
-	include '..\macro/export.inc'
-	include '..\macro/resource.inc'
+	include '%x64devdir%\macro\struct.inc'
+	include '%x64devdir%\macro\import64.inc'
+	include '%x64devdir%\macro\export.inc'
+	include '%x64devdir%\macro\resource.inc'
 
 	struc TCHAR [val] { 
 		common 
@@ -55,12 +54,12 @@
 		(sizeof.#argstruc + 15) and (-16)
 	}
 
-	include '..\equates/kernel64.inc'
-	include '..\equates/user64.inc'
-	include '..\equates/gdi64.inc'
-	include "..\equates\comctl64.inc"
-	include '..\equates/comdlg64.inc'
-	include '..\equates/shell64.inc'
+	include '%x64devdir%\equates\kernel64.inc'
+	include '%x64devdir%\equates\user64.inc'
+	include '%x64devdir%\equates\gdi64.inc'
+	include "%x64devdir%\equates\comctl64.inc"
+	include '%x64devdir%\equates\comdlg64.inc'
+	include '%x64devdir%\equates\shell64.inc'
 
 	;ü------------------------------------------ö
 	;|     RSRC.INC                             |
@@ -162,10 +161,12 @@ entrydll:
 	push rsi
 	mov rbp,rsp
 	and rsp,-16
-;	.hInstance rcx,\
-;	.fdwReason rdx,\
-;	.reserved r8
-	mov rax,entrydll	;--- forces .reloc fixups to be valid
+	;---	.hInstance rcx,\
+	;---	.fdwReason rdx,\
+	;---	.reserved r8
+	xor eax,eax
+	mov r9,entrydll	;--- forces .reloc fixups to be valid
+	inc eax
 	cmp	rdx,DLL_PROCESS_ATTACH
 	jnz	@f
 

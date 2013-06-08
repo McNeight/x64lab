@@ -1,7 +1,7 @@
   
   ;#-------------------------------------------------ß
   ;|          x64lab  MPL 2.0 License                |
-  ;|   Copyright (c) 2009-2012, Marc Rainer Kranz.   |
+  ;|   Copyright (c) 2009-2013, Marc Rainer Kranz.   |
   ;|            All rights reserved.                 |
   ;ö-------------------------------------------------ä
 

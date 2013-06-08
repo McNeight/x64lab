@@ -17,6 +17,7 @@
 		04:01005ADEF3F97C6CAh,"config.utf8"
 		04:01005ADEF3F97C6CAh,"devtool.utf8"
 		04:01005ADEF3F97C6CAh,"accel.utf8"
+		04:01005ADEF3F97C6CAh,"command.utf8"
 	)
 	03:048FFF5BB543AAAC9h,"help"(
 		03:017EE02DF38B7DC4Fh,"en-US"(
@@ -27,6 +28,7 @@
 			04:017EE02DF38B7DC4Fh,"template.txt"
 			04:017EE02DF38B7DC4Fh,"bookmark.txt"
 			04:017EE02DF38B7DC4Fh,"configure.txt"
+			04:017EE02DF38B7DC4Fh,"command.txt"
 		)
 	)
 	03:09D49C9DF9F910599h,"ext"(
@@ -34,4 +36,6 @@
 		04:09D49C9DF9F910599h,"topfile.utf8"
 		04:09D49C9DF9F910599h,"vbscript.utf8"
 		04:09D49C9DF9F910599h,"arm.utf8"
+		04:09D49C9DF9F910599h,"clike.utf8"
 	)
+	

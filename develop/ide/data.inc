@@ -45,6 +45,7 @@ section '.data' data readable writeable
 	pLabfWsp	dq 0
 
 	hTip			dq 0
+	hIcon			dq 0
 	hInst			dq 0
 	hAccel		dq 0
 	hMain			dq 0
@@ -56,6 +57,8 @@ section '.data' data readable writeable
 	pTopStr	dq 0
 	pTopExt	dq 0
 	hBmpIml	dq 0
+
+	pTopCmd	dq 0
 
 	appDir		dq 0
 	backDir		dq 0
@@ -89,6 +92,9 @@ section '.data' data readable writeable
 		szDefLang	db "en-US",0
 		szCourierN	db "Courier New",0
 
+	;---mydummy db "path",0
+	;---myval   db "%path%;E:\PellesC",0
+
 	@szhash	back,bold,\
 		clearall,commline,commstart,commend,\
 		font,fontsize,fore,\
@@ -102,7 +108,7 @@ section '.data' data readable writeable
 		atime,\
 		cons,cdate,ctime,curs,\
 		docs,\
-		env,\
+		env,ext,\
 		fshow,\
 		language,\
 		owner,\
@@ -111,8 +117,6 @@ section '.data' data readable writeable
 		session,\
 		version,\
 		wspace
-
-
 
 		align 2
 		tmMnuSize	SIZE 6,28
@@ -141,6 +145,7 @@ section '.data' data readable writeable
 		uzHexClass	du "HexView32",0
 		uzUpdate		du "update",0
 		uzJob				du "job",0
+		uzCommand		du "command",0
 
 		uzDefault  du "default"		;<--- follows
 		uzLabExt   du "."
@@ -154,7 +159,10 @@ section '.data' data readable writeable
 		uzBmpExt	 du ".bmp",0
 		uzVbsExt	 du ".vbs",0
 		uzWsfExt	 du ".wsf",0
-		uzCmd 		 du "cmd " ;--- 16 bytes
+		usOptC		 du "/C"
+		usOptU		 du "/U"
+		usOptA		 du "/A"
+		usCmd 		 du "cmd " ;--- 16 bytes
 		uzCscript	 du "cscript",0
 		uzNoLogo	 du "//nologo",0
 		uzR				 du "r /e" 
@@ -170,6 +178,9 @@ section '.data' data readable writeable
 		uzTipClass	du "tooltips_class32",0
 		uzSciDll		du "Scilexer64.dll",0
 		uzSciClass	du "Scintilla",0
+
+		;---uzDummy du "äöüßDatenträger",0
+		;---uzDummy1 db "многоязычных",0
 		
 		;--- menu -----------------------------------------
 		macro @mni argname,argicon,argtysta,argflags{
@@ -202,6 +213,7 @@ section '.data' data readable writeable
 
 		align 8
 		@mni MI_SEP,0,MFT_SEPARATOR,0
+		;---		@mni MI_MBREAK,0,MFT_MENUBARBREAK, MIIM_TYPE
 
 		@mnp MP_WSPACE,  -1,0,ISS
 			@mni MI_WS_LOAD,9,OWN,DIF
@@ -220,6 +232,7 @@ section '.data' data readable writeable
 			@mni MI_FI_NEWB,0,OWN,DIF
 			@mni MI_FI_SAVE,2,OWN,DIF
 			@mni MI_FI_CLOSE,5,OWN,DIF
+			@mnp MP_FI_CMD,17,OWN,DIF or MIIM_SUBMENU
 
 		@mnp MP_EDIT,  -1,0,ISS
 			@mnp MP_SCI, -1,OWN,DIF or MIIM_SUBMENU
@@ -235,20 +248,30 @@ section '.data' data readable writeable
 				@mni MI_DEVT_REM,	12,OWN,DIF
 				@mni MI_DEVT_ADDG, 0,OWN,DIF
 				@mni MI_DEVT_REMG, 0,OWN,DIF
+			@mni MI_CONF_RELCMDS,0,OWN,DIF
 
 		@mnp MP_UPD,   0,OWN,DIF or MIIM_SUBMENU
 				@mni MI_UPD_LANG,	15,OWN,DIF
 
 		@mnp MP_PATH,  -1,RJU,ISS or MIIM_FTYPE
-			@mni MI_PA_BROWSE,	0,OWN,DIF
-			@mni MI_PA_CONS,		0,OWN,DIF
+			@mni MI_PA_BROWSE,	20,OWN,DIF
+			@mni MI_PA_CONS,		18,OWN,DIF
 
+			;---@mni MI_PA_SETPROP,		0,OWN,DIF
 			;---	MP_WSPACE,		1,MFS_DISABLED,MIIM_STATE or MIIM_STRING
 			;---	UZ_EDIT_PANE,1,MFS_DISABLED,MIIM_STATE or MIIM_STRING
 
-			@mnp	MT_WSP,  -1,0,ISS
-			@mnp	MT_FILE, -1,0,ISS
-			@mnp	MT_SECT, -1,0,ISS
+			@mnp MT_WSP,  -1,0,ISS
+			@mnp MT_FILE, -1,0,ISS
+			@mnp MT_SECT, -1,0,ISS
+
+		;--- generic start ownerdraw command item
+		;---		@mni MI_CMDG,16,OWN,DIF or MIIM_SUBMENU
+		;---		@mni MI_CMD,17,OWN,DIF
+
+		@mni MI_CMDI,0,OWN,DIF
+
+
 
 		display "--- Size of data "
 		display_decimal $-$$

@@ -1,7 +1,7 @@
   
   ;#-------------------------------------------------ß
   ;|          x64lab  MPL 2.0 License                |
-  ;|   Copyright (c) 2009-2012, Marc Rainer Kranz.   |
+  ;|   Copyright (c) 2009-2013, Marc Rainer Kranz.   |
   ;|            All rights reserved.                 |
   ;ö-------------------------------------------------ä
 
@@ -10,6 +10,7 @@
   ;| update:
   ;| filename:
   ;ö-------------------------------------------------ä
+
 
 config:
 	virtual at rbx
@@ -32,6 +33,8 @@ config:
 		bridge.attach
 	mov rsi,\
 		uzPlugName
+	;---mov rax,[plugDir]
+	;---lea rsi,[rax+DIR.dir]
 
 	mov rcx,\
 		top64_bridge
@@ -263,6 +266,7 @@ config:
 	mov rdx,rsi
 	mov rcx,rdi
 	call apiw.selobj
+
 	mov rdx,rdi
 	mov rcx,[hMain]
 	call apiw.rel_dc
@@ -782,7 +786,6 @@ config:
 	;#---------------------------------------------------ö
 	;|                   WRITE CONFIG x64lab             |
 	;ö---------------------------------------------------ü
-
 
 .write:
 	push rbp

@@ -1,7 +1,7 @@
   
   ;#-------------------------------------------------ß
   ;|          x64lab  MPL 2.0 License                |
-  ;|   Copyright (c) 2009-2012, Marc Rainer Kranz.   |
+  ;|   Copyright (c) 2009-2013, Marc Rainer Kranz.   |
   ;|            All rights reserved.                 |
   ;ö-------------------------------------------------ä
 
@@ -17,8 +17,8 @@
 	define DEBUG FALSE  
 	define UNICODE TRUE
 	define TITLE "x64lab"
-
 	define MAINCLASS X64LAB
+
 	include "version.inc"
 
 	define COPYRIGHT "Copyright (c) Marc Rainer Kranz 2009-2012"

@@ -623,7 +623,6 @@ doc:
 	mov r12,rdx
 	mov r13,[pDoc]
 
-;@break
 	lea rdi,[rsp+\
 		sizea16.LVITEMW]
 	mov eax,"["
@@ -637,10 +636,6 @@ doc:
 	mov rsi,rax
 	rep movsb
 	mov eax,"]"
-	stosw
-	mov eax," "
-	stosw
-	mov eax,"-"
 	stosw
 	mov eax," "
 	stosw
@@ -973,6 +968,7 @@ doc:
 	mov rcx,[rsi+\
 		EDIT.curlabf]
 	call .list_bm
+
 
 ;---	mov rax,[rsi+\
 ;---		EDIT.curlabf]

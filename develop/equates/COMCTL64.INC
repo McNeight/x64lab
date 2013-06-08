@@ -56,6 +56,21 @@
 	@sizea16 TVITEMW
 
 
+	struct BUTTON_SPLITINFO
+		mask			dd ?
+							dd ?
+		himlGlyph dq ?
+		uSplitStyle dd ?
+		size			SIZE
+							dd ?
+	ends
+
+	struct NMBCDROPDOWN
+		hdr NMHDR 
+		rcButton RECT
+	ends
+	@sizea16 NMBCDROPDOWN
+
 ;---	struct TVITEMW
 ;---	 mask			dd ?
 ;---						dd ?
@@ -533,11 +548,11 @@ struct TC_ITEMHEADER
 ends
 
 struct NMTVGETINFOTIPW
-	 hdr NMHDR
-	 pszText dq ?
+	 hdr 				NMHDR
+	 pszText 		dq ?
 	 cchTextMax dd ?,?
-	 hItem dq ?
-	 lParam dq ?
+	 hItem 			dq ?
+	 lParam 		dq ?
 ends
 
 ;struct TC_ITEM
@@ -1237,6 +1252,14 @@ TTF_IDISHWND   = 01h
 TTF_CENTERTIP  = 02h
 TTF_RTLREADING = 04h
 TTF_SUBCLASS   = 10h
+TTF_TRACK      = 20h
+TTF_ABSOLUTE   = 80h
+TTF_TRANSPARENT = 100h
+TTF_PARSELINKS  = 1000h
+TTF_DI_SETITEM  = 8000h
+
+
+
 
 ; Tooltip durations
 

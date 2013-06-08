@@ -28,7 +28,21 @@
 	FSCR_816 equ 4	;--- convert utf-8 to utf-16
 	FSCR_168 equ 8	;--- convert utf-16 to utf-8
 
-	
+	struct OMNI
+		id		dw ?
+		union
+			iIcon	dw ?
+			iType	dw ?
+		ends
+		cpts	dw ?
+					db ?	;--- eventual info type
+					db ?
+		param dq ?	;--- eventual param
+		info	dq ?	;--- more info
+					dq ?
+		;--- follow text
+	ends
+		
 	struct DIR
 		hash	dq ?
 		hnext	dq ?
@@ -145,51 +159,6 @@
 		cmds	dq ?	;--- commands memory
 	ends
 
-	;---- blocks in the [ext\asm.assembly]
-	;---	%d drive
-	;---	%f filename.ext
-	;---		%n name in filename
-	;---		%e extension
-	;---	%h hash
-	;---	%p path
-	;---	%r random
-	;---	%t timestamp
-
-	;---	# ;--- command exec and redirect output here
-	;---	> ;--- set x64lab
-	;---	< ;--- get x64lab
-	;---	? ;--- help x64lab
-	;---	- ;--- execute command and close shell
-	;---	+ ;--- execute command and stay open
-
-	;---  command item example
-	;---	polib:(
-	;---		enb:(
-	;---     path:"%path%;K:\masm32\bin"
-	;---     
-	;---    )
-	;---		;--- first commandline option for "polib"
-	;---		#:"polib.exe //OUT:%n.lib //MAKEDEF:%n.def %n.%e"
-	;---		;--- second commandline option for "polib"
-	;---		#:"polib.exe //LIST %n.lib"
-	;---	)
-
-	struct CMD_SLOT
-		next	dq 0
-		type	db 0	;--- #,>,<,?,-,+
-					db 0
-		len		dw 0
-		stuff	dd 0	;--- "polib.exe //OUT:%n.lib //MAKEDEF:%n.def %n.%e"
-		;--- stuff aligned 16
-	ends
-
-	struct CMD_ITEM
-		next	dq 0
-		hash	dq 0	;--- user named item "polib"
-		envb	dq 0	;--- points to an envblock
-		cmds	dq 0	;--- points to CMD_SLOT
-	ends
-
 	;-------- LABFILE -------------
 	LF_NULL		equ 0
 	LF_WSP		equ 1		;--- workspace marker
@@ -234,7 +203,7 @@
 		state	db 0	;--- treitem state 
 			;--- TVE_COLLAPSE	= 0001h
 			;--- TVE_EXPAND  	= 0002h
-					dq 0	;---
+		pOmni	dq 0	;--- last OMNI pointer used for cmd
 
 		;-------------------------------------
 		type		dw 0	;--- LF_?
@@ -318,8 +287,8 @@ ends
 		hSci			dq 0
 		hCbxEdit	dq 0
 		pCbexEOld	dq 0	;--- old winproc CbexEdit
-
-		cmd				db FILE_BUFLEN*2 dup (0)
+		fontsize  SIZE
+							dq 0
 		part0			dd 0
 		part_enc	dd 0
 		part_dir 	dd 0
@@ -329,12 +298,12 @@ ends
 	struct DEVT PLUGGED
 		hLvw	dq 0
 		hTlb	dq 0
-		hCbx	dq 0
+		hCbx	dq 0	;--- Cbex Groups
 		pGrp	dq 0
-					dd 0
-					dd 0
+		hCbxE	dq 0	;--- control edit for Cbex
 		iGrp	dd 0
 					dd 0
+		uzTip	db FILE_BUFLEN dup (?)
 	ends
 
 	struct DEVTITEM
@@ -350,6 +319,16 @@ ends
 		;--- follow filename.ext
 		;--- follow paras
 	ends
+
+	struct CMDT
+		cmdl	dq 0	;--- commandline
+		envb	dq 0	;--- envblock
+		path	dq 0	;--- execution path
+		iType	dw 0	;--- type index redirA,redirU
+		flags	dw 0
+					dd 0
+	ends
+
 
 	struct TOOLDLG
 		hDlg			dq 0

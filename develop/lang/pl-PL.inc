@@ -36,7 +36,7 @@
     UZ_CPNOSEL,db "Brak zaznaczenia",\
 		UZ_INFO_UTF8,db ";--- Uwaga!! utf8 bez BOM'u äöüßąćęłńśóźż",\
 		UZ_INFO_TOP,db ";--- TOP format file for x64lab",\
-		UZ_INFO_COPYR,db ";--- Copyright Marc Rainer Kranz 2009-2012",\
+		UZ_INFO_COPYR,db ";--- Copyright Marc Rainer Kranz 2009-2013",\
 		UZ_INFO_CDATE,db "Cstamp",\
 		UZ_INFO_SIZE,db "Rozmiar",\
 		UZ_INFO_TYPE,db "Typ",\
@@ -83,6 +83,7 @@
 			MI_FI_SAVEAS,db "Zapisz jako",\
 			MI_FI_ENCO,db "Zakoduj aktualny",\
 			MI_FI_BACK,db "Kopia zapasowa jako",\
+			MP_FI_CMD,db "(*) Execute command",\
 		MP_EDIT,db "Edytuj",\
 			MI_ED_LNK,db "Wstaw nowe inteligente łącze",\
 			MI_ED_REMITEM,db "Usuń obiekt z Przestrzeni Roboczej",\
@@ -94,6 +95,7 @@
 			MI_DEVT_ADDG,db "Dodaj nową etykietę GRUPA",\
 			MI_DEVT_REM,db "Usuń narzędzie",\
 			MI_DEVT_REMG,db "Usuń GRUPĘ",\
+			MI_CONF_RELCMDS,db "(*)Reload commands",\
 		MP_SCI,db "Scintilla",\
 			MI_SCI_COMML,db "Zakomentuj linie",\
 			MI_SCI_COMMB,db "Zakomentuj bloki",\

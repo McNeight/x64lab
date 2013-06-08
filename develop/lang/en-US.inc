@@ -33,7 +33,7 @@
     UZ_CPNOSEL,db "No selection",\
 		UZ_INFO_UTF8,db ";--- Warning!! utf8 no-BOM äöüß",\
 		UZ_INFO_TOP,db ";--- TOP format file for x64lab",\
-		UZ_INFO_COPYR,db ";--- Copyright Marc Rainer Kranz 2009-2012",\
+		UZ_INFO_COPYR,db ";--- Copyright Marc Rainer Kranz 2009-2013",\
 		UZ_INFO_CDATE,db "Cstamp",\
 		UZ_INFO_SIZE,db "Size",\
 		UZ_INFO_TYPE,db "Type",\
@@ -80,6 +80,7 @@
 			MI_FI_SAVEAS,db "Save as",\
 			MI_FI_ENCO,db "Encode current",\
 			MI_FI_BACK,db "Backup as",\
+			MP_FI_CMD,db "Execute command",\
 		MP_EDIT,db "Edit",\
 			MI_ED_LNK,db "Insert new smartlink",\
 			MI_ED_REMITEM,db "Remove item from workspace",\
@@ -91,6 +92,7 @@
 			MI_DEVT_ADDG,db "Add default GROUP label",\
 			MI_DEVT_REM,db "Remove tool",\
 			MI_DEVT_REMG,db "Remove GROUP",\
+			MI_CONF_RELCMDS,db "Reload commands",\
 		MP_SCI,db "Scintilla",\
 			MI_SCI_COMML,db "Comment by line/s",\
 			MI_SCI_COMMB,db "Comment block/s",\
@@ -138,10 +140,7 @@
 				"Tools contained into it will be removed too !",13,10,\
 				"Remove it permanently ?">,\
 			UZ_MSG_TADDG,db "Type something, press <enter> to create a Group",\
-			UZ_MSG_SCIREL,<db \
-				"After saving class files for Scintilla, please close and reopen",13,10,\
-        "current editor open files too in order",13,10,\
-        "to apply syntax colour changes to them">,\
+			UZ_MSG_SCIREL,db "Warning: Please reopen edited files to apply colourizing on syntax",\
 			UZ_MSG_REMITEM,<db \
 				"Warning: Item in workspace contains subitems. Removing it will",13,10,\
         "remove contained subitems too. This operation cannot be undone.",13,10,\
@@ -162,7 +161,7 @@
 				"Add this smartlink as its first child item ?">,\
 			UZ_TEMPLATE,db "Ready templates",\
 			UZ_TMPL_MOD,db "Bare-module templates"
-			
+		
 
 		;---			MI_DEVT_MAN,db "Manage tools file (expert user)",\
 		;---			MI_DEVT_REL,db "Reload tools",\

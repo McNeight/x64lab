@@ -522,6 +522,13 @@ sci:
 		SCI_SETKEYWORDS
 	jmp	apiw.sms
 
+.set_charset:
+	;--- in R9 int charSet
+	;--- in R8 int styleNumber
+	mov edx,\
+		SCI_STYLESETCHARACTERSET
+	jmp	apiw.sms
+
 .set_backcolor:
 	mov edx,\
 		SCI_STYLESETBACK
@@ -618,8 +625,8 @@ sci:
 	jmp	apiw.sms
 
 .set_sel:
-	;--- in R9 , int currentPos
-	;--- in R8 (int anchorPos
+	;--- in R9 int currentPos
+	;--- in R8 int anchorPos
 	mov edx,SCI_SETSEL
 	jmp	apiw.sms	
 

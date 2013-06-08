@@ -13,9 +13,10 @@
 
 
 	align 2
-	@using art.cout2XX, art.cout2XU
+	@using art.cout2XX,art.cout2XU,art.cout
 		uzFrm2XX	du "%llX %llX",13,10,0
 		uzFrm2XU	du "%llX %ls",13,10,0
+		uzFrm2DD	du "%lld %lld",13,10,0
 	@endusing
 
 
@@ -50,7 +51,9 @@
 		uzOPar			du "[",0
 		uzCPar			du "]",0
 		uzFisheye		db 0C9h,25h,0,0
-		uzBlackLxPTri	db 0C0h,25h,0,0
+		uzBlkLxPTri	db 0C0h,25h,0,0
+		uzBlkRxPTri	db 0B6h,25h,0,0
+		uzWhiRxPTri db 0B7h,25h,0,0
 		uzTab				du 9,0
 		uzNull			du 0,0
 		uzSlash			du "\",0

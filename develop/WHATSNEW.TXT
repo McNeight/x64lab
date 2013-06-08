@@ -1,4 +1,16 @@
 
+- version 1.0.48 (09.06.2013 ) cmds 
+  +HLP How to setup commands and commandlines
+  +GUI Menu Rx on item of workspace show "Execute command"
+  +FIL [ext\clike.utf8] C and C++ extension colourize for Scintilla
+
+- version 1.0.38 (20.05.2013 ) "" 
+  +FIL [config\command.utf8] command textfile
+  +DES experimental redirect console on command line
+
+- version 1.0.37 (07.04.2013 ) "" 
+  +GUI Update tooltip on lang switch for cbex devtool
+
 - version 1.0.36 (03.04.2013 ) "" 
   +NOT Maintenance "tracking"
   +NOT "cleanup"

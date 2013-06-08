@@ -186,6 +186,7 @@
 		InvalidateRect,"InvalidateRect",\
 		IsDialogMessageW,"IsDialogMessageW",\
 		IsWindow,"IsWindow",\
+		IsWindowVisible,"IsWindowVisible",\
 		LoadAcceleratorsW,"LoadAcceleratorsW",\
 		LoadBitmapW,"LoadBitmapW",\
 		LoadCursorW,"LoadCursorW",\
@@ -202,6 +203,7 @@
 		MessageBoxExW,"MessageBoxExW",\
 		ModifyMenuW,"ModifyMenuW",\
 		MoveWindow,"MoveWindow",\
+		OemToCharA,"OemToCharA",\
 		PostMessageW,"PostMessageW",\
 		PostQuitMessage,"PostQuitMessage",\
 		PtInRect,"PtInRect",\
@@ -251,6 +253,7 @@
 		CopyFileW,"CopyFileW",\
 		CreateDirectoryW,"CreateDirectoryW",\
 		CreateFileW,"CreateFileW",\
+		CreatePipe,"CreatePipe",\
 		CreateProcessW,"CreateProcessW",\
 		DeleteFileW,"DeleteFileW",\
 		ExitProcess,"ExitProcess",\
@@ -292,10 +295,12 @@
 		QueryPerformanceCounter,"QueryPerformanceCounter",\
 		QueryPerformanceFrequency,"QueryPerformanceFrequency",\
 		ReadFile,"ReadFile",\
+		ResumeThread,"ResumeThread",\
 		SetCurrentDirectoryW,"SetCurrentDirectoryW",\
 		SetEndOfFile,"SetEndOfFile",\
 		SetEnvironmentVariableW,"SetEnvironmentVariableW",\
 		SetFilePointer,"SetFilePointer",\
+		SetStdHandle,"SetStdHandle",\
 		Sleep,"Sleep",\
 		SystemTimeToFileTime,"SystemTimeToFileTime",\
 		UnmapViewOfFile,"UnmapViewOfFile",\

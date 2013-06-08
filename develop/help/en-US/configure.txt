@@ -3,7 +3,7 @@
  Configure
 
  x64lab may be configured in several ways. at the moment i write
- we are in a growing phase. lot of flags and settings even when
+ it is in a growing phase. lot of flags and settings even when
  available, will not be read or written back in configuration files.
  this is because i am mainly concentrated on design.
 

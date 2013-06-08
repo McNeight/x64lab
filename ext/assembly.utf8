@@ -12,7 +12,7 @@
 	commline:";---"
 
 	;--- IDX_CPUINSTRUCTION = 0
-	keyword:0,"aaa aad aam aas adc add and call cbw" \
+	keyword:0,"aaa aad aam aas adc add and call cbw " \
 		"bswap cmpxchg invd  invlpg  wbinvd xadd " \
 		"clc cld cli cmc cmp cmps cmpsb cmpsw cwd daa das dec div esc hlt " \
 		"idiv imul in inc int into iret ja jae jb jbe jc jcxz je jg jge jl " \

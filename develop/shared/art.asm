@@ -713,6 +713,7 @@ align 8
 	;#---------------------------------------------------ö
 	;|                .GET_FNAME		utf16                |
 	;ö---------------------------------------------------ü
+@using .get_fname
 .get_fname:
 	;--- in RCX string
 	;--- RET EAX 0,numchars
@@ -720,7 +721,7 @@ align 8
 	;--- RET EDX pname "file.asm"
 	;--- RET R8 string
 	;--- WORKS with dir too example
-	;C:\MYDIR\SUBDIR  EAX=6 /EDX point to "SUBDIR"
+	;--- C:\MYDIR\SUBDIR  EAX=6 /EDX point to "SUBDIR"
 
 	mov rdx,rcx ; path+filename
 	xor eax,eax
@@ -758,6 +759,7 @@ align 8
 	cmovb rax,rdx
 	cmovb rdx,r9
 	ret 0
+@endusing
 
 
 ;@using .copyz
@@ -1106,7 +1108,7 @@ align 8
 .get_ext:
 	;--- in RCX uzString: path+file.ext utf16
 	;--- RET RAX 0,pExtension	"asm"
-	;--- RET RCX numchars	3
+	;--- RET RCX len utf16 = 6
 	;--- RET RDX original string
 
 	mov rdx,rcx
@@ -1238,8 +1240,9 @@ align 8
 	;|         .FCLOSE            	                     |
 	;ö---------------------------------------------------ü
 
-@using .fclose
+@using .fclose,.hclose
 	;--- in RCX filehandle
+.hclose:
 .fclose:
 	xor rax,rax
 	test rcx,rcx
@@ -1646,6 +1649,18 @@ end if
 	;display_decimal $ - .get_codepoint
 @endusing
 
+@using .cout
+.cout:
+	push rbp
+	mov rbp,rsp
+	and rsp,-16
+	sub rsp,20h
+	call [wprintf]
+	mov rsp,rbp
+	pop rbp
+	ret 0
+@endusing
+
 
 @using .cout2XX
 .cout2XX:
@@ -1768,8 +1783,8 @@ end if
 	sub eax,ecx
 	sub eax,edx
 	sub eax,ecx
+	mov word[r8-2],r11w
 	sub r8,r10
-	mov word[r8-1],r11w
 	or al,"0"
 	test ecx,ecx
 	mov [r8],al
@@ -2101,49 +2116,6 @@ end if
 ;display_decimal $-.u2dq
 @endusing
 
-;	;#---------------------------------------------------ö
-;	;|                     SETDIR                        |
-;	;ö---------------------------------------------------ü
-
-;@using .setdir
-;.setdir:
-;	push eax
-;	SetCurrentDirectory
-;	ret 0
-;@endusing
-
-;	;#---------------------------------------------------ö
-;	;|                     CREATEDIR                     |
-;	;ö---------------------------------------------------ü
-
-;@using .createdir
-;	;IN RCX = dirname
-;	;RET RAX len
-;	;RET RCX dirname
-;.createdir:
-;	push rbp
-;	push rbx
-;	mov rbp,rsp
-;	mov rbx,rcx
-;	and rsp,-16
-;	xor rdx,rdx
-;	sub rsp,20h
-;	call [CreateDirectoryW]
-;	xchg rcx,rbx
-;	mov rsp,rbp
-;	pop rbx
-;	pop rbp
-;	ret 0
-;@endusing
-
-
-;@using .curdir
-;.curdir:
-;	push eax
-;	push 511
-;	call [GetCurrentDirectoryW]
-;	ret 0
-;@endusing
 
 
 ;	;#---------------------------------------------------ö
@@ -2420,71 +2392,4 @@ end if
 ;@endusing
 
 
-
-;	;#---------------------------------------------------ö
-;	;|                       				                     |
-;	;ö---------------------------------------------------ü
-
-;@using .get_errstr
-;proc .get_errstr \
-;	_pbuffer,\
-;	_bufsize,\
-;	_flags,\
-;	_hmodule,\
-;	_ids
-;	; RET EAX=numchars/0
-;	; RET EDX= id error/string
-;	; RET buffer/0 (error)
-;	
-;	push ebx
-;	push edi
-;	push esi
-
-;	mov edi,[_bufsize]
-;	mov esi,[_pbuffer]
-;	
-;	mov ebx,[_flags]
-;	test ebx,USE_SYSERRSTR
-;	jz	.ges3
-;	GetLastError
-;	push eax
-;	push 0
-;	push edi
-;	push esi
-;	push LANG_NEUTRAL
-;	push eax
-;	push 0
-;	push FORMAT_MESSAGE_IGNORE_INSERTS \
-;			 or FORMAT_MESSAGE_FROM_SYSTEM
-;	FormatMessage
-;	jmp .ges4
-
-;.ges3:
-;	mov eax,[_ids]
-;	test ebx,USE_DLGERRSTR
-;	jz	.ges1
-;	CommDlgExtendedError
-;	push eax
-;	test eax,eax
-;	jz	.ges4
-;	pop eax	
-
-;.ges1:
-;	push eax
-
-;	push edi
-;	push esi
-;	push eax
-;	push [_hmodule]
-;	LoadString
-;	
-;.ges4:		
-;	pop edx
-
-;	pop esi
-;	pop edi
-;	pop ebx
-;	ret
-;endp
-;@endusing
 

@@ -1,6 +1,12 @@
 echo off
+ copy config\accel_ok.utf8 config\accel.utf8 /Y
+ copy develop\config\accel_ok.utf8 develop\config\accel.utf8 /Y
+
  copy config\config_ok.utf8 config\config.utf8 /Y
  copy develop\config\config_ok.utf8 develop\config\config.utf8 /Y
+
+ copy config\command_ok.utf8 config\command.utf8 /Y
+ copy develop\config\command_ok.utf8 develop\config\command.utf8 /Y
 
  copy config\devtool_ok.utf8 config\devtool.utf8 /Y
  copy develop\config\devtool_ok.utf8 develop\config\devtool.utf8 /Y
