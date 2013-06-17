@@ -79,11 +79,9 @@ ends
 	TDELETED	equ 20h
 	TPARAM		equ 40h
 
-
 	;--- by TNUMBER/TOBJECT: keep symple dqword storage
 	;--- by TLABEL/TQUOTED storage pointer qword_val points
   ;--- to new substituting item
-
 
 	F_NAME		equ 1
 	F_VALUE		equ 2

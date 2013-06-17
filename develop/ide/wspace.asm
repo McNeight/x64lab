@@ -1988,9 +1988,9 @@ xor eax,eax
 	inc qword[rsp]
 
 	;-----------------------------
-	 mov r8,rdi         
-	 mov rdx,r9
-	 call art.cout2XU
+;---	 mov r8,rdi         
+;---	 mov rdx,r9
+;---	 call art.cout2XU
 	;-----------------------------
 
 .load_kdirsB:
@@ -2778,8 +2778,8 @@ xor eax,eax
 ;---	call apiw.sms
 
 	;--- delete not default items on MT_FILE
-	cmp rsi,[hMT_FILE]
-	jnz	winproc.ret0
+;---	cmp rsi,[hMT_FILE]
+;---	jnz	winproc.ret0
 
 ;---	mov rdx,rbx
 ;---	mov rcx,rsi

@@ -105,7 +105,11 @@
 		CoInitializeEx,"CoInitializeEx",\
 		CoTaskMemAlloc,"CoTaskMemAlloc",\
 		CoTaskMemFree,"CoTaskMemFree",\
-		CoUninitialize,"CoUninitialize"
+		CoUninitialize,"CoUninitialize",\
+		OleInitialize,"OleInitialize",\
+		OleUninitialize,"OleUninitialize",\
+		RegisterDragDrop,"RegisterDragDrop",\
+		RevokeDragDrop,"RevokeDragDrop"
 
 	import USER32,\
 		AnimateWindow,"AnimateWindow",\

@@ -523,7 +523,8 @@ devtool:
 	call cbex.get_edit
 	mov [.devt.hCbxE],rax
 
-	mov r9,LPSTR_TEXTCALLBACK
+	mov r9,\
+		LPSTR_TEXTCALLBACK
 	mov r8,rax
 	mov rdx,[.hwnd]
 	mov rcx,[hTip]

@@ -91,9 +91,12 @@ ext:
 
 	mov ax,"*"
 	stosw
-	mov rax,qword[uzUtf8Ext]
+	mov ax,"."
+	stosw
+	mov rax,qword[uzUtf8Ext+2]
 	stosq
 	xor eax,eax
+	stosw
 	stosw
 
 	mov rax,rdi

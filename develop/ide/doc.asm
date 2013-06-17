@@ -750,7 +750,8 @@ doc:
 	mov r9,\
 		LVS_EX_CHECKBOXES or\
 		LVS_EX_FULLROWSELECT or \
-		LVS_EX_AUTOSIZECOLUMNS
+		LVS_EX_AUTOSIZECOLUMNS or \
+		LVS_EX_INFOTIP
 	;---LVS_EX_JUSTIFYCOLUMNS ; or \
 	;---LVS_EX_AUTOSIZECOLUMNS ;or \
 	;---LVS_EX_GRIDLINES or \
@@ -813,7 +814,8 @@ doc:
 
 	mov r9,\
 		LVS_EX_FULLROWSELECT or \
-		LVS_EX_AUTOSIZECOLUMNS or LVS_EX_DOUBLEBUFFER
+		LVS_EX_AUTOSIZECOLUMNS or \
+		LVS_EX_DOUBLEBUFFER
 	xor r8,r8
 	mov rcx,[.doc.hLvwB]
 	call lvw.set_xstyle
@@ -865,6 +867,43 @@ doc:
 	jz	.wm_notifyA
 	cmp rdx,[.doc.hLvwB]
 	jz	.wm_notifyB
+	cmp rdx,[hTip]
+	jz	.tip_notify
+	jmp	.ret0
+
+.tip_notify:
+	mov rax,[r9+\
+		NMHDR.idFrom]
+	cmp rax,[.doc.hLvwA]
+	jnz	.ret0
+
+	mov edx,[r9+\
+		NMHDR.code]
+	cmp edx,\
+		TTN_GETDISPINFOW
+	jnz	.ret0
+
+	mov rsi,r9
+	mov rcx,[.doc.hLvwA]
+	call lvw.gethit
+
+;@break	
+	xor eax,eax
+	mov [rsi+\
+		NMTTDISPINFO.lpszText],rax
+
+	test edx,edx
+	jz	.ret0
+
+	mov rax,[rdx+\
+		LABFILE.pOmni]
+	test eax,eax
+	jz	.ret0
+
+	lea rdx,[rax+\
+		sizeof.OMNI]
+	mov [rsi+\
+		NMTTDISPINFO.lpszText],rdx
 	jmp	.ret0
 
 .wm_notifyB:
@@ -944,7 +983,36 @@ doc:
 	jz	.notify_schgedA
 	cmp edx,NM_DBLCLK
 	jz	.notify_dblclkA
+	cmp edx,\
+		LVN_GETINFOTIPW
+	jz	.notify_tip
 	jmp	.ret0
+
+.notify_tip:
+;@break
+;	mov eax,[r9+NMLVGETINFOTIP.iItem]
+	
+;---	xor eax,eax
+;---	mov [r9+\
+;---		NMLVGETINFOTIP.pszText],rax;uzDefault
+	;---	mov rax,[r9+\
+	;---		NMTVGETINFOTIPW.hItem]
+	;---	mov r8,rax
+	;---	mov rdx,rax
+	;---	call art.cout2XX
+
+	;---	test eax,eax
+	;---	jz	winproc.ret0
+	xor r8,r8
+	xor r9,r9
+	mov rcx,[hTip]
+	call tip.popup
+	jmp	.ret0
+
+;---	mov eax,[r9+NMLVGETINFOTIP.dwFlags]
+;---	mov rax,[r9+NMLVGETINFOTIP.pszText]
+;---	mov [r9+NMLVGETINFOTIP.pszText],uzDefault
+;---	mov [r9+NMLVGETINFOTIP.dwFlags],0
 
 .notify_schgedA:
 	mov rcx,\
@@ -1084,10 +1152,21 @@ doc:
 	mov [.doc.hLvwA],rax
 	mov [hDocs],rax
 
+	;--- enable tool balloon for open documents
+	mov r9,\
+		LPSTR_TEXTCALLBACK
+	mov r8,rax
+	mov rdx,[.hwnd]
+	mov rcx,[hTip]
+	call tip.add
+
+
 	mov rdx,DOC_LVWB
 	mov rcx,[.hwnd]
 	call rdi
 	mov [.doc.hLvwB],rax
+
+
 
 .ret1:				;message processed
 	xor rax,rax

@@ -47,10 +47,10 @@
 
 	;--- set static com pointer 
 	;--- @comsta pUnk,iUnknown
-	macro @comsta argcall,arginter {
+	macro @comsta argname,arginter {
 		align 8
 		virtual at $
-			argcall arginter
+			argname arginter
 		end virtual
 		dq 0
 	}

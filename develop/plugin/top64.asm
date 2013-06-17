@@ -1,4 +1,4 @@
-  
+ 
   ;#-------------------------------------------------ß
   ;|          top64  MPL 2.0 License                 |
   ;|   Copyright (c) 2011-2012, Marc Rainer Kranz.   |
@@ -25,7 +25,7 @@ INC_SDATA equ
 INC_DATA	equ
 INC_CODE	equ WORKDIR#'\'#MODULE#'\code.asm'
 INC_RES		equ 
-APIIMPORT			equ 
+APIIMPORT	equ 
 
 INC_IMP	equ SHAREDDIR#'\importw.inc'
 INC_FIX	equ TRUE
@@ -44,12 +44,5 @@ APIBRIDGE equ \
 	top64.parse,\
 	top64.free,\
 	top64.locate
-
-;	top64.getnum,\
-;	top64.locate,\
-;	top64.getstr,\
-;	top64.next,\
-;	top64.rawnext,\
-
 
 include '%x64devdir%\shared\common.asm'

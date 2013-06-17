@@ -7,7 +7,8 @@
  this is a real boost to your time/development. that mad clicking, you always
  forcedly liked, has been practically eliminated. i applied this successful idea
  already in my old 32bit ide. then i revised and improved it over the two
- üast years.
+ past years. a videoclip+musik tutorial at
+ http://www.youtube.com/watch?v=BDNkctTT9XI
 
  to configure your own commands open the file [config\command.utf8]
  you will find there some items of preconfigured commands. 

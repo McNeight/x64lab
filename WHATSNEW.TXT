@@ -1,4 +1,13 @@
 
+- version 1.0.50 (17.06.2013 ) Win8 
+  +DES Start testing on Win 8
+  +GUI Correcting bug while opening class file for scintilla
+  +BEH Improved remember last command
+
+- version 1.0.49 (10.06.2013 ) "" 
+  +GUI Execute cmd from the selected doc in view
+  +GUI Cmds Tooltip on open documents
+
 - version 1.0.48 (09.06.2013 ) cmds 
   +HLP How to setup commands and commandlines
   +GUI Menu Rx on item of workspace show "Execute command"

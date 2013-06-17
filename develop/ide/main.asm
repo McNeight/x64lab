@@ -596,9 +596,24 @@ winproc:
 	mov rcx,[hTree]
 	call tree.get_sel
 	test eax,eax
-	jz .ret0
+	jnz .mp_fi_cmdA
 
-	;--- get LABFILE ---
+	;--- try the current selected doc in view
+	mov rcx,[pEdit]
+	mov rbx,[rcx+\
+		EDIT.curlabf]
+	test ebx,ebx
+	jz	.ret0
+	cmp rbx,[rcx+\
+		EDIT.deflabf]
+	jz	.ret0
+	mov rsi,[.labf.pOmni]
+	test esi,esi
+	jz	.ret0
+	jmp	.mi_cmdA
+
+.mp_fi_cmdA:
+	;--- get LABFILE from WSP---
 	sub rsp,\
 		sizeof.TVITEMW+\
 		MAX_CMDCPTS
@@ -633,7 +648,7 @@ winproc:
 	test eax,eax
 	jz .ret0
 
-	;--- get LABFILE ---
+	;--- get LABFILE from WSP ---
 	sub rsp,\
 		sizeof.TVITEMW+\
 		MAX_CMDCPTS
@@ -641,6 +656,7 @@ winproc:
 	mov edx,eax
 	mov rcx,[hTree]
 	call tree.get_param
+
 	mov rbx,[rsp+\
 		TVITEMW.lParam]
 	test eax,eax

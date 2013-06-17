@@ -71,6 +71,18 @@
 	ends
 	@sizea16 NMBCDROPDOWN
 
+	struct NMLVGETINFOTIP
+		hdr NMHDR
+		dwFlags	dd ?
+						dd ?
+		pszText dq ?
+		cchTextMax dd ?
+		iItem 		dd ?
+		iSubItem	dd ?
+		lParam		dq ?
+	ends
+
+
 ;---	struct TVITEMW
 ;---	 mask			dd ?
 ;---						dd ?
@@ -95,6 +107,13 @@
 ;---	ends
 ;---	@sizea16 TVITEMW
 
+	struct LVHITTESTINFO
+		pt		POINT
+		flags 		dd ?
+		iItem 		dd ?
+		iSubItem 	dd ?
+		iGroup		dd ?
+	ends
 
 
 	struct COMBOBOXEXITEMW
@@ -436,13 +455,6 @@ struct LV_FINDINFO
   pt	   POINT
   vkDirection dd ?
 ends
-
-struct LV_HITTESTINFO
-  pt		POINT
-  flags 	dd ?
-  iItem 	dd ?
-ends
-
 
 	struct NMITEMACTIVATE
 	  hdr			NMHDR
@@ -1773,7 +1785,8 @@ LVN_ODCACHEHINT     = LVN_FIRST - 13
 LVN_GETDISPINFOA    = LVN_FIRST - 50
 LVN_SETDISPINFOA    = LVN_FIRST - 51
 LVN_ODFINDITEMA     = LVN_FIRST - 52
-LVN_KEYDOWN	    = LVN_FIRST - 55
+LVN_KEYDOWN	        = LVN_FIRST - 55
+LVN_GETINFOTIPW     = LVN_FIRST - 58
 LVN_BEGINLABELEDITW = LVN_FIRST - 75
 LVN_ENDLABELEDITW   = LVN_FIRST - 76
 LVN_GETDISPINFOW    = LVN_FIRST - 77
@@ -1784,6 +1797,7 @@ LVN_ENDLABELEDIT    = LVN_ENDLABELEDITA
 LVN_GETDISPINFO     = LVN_GETDISPINFOA
 LVN_SETDISPINFO     = LVN_SETDISPINFOA
 LVN_ODFINDITEM	    = LVN_ODFINDITEMA
+
 
 
 
